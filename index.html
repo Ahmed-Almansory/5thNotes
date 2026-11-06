@@ -321,13 +321,16 @@ renderCards();
 // ===== Visitor counter (every visit counts) =====
 (function () {
   const el = document.getElementById('visitorCount');
-  fetch('https://api.counterapi.dev/v1/5thnotes-almansory/visitors/up')
+  fetch('https://abacus.jasoncameron.dev/hit/5thnotes-almansory/visits')
     .then(r => r.json())
     .then(d => {
-      if (d.count === undefined) throw new Error('bad response');
-      el.textContent = Number(d.count).toLocaleString('en-US');
+      if (d.value === undefined) throw new Error('bad response');
+      el.textContent = Number(d.value).toLocaleString('en-US');
     })
-    .catch(() => { el.parentElement.style.display = 'none'; });
+    .catch(err => {
+      console.error('Visitor counter failed:', err);
+      el.parentElement.style.display = 'none';
+    });
 })();
 </script>
 </body>
