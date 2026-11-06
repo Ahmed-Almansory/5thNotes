@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chest Question Bank</title>
+<style>
+:root{--bg:#f2f7f8;--sf:#fff;--tx:#12303a;--mu:#5b7580;--pr:#0e7c86;--pl:#d9eef0;--ok:#1a7f4b;--okb:#dff3e6;--bd:#b3261e;--bdb:#fbe3e1;--ln:#d3e2e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a1f;--sf:#14262d;--tx:#e3f0f2;--mu:#93aab2;--pr:#4cc3cd;--pl:#18383f;--ok:#5fd18f;--okb:#12362357;--bd:#ff8f87;--bdb:#4a1f1d;--ln:#244048;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1a1f;--sf:#14262d;--tx:#e3f0f2;--mu:#93aab2;--pr:#4cc3cd;--pl:#18383f;--ok:#5fd18f;--okb:#12362357;--bd:#ff8f87;--bdb:#4a1f1d;--ln:#244048;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:1.6rem;margin:8px 0 2px;letter-spacing:-.02em}h2{font-size:1.2rem;line-height:1.4;margin:6px 0 14px}
+.sub{color:var(--mu);margin:0 0 16px;font-size:.92rem}
+.g{display:grid;gap:10px}
+.cd{background:var(--sf);border:1px solid var(--ln);border-left:5px solid var(--pr);border-radius:10px;padding:12px 14px;text-align:left;color:var(--tx);font:inherit;cursor:pointer;width:100%}
+.cd b{display:block}.cd small{color:var(--mu);display:block}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+button{font:inherit;cursor:pointer}
+.b{background:var(--pr);color:#fff;border:0;border-radius:8px;padding:10px 16px;font-weight:600}
+.b.s{background:var(--pl);color:var(--tx)}.b:disabled{opacity:.4;cursor:default}
+.sm{font-size:.8rem;padding:4px 10px;border-radius:6px;border:1px solid var(--pr);background:transparent;color:var(--pr)}
+.bar{height:8px;background:var(--pl);border-radius:4px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:var(--pr)}
+.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select{font:inherit;background:var(--sf);color:var(--tx);border:1px solid var(--ln);border-radius:8px;padding:8px;max-width:100%;flex:1;min-width:0}
+.q{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:16px}
+.m{color:var(--mu);font-size:.82rem}
+.o{display:block;width:100%;text-align:left;background:var(--sf);color:var(--tx);border:2px solid var(--ln);border-radius:10px;padding:11px 13px;margin:8px 0;font:inherit}
+.o:not(:disabled):hover{border-color:var(--pr)}
+.o.ok{border-color:var(--ok);background:var(--okb)}.o.bad{border-color:var(--bd);background:var(--bdb)}
+.o:disabled{cursor:default;color:var(--tx)}
+.fb{margin-top:12px;padding:12px;border-radius:10px;background:var(--pl)}
+.fb strong.ok{color:var(--ok)}.fb strong.bad{color:var(--bd)}
+.fb p{margin:6px 0 0}
+.nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
+.lq{margin:12px 0}.lq .fb{display:none}.lq.d .fb{display:block}footer{text-align:center;color:var(--mu);padding:24px 16px;font-size:.85rem}
+</style></head><body><div class="w" id="app"></div><footer>© Almansory/ 5th notes</footer>
+<script>
+const C=[["Symptoms","Dyspnea · cough · sputum · hemoptysis · chest pain · wheeze",1,15],["General examination","Clubbing · cyanosis · neck veins · lymph nodes",16,23],["Inspection & palpation","Surface anatomy · chest shape · movements · trachea · apex · TVF",24,43],["Percussion","Technique · percussion notes · areas of dullness · shifting dullness",44,57],["Auscultation","Breath sounds · added sounds · vocal resonance",58,70],["Clinical syndromes","Collapse · consolidation · cavity · fibrosis · effusion · pneumothorax · cases",71,79],["Investigations","Chest X-ray · spirometry · arterial blood gases",80,85],["Asthma & COPD","Bronchial asthma · chronic bronchitis · emphysema",86,92],["Suppurative lung disease","Bronchiectasis · lung abscess · cystic fibrosis",93,96],["Tuberculosis","Pulmonary tuberculosis",97,104],["Tumors & ILD","Bronchogenic carcinoma · mesothelioma · ILD · sarcoidosis · pneumoconiosis",105,110],["Pulmonary vascular","Pulmonary hypertension · cor pulmonale · pulmonary embolism",111,115],["Pleural diseases","Pleural effusion · pneumothorax · empyema",116,121],["Mediastinum & resp. failure","Mediastinal syndrome · respiratory failure · ARDS",122,123]];
+const Q=[
+"Causes of acute (sudden) dyspnea include all the following except:|Pneumothorax|Pulmonary embolism|Interstitial pulmonary fibrosis|Bronchial asthma",
+"Acute dyspnea with chest pain could be due to the following except:|Myocardial infarction|Pulmonary embolism|Attack of bronchial asthma|Pneumothorax",
+"Gradual progressive dyspnea could be due to the following except:|Pneumothorax|Chronic obstructive pulmonary disease|Interstitial pulmonary fibrosis|Showers of pulmonary emboli",
+"Causes of dyspnea with chest wheeze include the following:|Pleural effusion|Chronic obstructive pulmonary disease|Pneumothorax|All of the above",
+"Causes of dyspnea with chest wheeze include the following except:|Bronchial asthma|Chronic obstructive pulmonary disease|Acute asthmatic bronchitis|Interstitial pulmonary fibrosis",
+"Dry cough could be due to the following except:|Bronchial asthma|Bronchiectasis|Interstitial pulmonary fibrosis|Pleurisy",
+"Productive cough could be due to the following except:|Pneumonia|Bronchiectasis|Interstitial pulmonary fibrosis|Lung abscess",
+"Rusty sputum is characteristic of:|Pneumonia|Bronchiectasis|Amoebic lung abscess|Bronchial asthma",
+"Purulent sputum is characteristic of:|Interstitial pulmonary fibrosis|Bronchial asthma|Bronchiectasis|Pulmonary embolism",
+"Localized fixed wheeze could be due to:|Bronchial asthma|Chronic bronchitis|Endobronchial tumor|Emphysema",
+"Localized fixed wheeze could be due to the following except:|Foreign body aspiration|Endobronchial tumor|Compression of a bronchus by enlarged lymph node|Bronchial asthma",
+"Chest wheezes that disappear with cough could be due to:|Bronchial secretions|Bronchospasm|Bronchial compression|None of the above",
+"Chest pain of pleural origin is characterized by the following except:|Stitching in character|Increases with cough|Exaggerated by holding breath|Increases with inspiration",
+"Stitching chest pain that increases with inspiration and decreases with holding breath could be due to:|Pericarditis|Pleurisy|Tracheitis|Intercostal myositis",
+"Dyspnea without chest wheeze could be due to:|Pleural effusion|Primary emphysema|Interstitial pulmonary fibrosis|All of the above",
+"Bilateral congested non-pulsating neck veins occur in all the following EXCEPT:|Fibrosing mediastinitis|Cardiac tamponade|SVC thrombosis|Extra-pulmonary non-metastatic manifestations of oat cell carcinoma",
+"Clubbing of fingers is associated with the following EXCEPT:|Bronchial asthma|Bronchogenic carcinoma|Bronchiectasis|Interstitial pulmonary fibrosis",
+"Clubbing is present in all EXCEPT:|IPF|Cystic fibrosis|Emphysema|Bronchiectasis",
+"Which of the following is NOT associated with clubbing of fingers?|Lung cancer|Interstitial lung disease|Cystic fibrosis|Chronic obstructive pulmonary disease",
+"Warming the hand in peripheral cyanosis:|Improves cyanosis of the hand|Worsens cyanosis of the hand|Improves tongue discoloration|All of the above",
+"Causes of peripheral cyanosis include all of the following except:|Shock|Right-to-left shunt|Peripheral artery disease|Cold exposure",
+"In cyanosis the reduced hemoglobin should not be less than:|5 gm/dl|7 gm/dl|9 gm/dl|None of the above",
+"Central cyanosis occurs in all of the following except:|Marked polycythemia|Right-to-left shunt|Shock|Interstitial lung fibrosis",
+"Bifurcation of the trachea (carina) lies opposite:|Angle of Lewis|Second thoracic vertebral body|Above the arch of aorta|Below the bifurcation of the pulmonary conus",
+"The transverse fissure is present at the level of:|2nd costal cartilage|4th thoracic vertebra|4th costal cartilage|2nd thoracic vertebra",
+"Barrel shaped chest is caused by:",
+"Barrel shaped chest is characterized by the following except:|The anteroposterior diameter equals the transverse diameter|Dorsal lordosis|Wide subcostal angle|The shoulders are transverse",
+"Regarding hyperinflation (barrel chest), all of the following are true except:|Increased anteroposterior diameter|Kyphosis|Ribs are more oblique|Wide subcostal angle",
+"Unilateral chest wall retraction could be due to:|Lung collapse|Lung consolidation|Pleural effusion|Pneumothorax",
+"The main muscle of ventilation is:|Internal intercostal muscle|External intercostal muscle|Diaphragm|Transversus thoracis",
+"Abdominal paradox is a sign of:|Intercostal muscle fatigue|Diaphragmatic paralysis|Peritonitis|Massive ascites",
+"Indrawing of the intercostal spaces during inspiration is a sign of:|Intercostal muscle fatigue|Diaphragmatic paralysis|Increased airway resistance|Pleurisy",
+"All of the following occur in prolonged expiration except:|Use of abdominal muscles|Intercostal indrawing|Pursing of the lips|Inspiration equals expiration",
+"One of the following increases the mobility of the chest:|Pleural effusion|Bronchogenic carcinoma|Pneumothorax|None of the above",
+"Presence of dilated tortuous veins over the chest wall which fill from above downward is due to:|Superior vena cava obstruction|Congestive heart failure|Inferior vena cava obstruction|Portal hypertension",
+"Tracheal tug could be detected in:|Emphysema|Acute severe asthma|Bilateral pulmonary T.B. (acute)",
+"What shifts the apex outside the midclavicular line?|Right pleural effusion|Right pneumothorax|Right ventricular enlargement|All of the above",
+"Causes of apex at the left parasternal line:|Right pneumothorax|Right collapse|Right pleural effusion",
+"Causes of palpable pulsation over the chest wall:",
+"T.V.F. is usually increased over:|Consolidation|Emphysema|Pneumothorax",
+"Increased TVF occurs in all of the following except:|Pneumonia|Obstructive collapse|Superficial cavity|Cavity surrounded by an area of consolidation",
+"TVF is decreased in the following conditions except:|Pneumothorax|Superficial cavity|Mesothelioma|Pleural effusion",
+"All the following show reduced T.V.F. except:|Collapse|Consolidation|Fibrosis|Emphysema",
+"Shifting dullness over the chest occurs with:|Free pleural effusion|Encysted pneumothorax|Hydropneumothorax|Encysted pleural effusion",
+"Presence of positive tidal percussion denotes that the dullness is due to:|Supradiaphragmatic dullness|Subdiaphragmatic dullness|Subpneumonic lesion|Chest wall lesion",
+"Presence of positive reversed tidal percussion could be due to:|Supradiaphragmatic dullness|Diaphragmatic paralysis|Subdiaphragmatic dullness|Subpneumonic lesion",
+"The bare area of the heart is normally:|Hyperresonant by heavy percussion|Dull by light percussion|Resonant by heavy percussion|Resonant by light percussion",
+"The dullness of the bare area of the heart is increased in the following conditions except:|Cardiomegaly|Pericardial effusion|Lingula collapse|Emphysema",
+"The dullness of the bare area of the heart is increased in case of:|Emphysema|Bronchial asthma|Cardiomegaly|Interstitial pulmonary fibrosis",
+"Dullness of Traube’s area is due to the following except:|Left pleural effusion|Full stomach|Left lower lobe consolidation|Splenomegaly",
+"Traube’s dullness occurs with:|Left lower lobe consolidation|Left lower lobe collapse|Left sided pleural effusion",
+"Dull Kronig’s isthmus may be due to:|Superior sulcus tumor|Consolidated anterior segment of upper lobe|Emphysema",
+"Unilateral hyperresonance occurs with the following except:|Compensatory emphysema|Attack of bronchial asthma|Pneumothorax|Giant bulla",
+"The upper border of the liver can be detected by:|Heavy percussion at the right midclavicular line|Light percussion at the right midclavicular line|Both",
+"Kronig’s isthmus boundaries include the following except:|7th cervical spinous process|Middle of the sternal notch|Junction between the lateral third and medial two thirds of the clavicle|Junction between the lateral two thirds and medial third of the scapular spine",
+"Boundaries of Kronig’s isthmus, all except:|T1 spine|Sternoclavicular joint|Junction between medial 2/3 and lateral 1/3 of the clavicle",
+"Lateral end of Kronig’s isthmus is:|Contact of acromion process with clavicle|Tip of cervical spine|Line of contact between junction of medial two thirds & lateral one third of clavicle and junction of lateral two thirds & medial one third of scapular spine",
+"The following conditions are associated with diminished breath sounds except:|Pneumonia|Pleural effusion|Pneumothorax|Obstructive lung collapse",
+"The following is associated with diminished intensity of breath sounds:|Pleural effusion|Obstructive lung collapse|Pneumothorax|All of the above",
+"In auscultation, vesicular breathing is characterized by the following except:|Inspiration is three times the expiration|Gentle rustling sound|No gap between inspiration and expiration|Inspiration equals expiration",
+"In auscultation, bronchial breathing is characterized by the following except:|Hollow breathing|Gap between inspiration and expiration|Inspiration is three times the expiration|Inspiration equals expiration",
+"Bronchial breathing can be heard above:|Collapse|Consolidation|Pneumothorax",
+"Bronchial breathing is found in all the following except:|Collapse with patent bronchus|Bronchial asthma|Superficial cavity with patent bronchus|Bronchopleural fistula",
+"Amphoric breathing is a sign of presence of:|Cavity|Tension cavity|Closed pneumothorax",
+"Amphoric bronchial breathing occurs with:|Pneumonic consolidation|Superficial tense cavity|Big cavity with relaxed wall|Encysted pneumothorax",
+"Presence of positive D’Espine sign could be due to:|Paratracheal mass|Enlarged left atrium|Pericardial effusion|Enlarged subcarinal lymph node",
+"Positive D’Espine sign is characterized by:|Positive whispering pectoriloquy|Due to left atrium enlargement|At the 4th thoracic spinous process|All the above",
+"Late inspiratory crepitations occur with:|Pulmonary edema|Pulmonary emphysema|Pulmonary TB|Interstitial pulmonary fibrosis",
+"Positive whispering pectoriloquy occurs with:|Bronchial proper breathing|Tubular bronchial breathing|Cavernous bronchial breathing|Amphoric bronchial breathing",
+"Post-tussive suction occurs with:|Simple pneumothorax|Large cavity|Lobar pneumonia|Lung collapse",
+"A case with an area of increased TVF, resonant percussion note and bronchial breathing on auscultation. These are the physical findings of:|Consolidation|Superficial cavity|Lung collapse|Huge bulla",
+"Collapse is characterized by:|Increased TVF|Decreased TVF",
+"The following condition leads to lung collapse:|Partial bronchial obstruction|Bronchospasm|Interstitial pulmonary fibrosis|Total bronchial obstruction",
+"All of the following cause lung collapse EXCEPT:|Pneumothorax|Pleural effusion|Complete bronchial obstruction|Partial bronchial obstruction",
+"A case with decreased TVF, dullness and diminished breath sounds over the left hemithorax with shift of the trachea to the left. These are the physical findings of:|Left pneumothorax|Left lung consolidation|Left massive pleural effusion|Left lung obstructive collapse",
+"A short case about a patient complaining of dyspnea, diminished air entry on the left side and mediastinal shift to the left side. What is the most likely diagnosis?|Left sided pneumothorax|Left sided massive collapse|Pleural effusion|Collapse",
+"A case with diminished TVF, dullness and diminished breath sounds over the right clavicular and infraclavicular regions with shift of the trachea to the right side. These are the physical signs of:|Right upper lobe consolidation|Right upper lobe bronchogenic carcinoma|Right upper lobe collapse|Right upper lobe bulla",
+"A case with diminished TVF, dullness and diminished breath sounds over the right clavicular and infraclavicular regions with shift of the trachea to the LEFT side. These are the physical findings of:|Right upper lobe consolidation|Right upper lobe bronchogenic carcinoma|Right upper lobe collapse|Right upper lobe bulla",
+"Bilateral basal crepitations with frothy sputum. The most likely diagnosis is:|Left sided heart failure|Bronchial asthma",
+"Normal pH of arterial blood (ABG) is:",
+"Normal PCO2 in arterial blood is:|30-35 mmHg|20-25 mmHg|35-45 mmHg|50-60 mmHg",
+"Normal oxygen tension (PaO2) in arterial blood gases is:",
+"Simple spirometry can measure all of the following EXCEPT:|Inspiratory capacity|Tidal volume|Expiratory reserve volume|Residual volume",
+"In restrictive lung disease, the following volumes are reduced:|Vital capacity|Residual volume|Total lung capacity|All of the above",
+"A patient with decreased FVC and FEV1 but a normal FEV1/FVC ratio is suggested to have:|Restrictive lung disease|Obstructive lung disease|Mixed restrictive & obstructive lung disease|None of the above",
+"Main symptom in asthma is:|Chest pain|Hemoptysis|Dyspnea & wheezes",
+"Rapid reliever of bronchoconstriction is:|B2 receptor agonist|Sodium cromoglycate|Nedocromil sodium|Antihistamine",
+"Emphysema is characterized by:|Hemoptysis|Progressive dyspnea|Chest pain",
+"Neck veins in COPD:|Inspiratory filling|Inspiratory emptying|Expiratory filling",
+"Emphysema may be accompanied by all the following except:|Increased T.V.F. of lung apices|Encroachment on dullness of the bare area of the heart|Positive tracheal tug",
+"In emphysema:|Bare area of heart becomes widened|Pigeon-shaped chest|Encroachment over hepatic dullness",
+"In COPD all increases except:|FVC|RV|TLC|FRV",
+"A case with cough and expectoration of large amount of purulent offensive sputum for 10 years which increases on leaning forward. The examination revealed bilateral basal crepitations which change with cough. The possible diagnosis is:|Left lower lobe lung abscess|Right lower lobe lung abscess|Bronchiectasis|Right upper lobe abscess",
+"Diagnosis of bronchiectasis is confirmed nowadays by:|X-ray|Bronchography|Bronchoscopy|High resolution CT",
+"A case with history of fever and cough for few days followed by sudden gush of large amount of purulent offensive sputum which increases on lying on the left side. The examination revealed bronchial breathing over the right infra-scapular region. The possible diagnosis is:|Left lower lobe lung abscess|Right lower lobe lung abscess|Left lower lobe bronchiectasis|Right upper lobe lung abscess",
+"Suppurative lung syndromes include the following except:|Lung abscess|Empyema|Bronchiectasis|Infected lung cyst",
+"Tuberculosis is transmitted by:|Droplet infection|Food borne infection|Intrauterine infection|All of the above",
+"Taking history in a case suspected to be pulmonary T.B. should stress upon:|Present history|Past history|Family history|Contact history",
+"The radiological finding in pulmonary tuberculosis is:|Cavitation|Fibrosis|Consolidation|All of the above",
+"The diagnosis of active pulmonary tuberculosis is proved by:|Positive tuberculin skin test|Positive sputum for acid fast bacilli|Radiological shadows impressive of TB|Elevated ESR",
+"Positive tuberculin test denotes:|Active disease only|Infection only|Infection with or without disease|None of the above",
+"The following anti-tuberculous drugs have hepatotoxic effect except:|Rifampicin|Pyrazinamide|Ethambutol|Isoniazid",
+"The anti-tuberculous drug that leads to orange discoloration of body fluids is:|Rifampicin|Pyrazinamide|Ethambutol|Isoniazid",
+"The following anti-TB drugs can be used safely in renal impairment except:|Pyrazinamide|Streptomycin",
+"Exposure to asbestos is the main risk factor for:|Bronchogenic carcinoma|Mesothelioma|Carcinoid tumor|Lymphoma",
+"Bronchogenic carcinoma can be presented by:|Lung abscess formation|Pneumonic consolidation|Normal physical findings|All of the above",
+"Bronchial carcinoma may present with:|Collapse|Consolidation|Effusion|All of the above|None of the above",
+"A case with history of gradual progressive dyspnea and dry irritative cough. The general examination revealed central cyanosis and third degree clubbing of fingers. The local examination revealed bilateral diffuse late inspiratory crepitations. The possible diagnosis is:|Interstitial pulmonary fibrosis|Bilateral bronchiectasis|Bronchogenic carcinoma|Congestive heart failure",
+"What is the investigation of choice for diagnosis of interstitial lung diseases?|Chest X-ray|MRI chest|High resolution CT chest|PET CT",
+"Caplan syndrome in coal worker’s pneumoconiosis is associated with:|SLE|Scleroderma|Rheumatoid arthritis|Ankylosing spondylitis",
+"The palpable pulsations in a case of cor pulmonale are felt in:|The pulmonary area|The epigastric area|The left parasternal area|All of the above",
+"Which of the following is NOT a typical clinical finding in pulmonary embolism?|Dyspnea|Bradycardia|Chest pain|Hemoptysis",
+"Neck veins in cor pulmonale show:|Congested pulsating neck veins|Giant a wave|Systolic expansion|All of the above",
+"Cor pulmonale shows the following except:|Pistol shot over the femoral artery|Tricuspid facies|Positive hepatojugular (hepatic) sign|Congested pulsating neck veins",
+"In pulmonary hypertension, there may be:|Wide splitting of the 2nd heart sound|Dullness in the 2nd right intercostal space|Organic tricuspid regurgitation|All of the above|None of the above",
+"During physical examination of a patient with suspected left sided pleural effusion, which combination of physical signs is classic for a fluid-filled pleural space?|Increased TVF, stony dull percussion, bronchial breathing|Decreased tactile vocal fremitus, stony dull percussion, absent/diminished breath sounds|Normal tactile vocal fremitus, tympanitic percussion, vesicular breathing with wheezes|Increased tactile vocal fremitus, dull percussion, amphoric breathing",
+"Main finding in pleural effusion is:|Dullness with increased breath sounds|Stony dullness with diminished breath sounds|Dullness with increased TVF",
+"Low TVF, dullness, diminished breath sounds on the left side and shift of the trachea to the right. Diagnosis?",
+"Pleural effusion is accompanied by the following physical signs except:|Skodaic resonance above its upper border|Shifting dullness|Aegophony at its upper border",
+"A case with diminished TVF, hyper-resonance and diminished breath sounds over the left hemithorax with shift of the trachea to the right side. These are physical findings of:|Left simple pneumothorax|Left tension pneumothorax|Left massive pleural effusion|Left lung consolidation",
+"Tension pneumothorax shows the following clinical signs except:|Shift of mediastinum to opposite side|Hyperresonance|Cavernous breathing|Amphoric breathing",
+"Type II respiratory failure is characterized by:|Hypoxemia only|Hypercapnia only|Hypoxemia and hypercapnia|None of the above",
+"Superior vena cava obstruction is characterized by the following except:|Congested non-pulsating neck veins|Morning face oedema|Supraclavicular and suprasternal fullness|Dilated veins over the chest wall which fill from down upward"];
+let K="CCABDBCACCDACBD"+"DACDABAC"+"AC-BCACBCBDAADB-ABBB"+"CBBBDCCCABABAC"+"ADDCBBBBDADBB"+"BBDDDBCBA"+"-C-DDA"+"CABCACA"+"CDBB"+"DDDBCCAB"+"BDDACC"+"DBDAE"+"BB-BBC"+"CD";
+const F=[10,12,7,12,4,4,5,5,7,19,13,10,12,4,4,1,3,5,3,1,1,7,4,1,3,2,10,2,20,7,8,4,1,2,13,1,1,1,3,1,2,11,3,16,7,1,12,7,4,9,1,1,3,1,5,1,1,9,7,8,11,1,3,1,1,14,4,1,1,2,6,1,4,2,8,3,9,6,3,5,5,3,5,3,1,1,6,1,2,1,1,3,11,4,13,1,9,1,3,13,4,5,3,5,3,1,1,9,3,3,8,6,1,1,1,3,1,2,1,11,1,6,13];
+const E={26:"Hyperinflation - emphysema / COPD (the ‘emphysematous’ chest).",39:"Epigastric & left parasternal pulsations (RV enlargement, e.g. cor pulmonale); apical pulsation absent in emphysema",80:"7.35 - 7.45",82:"80 - 100 mmHg",118:"Left massive pleural effusion"};
+const N={97:"Answer key corrected to D (the PDF key lists A)."};
+const X=["IPF causes gradual, progressive dyspnea, not sudden.","Asthma attack gives dyspnea and wheeze, but chest pain is not typical.","Pneumothorax causes sudden dyspnea, not gradual.","Of these, only COPD causes wheeze; effusion and pneumothorax give dyspnea without wheeze.","IPF causes dyspnea without wheeze.","Bronchiectasis gives a productive cough with copious purulent sputum.","IPF causes a dry cough.","Rusty sputum is typical of lobar (pneumococcal) pneumonia.","Bronchiectasis produces copious purulent sputum.","A fixed localized wheeze means a local bronchial narrowing, e.g. an endobronchial tumor.","Asthma gives generalized, variable wheeze, not a fixed localized one.","Wheeze from secretions clears with cough; bronchospasm or compression does not.","Pleural pain is worsened by deep breathing and cough, and eased by holding the breath.","Pleuritic pain eases when the breath is held, as the inflamed layers stop rubbing.","Effusion, emphysema and IPF all cause dyspnea without wheeze.","Paraneoplastic (non-metastatic) manifestations do not obstruct venous return; the others do.","Bronchial asthma is not associated with clubbing.","Emphysema/COPD does not cause clubbing; if present, suspect carcinoma.","COPD is not associated with clubbing.","Warming improves circulation, so peripheral cyanosis improves; central (tongue) cyanosis does not.","Right-to-left shunt causes central cyanosis.","Cyanosis appears when reduced hemoglobin is 5 g/dl or more.","Shock causes peripheral (low-flow) cyanosis, not central.","The carina lies at the level of the sternal angle (angle of Louis).","The transverse fissure lies at the level of the 4th costal cartilage.","","Barrel chest has dorsal kyphosis, not lordosis.","In hyperinflation the ribs become horizontal, not oblique.","Collapse reduces lung volume, so the chest wall retracts on that side.","The diaphragm is the main muscle of ventilation.","In diaphragmatic paralysis the abdomen moves inward during inspiration (abdominal paradox).","Indrawing reflects strong negative pressure against raised airway resistance.","Indrawing is a sign of difficult inspiration, not of prolonged expiration.","Effusion, carcinoma and pneumothorax all reduce chest movement.","Collateral veins fill downward when the SVC is obstructed.","Hyperinflated chest in emphysema pulls the trachea down with inspiration.","Effusion or pneumothorax pushes the mediastinum, and RV enlargement shifts the apex outward.","Right collapse pulls the heart to the right, so the apex lies near the left parasternal line.","","Solid consolidation conducts vibrations well, so TVF rises.","Obstructive collapse has a blocked bronchus, so TVF is decreased.","A superficial cavity increases TVF.","Consolidation increases TVF.","Air and fluid together give a level that shifts with posture (hydropneumothorax).","Tidal percussion moves with respiration, which indicates subdiaphragmatic dullness.","Reversed tidal percussion indicates paradoxical diaphragm movement, as in paralysis.","The bare area is not covered by lung, so it is dull on light percussion.","Emphysema overlaps the heart, reducing the bare-area dullness.","Cardiomegaly enlarges the bare-area dullness.","Lung consolidation does not fill Traube’s area; effusion, full stomach and splenomegaly do.","Left pleural effusion makes Traube’s area dull.","A superior sulcus (Pancoast) tumor makes Kronig’s isthmus dull.","An asthma attack causes bilateral, not unilateral, hyperresonance.","Heavy percussion reaches the liver’s upper border beneath the lung.","The isthmus lies over the shoulder between the clavicle and the scapular spine, not at the sternal notch.","The posterior boundary is the C7 spinous process, not T1.","The lateral end is the line joining the clavicle and scapular-spine junctions.","Consolidation usually gives bronchial breathing, not diminished breath sounds.","Effusion, collapse and pneumothorax all diminish breath sound intensity.","Vesicular: inspiration longer than expiration with no gap; equal inspiration/expiration is bronchial.","Bronchial: inspiration equals expiration with a gap; 3:1 is vesicular.","Consolidation transmits bronchial breathing from a patent bronchus.","Asthma has narrowed airways, so breath sounds are diminished with wheeze, not bronchial.","Amphoric breathing indicates a tense cavity with a patent bronchus.","A superficial tense cavity gives amphoric bronchial breathing.","Enlarged subcarinal nodes transmit the voice to the spine (D’Espine sign).","D’Espine sign is a positive whispering pectoriloquy over the spines.","IPF gives fine late inspiratory crepitations.","Tubular breathing (solid consolidation) transmits whispered speech clearly.","Post-tussive suction occurs over a large cavity.","Increased TVF, resonance and bronchial breathing indicate a superficial cavity.","Blocked bronchus in collapse means decreased TVF.","Total bronchial obstruction leads to air absorption and collapse.","Partial obstruction does not cause collapse.","Dull, decreased TVF, trachea shifted to the same side indicates obstructive collapse.","Mediastinal shift to the same side points to collapse.","Trachea pulled to the same side indicates upper lobe collapse.","Trachea pushed to the opposite side suggests a mass, e.g. carcinoma.","Basal crepitations with frothy sputum indicate pulmonary edema from left heart failure.","","Normal PaCO2 is 35-45 mmHg.","","Spirometry cannot measure residual volume.","In restrictive disease VC, RV and TLC are all reduced.","Reduced FVC and FEV1 with a normal ratio suggests a restrictive pattern.","Asthma presents mainly with dyspnea and wheeze.","Beta-2 agonists are rapid relievers; cromoglycate and nedocromil are preventers.","Emphysema causes progressive dyspnea.","Raised intrathoracic pressure fills the neck veins in expiration in COPD.","TVF is decreased, not increased, over emphysematous apices.","Hyperinflated lungs encroach on hepatic dullness.","In COPD FVC falls while RV, TLC and FRC rise.","Chronic purulent offensive sputum with changing basal crepitations indicates bronchiectasis.","HRCT confirms bronchiectasis nowadays.","A sudden gush after fever suggests a lung abscess rupturing into a bronchus, here right lower lobe.","Empyema is a pleural collection, not a lung suppuration.","TB spreads mainly by droplets; milk (bovine) and congenital spread also occur.","Contact history is key in suspected TB.","TB can show cavitation, fibrosis and consolidation.","Active TB is proven by acid-fast bacilli in sputum.","A positive tuberculin test means infection, with or without disease.","Ethambutol is not hepatotoxic (its toxicity is optic neuritis).","Rifampicin causes orange discoloration of body fluids.","Streptomycin is nephrotoxic and avoided in renal impairment.","Asbestos is the main risk factor for mesothelioma.","Bronchogenic carcinoma has many presentations, including abscess, consolidation or none.","Carcinoma may cause collapse, consolidation or effusion.","Dry cough, clubbing, cyanosis and late inspiratory crepitations indicate IPF.","HRCT is the investigation of choice for ILD.","Caplan syndrome is pneumoconiosis with rheumatoid arthritis.","RV enlargement gives pulsation in the pulmonary, epigastric and left parasternal areas.","PE causes tachycardia, not bradycardia.","Cor pulmonale shows congested pulsating veins with giant a wave and systolic expansion.","Pistol shot femoral is a sign of aortic regurgitation, not cor pulmonale.","The key marks none of the listed options as correct.","Effusion: decreased TVF, stony dullness, diminished breath sounds.","Stony dullness with diminished breath sounds is the main finding.","","Shifting dullness is not a feature of free effusion in this key.","Hyperresonance with the trachea pushed to the opposite side indicates tension pneumothorax.","Cavernous breathing is not a sign of tension pneumothorax; amphoric is.","Type II failure has hypoxemia with hypercapnia.","In SVC obstruction chest wall veins fill from above downward."];
+const ex=q=>X[q.n-1]?`<p><b>Explanation</b><br>${X[q.n-1]}</p>`:"";
+let SH=false;function tg(v){SH=v;try{localStorage.setItem("cqbsh",v?"1":"0")}catch(e){}show()}
+try{SH=localStorage.getItem("cqbsh")==="1"}catch(e){}
+const H=[
+["Superior vena cava obstruction is characterized by the following except:","Congested non pulsating neck veins","Morning face oedema","Supraclavicular and suprasternal fullness","Dilated veins over the chest wall which fill from down upward","D","In SVC obstruction the collateral veins fill from above downward (blood flows toward the IVC)."],
+["Unilateral chest wall retraction could be due to the following except:","Lung collapse","Lung fibrosis","Lung consolidation","Pleural fibrosis","C","Consolidation does not reduce lung volume, so no retraction. Collapse and fibrosis shrink the lung."],
+["The dullness of the bare area of the heart is increased in case of:","Emphysema","Bronchial asthma","Cardiomegaly","Interstitial pulmonary fibrosis","C","A larger heart enlarges the area not covered by lung. Emphysema/asthma (hyperinflation) reduce it."],
+["Gradual progressive dyspnea could be due to the following except:","Pneumothorax","Chronic obstructive pulmonary disease","Interstitial pulmonary fibrosis","Showers of pulmonary emboli","A","Pneumothorax causes sudden dyspnea."],
+["Barrel-shaped chest is characterized by the following except:","The anteroposterior diameter equals the transverse diameter","Dorsal lordosis","Wide subcostal angle","The shoulders are transverse","B","Barrel chest shows dorsal kyphosis, not lordosis."],
+["Shifting dullness over the chest occurs with:","Free pleural effusion","Encysted pneumothorax","Hydropneumothorax","Encysted pleural effusion","C","Air plus fluid in the pleural space: the fluid level shifts with posture. Free effusion alone gives a fixed dullness (Ellis curve)."],
+["A case with cough and expectoration of a large amount of purulent offensive sputum for 10 years which increases on leaning forward. The examination revealed bilateral basal crepitations which change with cough. The possible diagnosis is:","Left lower lobe lung abscess","Right lower lobe lung abscess","Bronchiectasis","Right upper lobe abscess","C","Chronic (10 years), bilateral, postural copious sputum with coarse crepitations that change with cough = bronchiectasis."],
+["In cyanosis the reduced hemoglobin should not be less than:","5 g/dl","7 g/dl","9 g/dl","None of the above","A","Central cyanosis appears when reduced Hb is at least 5 g/dl."],
+["TVF is decreased in the following conditions except:","Pneumothorax","Superficial cavity","Mesothelioma","Pleural effusion","B","A superficial cavity with patent bronchus increases TVF. The others separate lung from chest wall."],
+["Localized fixed wheeze could be due to:","Bronchial asthma","Chronic bronchitis","Endobronchial tumor","Emphysema","C","Local fixed bronchial narrowing (tumor, foreign body, compression) gives a localized fixed wheeze; the others give diffuse wheeze."],
+["A case with area of increased TVF, dullness and bronchial breathing. These are physical findings of:","Consolidation","Lung abscess","Pneumothorax","Lung collapse","A","Classic consolidation triad: increased TVF, dull note, bronchial breathing."],
+["Presence of dilated tortuous veins over the chest wall which fill from above downward are due to:","Superior vena cava obstruction","Congestive heart failure","Inferior vena cava obstruction","Portal hypertension","A","Hmm-check direction: key says SVC obstruction."],
+["Presence of positive D’Espine sign could be due to:","Paratracheal mass","Enlarged left atrium","Pericardial effusion","Enlarged subcarinal lymph node","D","Bronchophony over the spines below T4 in adults = enlarged tracheobronchial (subcarinal) nodes."],
+["The following conditions are associated with diminished breath sounds except:","Pneumonia","Pleural effusion","Pneumothorax","Obstructive lung collapse","A","Pneumonia (consolidation) gives bronchial breathing."],
+["The palpable pulsations in a case of cor pulmonale are felt in:","The pulmonary area","The epigastric area","The left parasternal area","All of the above","D","RV hypertrophy gives left parasternal heave, epigastric pulsation and palpable P2 in the pulmonary area."],
+["A case with diminished TVF, hyper-resonance and diminished breath sounds over the left hemithorax with shift of the trachea to the right side. These are physical findings of:","Left simple pneumothorax","Left tension pneumothorax","Left massive pleural effusion","Left lung consolidation","B","Air with mediastinal shift away from the affected side = tension pneumothorax."],
+["The following condition leads to lung collapse:","Partial bronchial obstruction","Bronchospasm","Interstitial pulmonary fibrosis","Total bronchial obstruction","D","Complete obstruction leads to air resorption and obstructive collapse."],
+["Hazards of cough include the following except:","Pneumothorax","Transudative pleural effusion","Hernia","Cerebral hemorrhage","B","Cough does not cause transudative effusion."],
+["Rusty sputum is characteristic of:","Bronchial asthma","Bronchiectasis","Amoebic lung abscess","Pneumonia","D","Rusty sputum = pneumococcal lobar pneumonia (anchovy sauce is amoebic abscess)."],
+["Chest wheezes that disappear with cough could be due to:","Bronchial secretions","Bronchospasm","Bronchial compression","None of the above","A","Secretions cleared by cough remove the wheeze; spasm or compression do not."],
+["In auscultation, vesicular breathing is characterized by the following except:","Inspiration is three times the expiration","Gentle rustling sound","No gap between inspiration and expiration","Inspiration equals expiration","D","In vesicular breathing inspiration is longer (3:1) than expiration. Equal I:E is bronchial."],
+["TVF is increased in the following condition:","Pleural effusion","Superficial cavity","Pleural fibrosis","Obstructive lung collapse","B","Cavity with patent bronchus conducts vibrations better. The others decrease TVF."],
+["A case with decreased TVF, dullness, and diminished breath sounds over the left hemithorax with shift of the trachea to the left. These are physical findings of:","Left pneumothorax","Left lung consolidation","Left massive pleural effusion","Left lung obstructive collapse","D","Trachea pulled toward the lesion = collapse. Massive effusion pushes it away."],
+["The bare area of the heart is normally:","Hyperresonant by heavy percussion","Dull by light percussion","Resonant by heavy percussion","Resonant by light percussion","B","The area not covered by lung is dull by light percussion; heavy percussion gives resonance."],
+["Localized fixed wheeze could be due to the following except:","Foreign body aspiration","Endobronchial tumor","Compression of a bronchus by enlarged lymph node","Bronchial asthma","D","Asthma causes diffuse variable wheeze."],
+["Chest pain of pleural origin is characterized by the following except:","Stitching in character","Increases with cough","Exaggerated by holding breath","Increases with inspiration","C","Pleuritic pain is relieved by holding the breath and worsened by deep inspiration/cough."],
+["Type II respiratory failure is characterized by:","Hypoxaemia only","Hypercapnia only","Hypoxaemia and hypercapnia","None of the above","C","Type II = low PaO2 plus high PaCO2 (ventilatory failure)."],
+["Purulent sputum is characteristic of:","Interstitial pulmonary fibrosis","Bronchial asthma","Bronchiectasis","Pulmonary embolism","C","Bronchiectasis produces copious purulent sputum."],
+["The diagnosis of active pulmonary tuberculosis is proved by:","Positive tuberculin skin test","Positive sputum for acid fast bacilli","Radiological shadows impressive of TB","Elevated ESR","B","Only demonstrating the organism proves active disease."],
+["The transverse fissure is present at the level of:","2nd costal cartilage","4th thoracic vertebra","4th costal cartilage","2nd thoracic vertebra","C","The horizontal fissure runs along the 4th costal cartilage (right lung)."],
+["A case with area of increased TVF, resonant percussion note and bronchial breathing on auscultation. These are physical findings of:","Consolidation","Superficial cavity","Lung collapse","Huge bulla","B","Cavity: increased TVF and bronchial breathing with a resonant (or tympanitic) note, unlike consolidation which is dull."],
+["Abdominal paradox is a sign of:","Intercostal muscle fatigue","Diaphragmatic paralysis","Peritonitis","Massive ascites","B","The paralyzed diaphragm is pushed up on inspiration, so the abdomen moves inward."],
+["Which of the following is not associated with clubbing of fingers?","Lung cancer","Interstitial lung disease","Cystic fibrosis","Chronic obstructive pulmonary disease","D","Uncomplicated COPD does not cause clubbing."],
+["Which of the following is NOT an atypical clinical finding in pulmonary embolism?","Dyspnea","Bradycardia","Chest pain","Hemoptysis","B","Per the key: tachycardia is typical; dyspnea, pleuritic pain and hemoptysis are the common findings."],
+["Positive D’Espine sign is characterized by:","Positive whispering pectoriloquy","Due to left atrium enlargement","At the 4th thoracic spinous process","All of the above","A","Whispered voice heard over the spines (below T7 in children/adults per the key) = positive whispering pectoriloquy."],
+["Presence of positive tidal percussion denotes that the dullness is due to:","Supradiaphragmatic dullness","Subdiaphragmatic dullness","Subpneumonic lesion","Chest wall lesion","B","Dullness changing with respiration means the lung edge moves over a structure beneath the diaphragm (e.g. liver)."],
+["A case with diminished TVF, dullness and diminished breath sounds over the right clavicular and infraclavicular regions with shift of the trachea to the left side. These are physical findings of:","Right upper lobe consolidation","Right upper lobe bronchogenic carcinoma","Right upper lobe collapse","Right upper lobe bulla","B","Trachea pushed away from the lesion = a mass (carcinoma)."],
+["Tuberculosis is transmitted by:","Food borne infection","Droplet infection","Intrauterine infection","All of the above","B","Main route is droplet/airborne. (The key lists B/D since other routes are rare.)"],
+["A case with diminished TVF, dullness and diminished breath sounds over the right clavicular and infraclavicular regions with shift of the trachea to the right side. These are physical findings of:","Right upper lobe bronchogenic carcinoma","Right upper lobe consolidation","Right upper lobe bulla","Right upper lobe collapse","D","Trachea pulled toward the lesion = collapse."],
+["Acute dyspnea with chest pain could be due to the following except:","Myocardial infarction","Pulmonary embolism","Attack of bronchial asthma","Pneumothorax","C","Asthma attack gives wheeze and dyspnea, typically without chest pain."],
+["A case with history of fever and cough for a few days followed by sudden gush of a large amount of purulent offensive sputum which increases on lying on the left side. The examination revealed bronchial breathing over the right infrascapular region. The possible diagnosis is:","Left lower lobe lung abscess","Right lower lobe lung abscess","Left lower lobe bronchiectasis","Right upper lobe abscess","B","Acute onset, sudden rupture into a bronchus; sputum rises when lying on the opposite side; signs are on the right lower zone."],
+["Unilateral chest wall retraction could be due to:","Lung collapse","Lung consolidation","Pleural effusion","Pneumothorax","A","Volume loss pulls the chest wall in. The others expand or maintain volume."],
+["Sudden dyspnea could be due to the following except:","Pneumothorax","Bronchial asthma","Interstitial pulmonary fibrosis","Pulmonary embolism","C","IPF causes gradual progressive dyspnea."],
+["Causes of dyspnea with chest wheeze include the following:","Pleural effusion","Chronic obstructive pulmonary disease","Pneumothorax","All of the above","B","COPD causes wheeze with dyspnea."],
+["The main muscle of ventilation is:","Internal intercostal muscle","External intercostal muscle","Diaphragm","Transversus thoracis","C","The diaphragm does about 70% of quiet breathing work."],
+["Unilateral hyper-resonance occurs with the following except:","Compensatory emphysema","Attack of bronchial asthma","Pneumothorax","Giant bulla","B","Asthma causes bilateral hyper-resonance."],
+["The radiological finding in pulmonary tuberculosis is:","Cavitation","Fibrosis","Consolidation","All of the above","D","TB can show all of these."],
+["Rapid reliever of bronchoconstriction is:","β2-receptor agonist","Sodium cromoglicate","Nedocromil sodium","Antihistamine","A","Short-acting β2 agonists (e.g. salbutamol) relax bronchial smooth muscle within minutes."],
+["Indrawing of intercostal spaces during inspiration is a sign of:","Intercostal muscle fatigue","Diaphragmatic paralysis","Increased airway resistance","Pleurisy","C","Obstruction creates marked negative intrapleural pressure that sucks in the spaces."],
+["Continuous agonizing dull aching chest pain is associated with:","Pulmonary embolism","Pleurisy","Bronchogenic carcinoma","All of the above","C","Chest wall/pleural invasion by carcinoma gives constant, severe, dull aching pain."],
+["In auscultation, bronchial breathing is characterized by the following except:","Hollow breathing","Gap between inspiration and expiration","Inspiration is three times the expiration","Inspiration equals expiration","C","Bronchial breathing: hollow, gap present, I = E. The 3:1 ratio is vesicular."],
+["Clubbing of fingers is associated with the following except:","Bronchial asthma","Bronchogenic carcinoma","Bronchiectasis","Interstitial pulmonary fibrosis","A","Asthma does not cause clubbing."],
+["Dullness of the Traube’s area is due to the following except:","Left pleural effusion","Full stomach","Left lower lobe consolidation","Splenomegaly","C","Traube’s space is normally tympanitic from the gastric bubble; consolidation does not affect it."],
+["Kronig’s isthmus boundaries include the following except:","7th cervical spinous process","Middle of sternal notch","Junction between the lateral third and medial two thirds of the clavicle","Junction between the lateral two thirds and medial third of the scapular spine","B","Kronig’s isthmus is bounded by the C7 spine, the clavicle junction anteriorly and the scapular spine. The sternal notch is not a boundary."],
+["Which of the anti-TB drugs should be totally avoided in pregnancy?","INH","Pyrazinamide","Rifampicin","Streptomycin","D","Streptomycin is ototoxic to the fetus (8th nerve)."],
+["Clubbing is present in all EXCEPT:","IPF","Cystic fibrosis","Emphysema","Bronchiectasis","C","Emphysema does not cause clubbing."],
+["During physical examination of a patient with suspected left-sided pleural effusion, which combination of physical signs is classic for a fluid-filled pleural space?","Increased TVF, stony dull percussion, bronchial breathing","Decreased tactile vocal fremitus, stony dull percussion, absent/diminished breath sounds","Normal tactile vocal fremitus, tympanitic percussion, vesicular breathing with wheezes","Increased tactile vocal fremitus, dull percussion, amphoric breathing","B","Fluid dampens vibration and sound: decreased TVF, stony dullness, diminished breath sounds."]];
+H[11][6]="SVC obstruction: collateral veins on the chest wall carry blood downward (fill from above downward). In IVC obstruction they fill from below upward.";
+
+Q.push("(p.40) The tuberculin skin test is read after:|Twenty four hours|Seven days|48 – 72 hours|Ten days",
+"(p.40) Screening for detection of early lung cancer include:|Fiberoptic bronchoscope|Rigid bronchoscope|Sputum cytology and chest X-ray|Bronchography",
+"(p.41) The tuberculin skin test is considered positive if:|The erythema < 10 mm|The induration > 10 mm|The erythema > 10 mm|The induration < 10 mm",
+"(p.41) A case with diminished TVF, positive shifting dullness and diminished breath sounds over the left hemithorax. These are physical findings of:|Left simple pneumothorax|Left tension pneumothorax|Left massive pleural effusion|Left hydropneumothorax",
+"(p.44) Orthopnea occur in:|left side heart failure|bronchial asthma|interstitial pulmonary fibrosis|all of the above",
+"(p.44) Warming hand in central cyanosis:|improve cyanosis of hand|worsen cyanosis of hand|improve tongue discoloration|all of the above",
+"(p.15) Angle of Lewis is opposite the following except:|Aortic arch|Right upper lobe bronchial stump|Carina of trachea",
+"(p.15) About Litten sign, the following is right except:|Should be in fatty patients|Positive in diaphragmatic paralysis|Should be detected with patient against sunlight",
+"(p.22) Pleural rub is characterized by all except:|It is a to & fro sound|Intensity increases by pressing the stethoscope against chest wall|Intensity decreases by pressing the stethoscope against chest wall|Disappears upon occurrence of pleural effusion",
+"(p.22) Clinically, right border of the heart can be percussed normally at:|One finger to the right of the sternum|One cm to the right of the lower half of the sternum|One cm to the right of mid-sternal line at lower half of the sternum",
+"(p.22) In pulmonary hypertension, all are true except:|Wide splitting of 2nd heart sound at pulmonary area|Reversed splitting of 2nd heart sound at pulmonary area|Systolic murmur at tricuspid area|Dullness in pulmonary area",
+"(p.17) Boundaries of Traub’s area include the following except:|Tip of left 8th costal cartilage|Tip of left 6th costal cartilage|Left 9th rib in mid-axillary line (MAL)|Left 11th rib in MAL",
+"(p.21) Unilateral chest retraction occurs with the following except:|Pleural fibrosis|Pulmonary fibrosis|Lung consolidation|Kyphoscoliosis",
+"(p.26) Continuous agonizing dull aching pain:|Bronchogenic carcinoma|Pulmonary embolism|Pleurisy|All of the above",
+"(p.27) Organisms resistant to T.B drugs are mainly resistant to:|Ethambutol & Rifampicin|Ethambutol & Streptomycin|Ethambutol & INH|INH & Rifampicin",
+"(p.48) A case with diminished TVF, hyper-resonance and diminished breath sounds over the left hemithorax and the trachea is central. These are physical findings of:|Left simple pneumothorax|Left tension pneumothorax|Left massive pleural effusion|Left lung consolidation",
+"(p.30) Complications of chronic cough include all except:|Cerebral hemorrhage|Hernia|Pneumothorax|Pleural effusion",
+"(p.31) Case of increased TVF, bronchial breathing & dullness on percussion. Diagnosis is:|Consolidation|Pleural effusion|Pneumothorax",
+"(p.1) Symmetrical abnormal chest shape except: (handwritten page, options not clear)",
+"(p.5) Emphysema is characterised by all except: (handwritten page, options not clear)");
+K+="CCBDABBACABBCADADA--";
+E[142]="kyphoscoliosis";E[143]="acute subcostal angle";
+X.push("The tuberculin test is read 48–72 hours after injection.","Sputum cytology and chest X-ray are non-invasive screening tools; bronchoscopy and bronchography are invasive.","Induration (not erythema) is measured; more than 10 mm is positive.","Air plus fluid in the pleural space (hydropneumothorax) gives a shifting level.","Pulmonary congestion in left heart failure causes dyspnea on lying flat.","","The sternal angle lies opposite the aortic arch and the carina, not a bronchial stump.","Litten sign is best seen in thin patients, not fatty ones.","Pressing the stethoscope increases the rub intensity, so a decrease is wrong.","","Reversed splitting of the 2nd sound is not a feature; wide splitting is.","","Consolidation does not reduce lung volume, so there is no retraction.","Chest wall invasion by bronchogenic carcinoma gives constant dull aching pain.","Multidrug-resistant TB is resistant to INH and rifampicin.","Simple pneumothorax: hyperresonance, decreased TVF and breath sounds, trachea central.","Pleural effusion is not a complication of chronic cough.","Increased TVF, bronchial breathing and dullness indicate consolidation.","","");
+C.push(["الاسئلة الزائدة من ملف الخمسين ورقة","Questions in File 1 (the 50-page file) only",124,143]);
+function mk(d,a){d.querySelectorAll(".o").forEach(x=>{if(x.dataset.l===a)x.classList.add("ok")})}
+function hw(){let on=false;const upd=()=>{let c=0,t=0;H.forEach((q,i)=>{const v=A["h"+i];if(v){t++;if(v===q[5])c++}});s.textContent=`Score: ${c} / ${t}`};
+$.innerHTML=`<div class=top><button class="b s" onclick="home()">Categories</button></div><h1 dir=auto>اسئلة ملف د هواري</h1><p class=sub>Chest MCQs · Dr. Hawary · ${H.length} questions</p><div class=row style="position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5"><b id=hs>Score: 0 / 0</b><button class="b s" id=ha>Show all answers</button><button class="b s" id=hr>Reset</button></div><div id=hl></div>`;
+const l=document.getElementById("hl"),s=document.getElementById("hs"),ha=document.getElementById("ha");
+H.forEach((q,i)=>{const d=document.createElement("div");d.className="q lq";
+d.innerHTML=`<h2><span style="color:var(--pr)">${i+1}.</span> ${q[0]}</h2>`+"ABCD".split("").map((x,j)=>`<button class=o data-l=${x}>${x}. ${q[j+1]}</button>`).join("")+`<div class=fb><b>Answer: ${q[5]}.</b> ${q[6]}</div>`;
+d.querySelectorAll(".o").forEach(b=>b.onclick=()=>{if(d.classList.contains("d"))return;A["h"+i]=b.dataset.l;sv();d.classList.add("d");b.classList.add(b.dataset.l===q[5]?"ok":"bad");mk(d,q[5]);upd()});
+const v=A["h"+i];if(v){d.classList.add("d");const bb=d.querySelector(`.o[data-l=${v}]`);if(bb)bb.classList.add(v===q[5]?"ok":"bad");mk(d,q[5])}
+l.appendChild(d)});
+ha.onclick=()=>{on=!on;l.querySelectorAll(".lq").forEach((d,i)=>{if(on&&!d.classList.contains("d")){d.classList.add("d");d.dataset.f=1;mk(d,H[i][5])}else if(!on&&d.dataset.f){d.classList.remove("d");delete d.dataset.f;d.querySelectorAll(".o").forEach(x=>x.classList.remove("ok"))}});ha.textContent=on?"Hide all answers":"Show all answers"};
+document.getElementById("hr").onclick=()=>{if(confirm("Clear your answers for this file?")){Object.keys(A).forEach(k=>{if(k[0]==="h")delete A[k]});sv();hw()}};upd();scrollTo(0,0)}
+const D=Q.map((s,i)=>{const p=s.split("|"),n=i+1;return{n,t:p[0],o:p.slice(1),k:"ABCDE".indexOf(K[i]),f:F[i],c:C.findIndex(c=>n>=c[2]&&n<=c[3])}});
+let A={},L=[],i=0,rev=false,sc=-1;
+try{A=JSON.parse(localStorage.getItem("cqb")||"{}")}catch(e){}
+const sv=()=>{try{localStorage.setItem("cqb",JSON.stringify(A))}catch(e){}};
+const $=document.getElementById("app");
+const bad=q=>A[q.n]!==undefined&&q.k>=0&&A[q.n]!==q.k;
+function home(){
+ L=[];let h=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h1>Chest Question Bank</h1><a href="https://t.me/kafifthnotes" target="_blank" rel="noopener" aria-label="Telegram channel" title="Telegram" style="flex:none;display:block;width:44px;height:44px"><svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="24" fill="#29a9eb"/><path fill="#fff" d="M10.6 23.3l22.9-8.8c1.1-.4 2 .3 1.7 1.7l-3.9 18.4c-.3 1.3-1.1 1.6-2.1 1l-5.9-4.4-2.9 2.8c-.3.3-.6.6-1.2.6l.4-6 10.9-9.9c.5-.4-.1-.7-.7-.3l-13.5 8.5-5.8-1.8c-1.3-.4-1.3-1.3.3-1.9z"/></svg></a></div><p class=sub>123 past-paper questions · answers from the IM Department Book &amp; Allam’s Clinical Examination</p><div class=g>`;
+ const st=qs=>{const d=qs.filter(q=>A[q.n]!==undefined).length,c=qs.filter(q=>q.k>=0&&A[q.n]===q.k).length,w=qs.filter(bad).length;return`${d}/${qs.length} answered · ${c} correct · ${w} incorrect`};
+ h+=`<div class=cd onclick="go(-1,false)"><b>All questions</b><small>${st(D)}</small><div class=row><button class=sm onclick="event.stopPropagation();go(-1,true)">Review incorrect &amp; unanswered</button></div></div>`;
+ h+=`<div class=cd onclick="hw()"><b dir=auto>اسئلة ملف د هواري</b><small>${Object.keys(A).filter(k=>k[0]==="h").length}/${H.length} answered · all listed together, with a show-all-answers option</small></div>`;C.forEach((c,j)=>{h+=`<div class=cd onclick="go(${j},false)"><b>${String(j+1).padStart(2,"0")}. ${c[0]}</b><small>${c[1]}</small><small>${st(D.filter(q=>q.c===j))}</small><div class=row><button class=sm onclick="event.stopPropagation();go(${j},true)">Review</button></div></div>`});
+ h+=`</div><div class=row><button class="b s" onclick="reset()">Reset progress</button></div>`;$.innerHTML=h;scrollTo(0,0)}
+function go(c,r){sc=c;rev=r;L=D.filter(q=>(c<0||q.c===c)&&(!r||A[q.n]===undefined||bad(q)));i=0;if(!L.length){alert("Nothing to review here: every question is answered correctly.");return}show()}
+function pick(j){A[L[i].n]=j;sv();show()}
+function show(){
+ const q=L[i],a=A[q.n],d=a!==undefined,sa=q.o.length==0,r=d||SH;
+ const done=L.filter(x=>A[x.n]!==undefined).length;
+ let h=`<div class=top><button class="b s" onclick="home()">Categories</button><select onchange="go(+this.value,rev)"><option value=-1 ${sc<0?"selected":""}>All questions</option>${C.map((c,j)=>`<option value=${j} ${sc===j?"selected":""}>${j+1}. ${c[0]}</option>`).join("")}</select></div>`;
+ h+=`<label class=m style="display:block;margin-top:10px"><input type=checkbox ${SH?"checked":""} onchange="tg(this.checked)"> Show correct answers immediately</label>`;h+=`<div class=m style="margin-top:4px">${rev?"Review mode (incorrect &amp; unanswered) · ":""}${done}/${L.length} answered</div><div class=bar><i style="width:${done/L.length*100}%"></i></div>`;
+ h+=`<div class=q><div class=m>Question ${i+1} of ${L.length} · ${q.n>123?"Extra #"+(q.n-123):"Q"+String(q.n).padStart(3,"0")} · ${C[q.c][0]}${q.f?` · badge in PDF: ${q.f}`:""}</div><h2>${q.t}</h2>`;
+ q.o.forEach((o,j)=>{h+=`<button class="o ${r&&j===q.k?"ok":d&&j===a?"bad":""}" ${r?"disabled":""} onclick="pick(${j})"><b>${"ABCDE"[j]}.</b> ${o}</button>`});
+ if(sa){h+=r?`<div class=fb><strong>Answer</strong><p>${E[q.n]}</p>${ex(q)}</div>`:`<button class=b onclick="pick('s')">Show answer</button>`}
+ else if(r){const ok=a===q.k;h+=`<div class=fb>${d?`<strong class=${ok?"ok":"bad"}>${ok?"Correct":"Incorrect"}</strong>`:""}<p>Correct answer: <b>${"ABCDE"[q.k]}.</b> ${q.o[q.k]}</p>${N[q.n]?`<p>${N[q.n]}</p>`:""}${ex(q)}</div>`}
+ h+=`<div class=nav><button class="b s" ${i?"":"disabled"} onclick="i--;show()">Previous</button><button class=b onclick="${i<L.length-1?"i++;show()":"home()"}">${i<L.length-1?"Next":"Finish"}</button></div></div>`;
+ $.innerHTML=h;scrollTo(0,0)}
+function reset(){if(confirm("Clear all saved answers?")){A={};sv();home()}}
+home();
+</script></body></html>

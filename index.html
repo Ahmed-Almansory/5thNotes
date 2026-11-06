@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>5th Notes — Question Banks Portal</title>
+<style>
+:root {
+  --navy: #0b2545;
+  --teal: #0f8b8d;
+  --soft: #e8f3f8;
+  --bg: #f4f7fa;
+  --card: #ffffff;
+  --tx: #14213d;
+  --mut: #5b6b7c;
+  --bd: #dbe3ea;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --navy: #0a1626;
+    --teal: #4cc3cd;
+    --soft: #13283c;
+    --bg: #0c1824;
+    --card: #12233a;
+    --tx: #e6edf5;
+    --mut: #9fb0c3;
+    --bd: #26405f;
+  }
+}
+:root[data-theme="dark"] {
+  --navy: #0a1626;
+  --teal: #4cc3cd;
+  --soft: #13283c;
+  --bg: #0c1824;
+  --card: #12233a;
+  --tx: #e6edf5;
+  --mut: #9fb0c3;
+  --bd: #26405f;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  background: linear-gradient(135deg, #0b2545, #0f8b8d);
+  color: #fff;
+  padding: 32px 18px 26px;
+  position: relative;
+  overflow: hidden;
+}
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+header p {
+  margin: 6px 0 0;
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+.theme-btn {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+main {
+  flex: 1;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+.tg-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f8b8d, #0b2545);
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 12px rgba(11,37,69,0.12);
+}
+.tg-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tg-banner svg {
+  width: 38px;
+  height: 38px;
+  flex: none;
+}
+.tg-banner b {
+  display: block;
+  font-size: 1.02rem;
+}
+.tg-banner span {
+  font-size: 0.84rem;
+  opacity: 0.88;
+}
+.search-bar {
+  margin-bottom: 18px;
+}
+.search-bar input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--tx);
+  font-size: 1rem;
+  outline: none;
+}
+.search-bar input:focus {
+  border-color: var(--teal);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-left: 5px solid var(--teal);
+  border-radius: 14px;
+  padding: 18px;
+  text-decoration: none;
+  color: var(--tx);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border-color: var(--teal);
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--teal);
+}
+.card h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+}
+.card p {
+  margin: 0 0 14px;
+  color: var(--mut);
+  font-size: 0.9rem;
+}
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teal);
+  border-top: 1px solid var(--bd);
+  padding-top: 10px;
+}
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--mut);
+  font-size: 0.88rem;
+  border-top: 1px solid var(--bd);
+  margin-top: 32px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>5th Notes — Question Banks</h1>
+      <p>Interactive Medical MCQs & Clinical Cases · By Almansory</p>
+    </div>
+    <button class="theme-btn" id="themeBtn">◐ Theme</button>
+  </div>
+</header>
+
+<main>
+  <a class="tg-banner" href="https://t.me/kafifthnotes" target="_blank" rel="noopener noreferrer">
+    <div class="tg-left">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#fff"/><path fill="#0f8b8d" d="M10 23.6l24.6-9.5c1.1-.4 2.1.3 1.7 1.9l-4.2 19.7c-.3 1.4-1.1 1.7-2.3 1.1l-6.3-4.7-3 2.9c-.3.3-.6.6-1.3.6l.5-6.4 11.6-10.5c.5-.4-.1-.7-.8-.3L16.8 28.6l-6.2-1.9c-1.3-.4-1.4-1.3.3-2z"/></svg>
+      <div>
+        <b>Join 5th Notes on Telegram</b>
+        <span>Stay updated with new chapters & notes</span>
+      </div>
+    </div>
+    <span>Open ↗</span>
+  </a>
+
+  <div class="search-bar">
+    <input type="search" id="searchInput" placeholder="Search subjects or chapters (e.g. Dermatology, Chest, Cardiology)...">
+  </div>
+
+  <div class="grid" id="cardsGrid"></div>
+</main>
+
+<footer>© Almansory / 5th Notes</footer>
+
+<script>
+// ==========================================
+// ضيف أي صفحة جديدة هنا مستقبلاً في القائمة دي بس
+// ==========================================
+const PAGES = [
+  {
+    title: "Dermatology MCQs",
+    subtitle: "11 Chapters · Introduction, Infections, Inflammatory, Allergic, Vitiligo, Hair & Acne (Hawary & Paradox)",
+    tag: "Dermatology",
+    file: "5thNotes Dermatology MCQs.html",
+    meta: "533+ Questions"
+  },
+  {
+    title: "Chest Question Bank",
+    subtitle: "14 Categories · Symptoms, Examination, Syndromes, Asthma, COPD, TB, ILD, Pleural & Dr. Hawary File",
+    tag: "Internal Medicine",
+    file: "All Chest Questions.html",
+    meta: "200+ Questions"
+  },
+  {
+    title: "Cardiology Question Bank",
+    subtitle: "13 Chapters · History, Examination, ECG, Arrhythmias, IHD, HTN, Heart Failure, Valvular & Pericardial",
+    tag: "Internal Medicine",
+    file: "All Cardiology Questions.html",
+    meta: "Full Bank + ECGs"
+  }
+];
+
+const grid = document.getElementById('cardsGrid');
+const searchInput = document.getElementById('searchInput');
+
+function renderCards() {
+  const q = searchInput.value.toLowerCase().trim();
+  const filtered = PAGES.filter(p =>
+    (p.title + ' ' + p.subtitle + ' ' + p.tag).toLowerCase().includes(q)
+  );
+
+  if (!filtered.length) {
+    grid.innerHTML = `<p style="color:var(--mut)">No matching subjects found.</p>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => `
+    <a class="card" href="${encodeURI(p.file)}">
+      <div>
+        <div class="card-top">
+          <span class="badge">${p.tag}</span>
+        </div>
+        <h2>${p.title}</h2>
+        <p>${p.subtitle}</p>
+      </div>
+      <div class="card-footer">
+        <span>${p.meta}</span>
+        <span>Start Solving →</span>
+      </div>
+    </a>
+  `).join('');
+}
+
+searchInput.addEventListener('input', renderCards);
+
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const root = document.documentElement;
+  const cur = root.getAttribute('data-theme');
+  root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+});
+
+renderCards();
+</script>
+</body>
+</html>
