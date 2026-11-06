@@ -234,25 +234,24 @@ footer {
 
   <div class="grid" id="cardsGrid"></div>
 </main>
+
+  
+  
 <footer>
   <div>© Almansory / 5th Notes</div>
   <div style="margin-top:6px; font-size:0.85rem; opacity:0.8;">
-    عدد الزوار الإجمالي: <span id="visitor-count" style="font-weight: 700; color: var(--teal);">جاري التحميل...</span>
+    عدد الزيارات الإجمالي:
+    <span class="counterapi"
+          ns="5thnotes"
+          key="main-site"
+          noIcon="true"
+          noCss="true"
+          style="font-weight:700; color:var(--teal);">
+    </span>
   </div>
 </footer>
 
-<script>
-  // كود أوتوماتيكي بيسحب ويحدث رقم الزوار الحقيقي لحظياً
-  fetch('https://api.counterapi.dev/v1/ahmed-almansory-5thnotes/visits/up')
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('visitor-count').textContent = data.count;
-    })
-    .catch(error => {
-      document.getElementById('visitor-count').textContent = 'متاح قريباً';
-    });
-</script>
-  
+<script async src="https://counterapi.com/c.js"></script>
   
   
 <script>
