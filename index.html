@@ -194,6 +194,15 @@ main {
   border-top: 1px solid var(--bd);
   padding-top: 10px;
 }
+.visitors {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--mut);
+}
+.visitors b {
+  color: var(--teal);
+  font-size: 1rem;
+}
 footer {
   text-align: center;
   padding: 20px;
@@ -235,25 +244,11 @@ footer {
   <div class="grid" id="cardsGrid"></div>
 </main>
 
-  
-  
 <footer>
-  <div>© Almansory / 5th Notes</div>
-  <div style="margin-top:6px; font-size:0.85rem; opacity:0.8;">
-    عدد الزيارات الإجمالي:
-    <span class="counterapi"
-          ns="5thnotes"
-          key="main-site"
-          noIcon="true"
-          noCss="true"
-          style="font-weight:700; color:var(--teal);">
-    </span>
-  </div>
+  <div class="visitors">👥 Visitors: <b id="visitorCount">…</b></div>
+  © Almansory / 5th Notes
 </footer>
 
-<script async src="https://counterapi.com/c.js"></script>
-  
-  
 <script>
 // ==========================================
 // ضيف أي صفحة جديدة هنا مستقبلاً في القائمة دي بس
@@ -322,6 +317,18 @@ document.getElementById('themeBtn').addEventListener('click', () => {
 });
 
 renderCards();
+
+// ===== Visitor counter (every visit counts) =====
+(function () {
+  const el = document.getElementById('visitorCount');
+  fetch('https://api.counterapi.dev/v1/5thnotes-almansory/visitors/up')
+    .then(r => r.json())
+    .then(d => {
+      if (d.count === undefined) throw new Error('bad response');
+      el.textContent = Number(d.count).toLocaleString('en-US');
+    })
+    .catch(() => { el.parentElement.style.display = 'none'; });
+})();
 </script>
 </body>
 </html>
