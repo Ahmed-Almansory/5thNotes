@@ -296,7 +296,7 @@ main {
   min-height: 0;
 }
 .card-name .nm {
-  font-size: clamp(1.55rem, 4.6vw, 2.15rem);
+  font-size: clamp(1.7rem, 5vw, 2.35rem);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.01em;
@@ -318,7 +318,7 @@ main {
 }
 @media (max-width: 600px) {
   .card { padding: 14px; border-radius: 16px; }
-  .card-name .nm { font-size: 1.3rem; }
+  .card-name .nm { font-size: 1.45rem; }
   .card-name .kind { font-size: 0.85rem; }
   .card-arrow { width: 28px; height: 28px; font-size: 0.9rem; }
   .card-tag { font-size: 0.55rem; padding: 3px 8px; }
@@ -577,10 +577,23 @@ body.menu-open .side-menu { transform: translateX(0); }
     <a class="stat" href="#banksSection"><b>2,128</b> MCQs</a>
     <a class="stat" href="#flashSection"><b>906</b> Flashcards</a>
     <a class="stat" href="#banksSection"><b>7</b> Question Banks</a>
-    <a class="stat" href="#flashSection"><b>14</b> Flashcard Decks</a>
     <a class="stat" href="#booksSection"><b>3</b> Revision Notes</a>
     <a class="stat" href="#bookCard"><b>1</b> Dermatology Book</a>
   </div>
+
+  <section id="banksSection">
+    <div class="sec-head sec-head-row">
+      <div>
+        <p class="eyebrow">Past Questions · Hawary · El Zanqa</p>
+        <h2>Question Banks</h2>
+        <p>2,128 questions across 7 banks — solve, review, and retake.</p>
+      </div>
+  <div class="search-bar">
+    <input type="search" id="searchInput" placeholder="Search subjects or chapters (e.g. Dermatology, Chest, Cardiology)...">
+  </div>
+    </div>
+    <div class="grid" id="cardsGrid"></div>
+  </section>
 
   <section id="flashSection">
     <div class="sec-head">
@@ -597,20 +610,6 @@ body.menu-open .side-menu { transform: translateX(0); }
     </span>
     <span class="flash-cta">Start Studying →</span>
   </a>
-  </section>
-
-  <section id="banksSection">
-    <div class="sec-head sec-head-row">
-      <div>
-        <p class="eyebrow">Past Questions · Hawary · El Zanqa</p>
-        <h2>Question Banks</h2>
-        <p>2,128 questions across 7 banks — solve, review, and retake.</p>
-      </div>
-  <div class="search-bar">
-    <input type="search" id="searchInput" placeholder="Search subjects or chapters (e.g. Dermatology, Chest, Cardiology)...">
-  </div>
-    </div>
-    <div class="grid" id="cardsGrid"></div>
   </section>
 
   <section id="booksSection">
