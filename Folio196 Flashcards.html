@@ -260,7 +260,7 @@ h3 { margin: 0 0 8px; font-size: 1.1rem; }
 
 /* ---------- flip cards ---------- */
 .card-stage { max-width: 760px; margin: 0 auto; }
-.flip-wrap { perspective: 1400px; }
+.flip-wrap { perspective: 1400px; cursor: pointer; }
 .flip-inner {
   display: grid; position: relative;
   transition: transform 0.45s ease; transform-style: preserve-3d;
@@ -415,6 +415,14 @@ footer a { color: var(--teal); }
   .view { animation: none; }
   html { scroll-behavior: auto; }
 }
+/* ---------- exam countdown + personal notes ---------- */
+.note-strip { margin-bottom: 10px; }
+.note-strip-row { display: flex; align-items: flex-start; gap: 8px; justify-content: flex-end; }
+.note-chip { flex: 1; min-width: 0; text-align: start; background: var(--soft); border: 1px solid var(--bd); border-inline-start: 3px solid #eab308; border-radius: 10px; padding: 7px 10px; font: inherit; font-size: 0.9rem; color: var(--tx); cursor: pointer; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.note-strip textarea { width: 100%; min-height: 64px; padding: 9px 10px; border: 1px solid var(--bd); border-radius: 10px; background: var(--card); color: var(--tx); font: inherit; resize: vertical; box-sizing: border-box; }
+.btn-sm { padding: 6px 10px; font-size: 0.85rem; }
+.dhikr-line { font-size: 1.05rem; color: var(--tx); text-align: center; margin: 14px 0 4px; line-height: 1.9; }
+#examStats .stat-grid { margin: 14px 0 0; }
 </style>
 </head>
 <body>
@@ -467,6 +475,15 @@ footer a { color: var(--teal); }
         <div id="dashUpcoming"></div>
         <p class="small muted" data-i18n="upcomingNote">Overdue cards are counted in today. Counts use each card's exact due time.</p>
       </div>
+    </div>
+    <div class="panel" id="examPanel">
+      <h3 data-i18n="examTitle">Exam countdown</h3>
+      <p class="small muted" data-i18n="examLead">Set your exam date and see how many new cards you need to start each day to finish on time. Counts cover all decks.</p>
+      <div class="field" style="max-width:280px">
+        <label for="examDate" data-i18n="examDateLabel">Exam date</label>
+        <input type="date" id="examDate">
+      </div>
+      <div id="examStats"></div>
     </div>
     <div class="panel">
       <h3 data-i18n="deckTreeTitle">Decks</h3>
@@ -528,7 +545,7 @@ footer a { color: var(--teal); }
             <button type="button" class="grade-btn g4" data-grade="4"><span class="g-name" data-i18n="easy">Easy</span><span class="g-iv" id="gradeIv4"></span><span class="g-key">4</span></button>
           </div>
         </div>
-        <p class="hint" data-i18n="learningNote">Learning cards come back at the end of the queue until they graduate. Press Space to flip, 1–4 to grade.</p>
+        <p class="hint" data-i18n="learningNote">Learning cards come back at the end of the queue until they graduate. Tap the card or press Space to flip, 1–4 to grade.</p>
       </div>
     </div>
     <div class="panel summary" id="studySummary" hidden>
@@ -539,6 +556,7 @@ footer a { color: var(--teal); }
         <div class="stat"><div class="num" id="summaryTime">0:00</div><div class="lbl" data-i18n="durationLabel">Duration</div></div>
       </div>
       <p class="muted small" id="summaryNote"></p>
+      <p class="dhikr-line" id="summaryDhikr" dir="rtl" lang="ar"></p>
       <div class="btn-row" style="justify-content:center">
         <button type="button" class="btn btn-accent" id="summaryAgainBtn" data-i18n="studyAgain">Study again</button>
         <button type="button" class="btn" id="summaryBackBtn" data-i18n="backToDashboard">Back to dashboard</button>
@@ -610,12 +628,13 @@ footer a { color: var(--teal); }
             <button type="button" class="btn" id="cramNextBtn" data-i18n="cramNext">Next →</button>
           </div>
         </div>
-        <p class="hint" data-i18n="cramHint">Cram progress is not saved. Press Space to flip, ← → to move.</p>
+        <p class="hint" data-i18n="cramHint">Cram progress is not saved. Tap the card or press Space to flip, ← → to move.</p>
       </div>
     </div>
     <div class="panel summary" id="cramEnd" hidden>
       <h3 data-i18n="cramDone">End of cram deck 🎉</h3>
       <p class="muted" data-i18n="cramDoneText">You went through all the cards in this cram session.</p>
+      <p class="dhikr-line" id="cramDhikr" dir="rtl" lang="ar"></p>
       <div class="btn-row" style="justify-content:center">
         <button type="button" class="btn btn-accent" id="cramRestartBtn" data-i18n="cramRestart">↻ Repeat (same order)</button>
         <button type="button" class="btn" id="cramReshuffleBtn" data-i18n="cramReshuffle">🔀 Re-shuffle &amp; repeat</button>
@@ -679,6 +698,17 @@ footer a { color: var(--teal); }
   <section class="view" id="view-difficult">
     <h2 data-i18n="difficultTitle">Difficult cards</h2>
     <p class="lead" data-i18n="difficultLead">Cards that need extra attention, by a fixed rule:</p>
+    <div class="panel">
+      <h3 data-i18n="leechTitle">Leech cards</h3>
+      <p class="small muted" data-i18n="leechRuleText">A card is a “leech” when it has failed (lapsed) 3 or more times. These are your worst offenders — study them first.</p>
+      <div class="btn-row" style="margin:0 0 14px">
+        <button type="button" class="btn btn-accent" id="leechStudyBtn" data-i18n="studyThese">Study these (FSRS)</button>
+        <button type="button" class="btn" id="leechCramBtn" data-i18n="cramThese">Cram these cards</button>
+      </div>
+      <p class="small muted" id="leechCount"></p>
+      <div class="listbox" id="leechList" style="max-height:none"></div>
+      <div id="leechEmpty"></div>
+    </div>
     <div class="notice" id="diffRule"></div>
     <div class="btn-row" style="margin:0 0 14px">
       <button type="button" class="btn btn-accent" id="diffStudyBtn" data-i18n="studyThese">Study these (FSRS)</button>
@@ -767,7 +797,7 @@ footer a { color: var(--teal); }
     </div>
     <div class="panel">
       <h3 data-i18n="backupTitle">Progress backup</h3>
-      <p class="muted small" data-i18n="backupDesc">Download a JSON file with your scheduling state, review history, bookmarks, and daily counts. Keep it somewhere safe — your progress lives only in this browser.</p>
+      <p class="muted small" data-i18n="backupDesc">Download a JSON file with your scheduling state, review history, bookmarks, daily counts, and personal notes. Keep it somewhere safe — your progress lives only in this browser.</p>
       <div class="btn-row">
         <button type="button" class="btn btn-primary" id="backupBtn" data-i18n="backupBtn">⬇ Download progress backup</button>
       </div>
@@ -780,7 +810,7 @@ footer a { color: var(--teal); }
       <input type="file" id="restoreFile" accept=".json,application/json" hidden>
       <hr class="sep">
       <h3 data-i18n="resetTitle">Reset progress</h3>
-      <p class="muted small" data-i18n="resetDesc">Clears all scheduling state, review history, bookmarks, and daily counts. Your settings are kept. This cannot be undone.</p>
+      <p class="muted small" data-i18n="resetDesc">Clears all scheduling state, review history, bookmarks, and daily counts. Your settings and personal notes are kept. This cannot be undone.</p>
       <div class="btn-row">
         <button type="button" class="btn btn-danger" id="resetBtn" data-i18n="resetBtn">Reset all progress</button>
       </div>
@@ -816,6 +846,72 @@ footer a { color: var(--teal); }
   "totalNotes": 904
  },
  "decks": [
+  {
+   "id": "ash",
+   "name": "Dr. Ashraf Zaki Q&A ~ س و ج",
+   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج",
+   "source": "ashraf",
+   "parent": null,
+   "children": [
+    "ash-cardiology",
+    "ash-abdomen",
+    "ash-chest",
+    "ash-neurology",
+    "ash-general"
+   ],
+   "cardCount": 292,
+   "ankiId": 1685125947495
+  },
+  {
+   "id": "ash-cardiology",
+   "name": "Cardiology",
+   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Cardiology",
+   "source": "ashraf",
+   "parent": "ash",
+   "children": [],
+   "cardCount": 55,
+   "ankiId": 1685130608181
+  },
+  {
+   "id": "ash-abdomen",
+   "name": "Abdomen",
+   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Abdomen",
+   "source": "ashraf",
+   "parent": "ash",
+   "children": [],
+   "cardCount": 55,
+   "ankiId": 1685170472218
+  },
+  {
+   "id": "ash-chest",
+   "name": "Chest",
+   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Chest",
+   "source": "ashraf",
+   "parent": "ash",
+   "children": [],
+   "cardCount": 73,
+   "ankiId": 1685166880629
+  },
+  {
+   "id": "ash-neurology",
+   "name": "Neurology",
+   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Neurology",
+   "source": "ashraf",
+   "parent": "ash",
+   "children": [],
+   "cardCount": 20,
+   "ankiId": 1685172415421
+  },
+  {
+   "id": "ash-general",
+   "name": "General",
+   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: General",
+   "source": "ashraf",
+   "parent": "ash",
+   "children": [],
+   "cardCount": 89,
+   "ankiId": 1685126010860
+  },
   {
    "id": "int",
    "name": "Internal medicine",
@@ -925,72 +1021,6 @@ footer a { color: var(--teal); }
    "children": [],
    "cardCount": 38,
    "ankiId": 1768562263100
-  },
-  {
-   "id": "ash",
-   "name": "Dr. Ashraf Zaki Q&A ~ س و ج",
-   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج",
-   "source": "ashraf",
-   "parent": null,
-   "children": [
-    "ash-cardiology",
-    "ash-abdomen",
-    "ash-chest",
-    "ash-neurology",
-    "ash-general"
-   ],
-   "cardCount": 292,
-   "ankiId": 1685125947495
-  },
-  {
-   "id": "ash-cardiology",
-   "name": "Cardiology",
-   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Cardiology",
-   "source": "ashraf",
-   "parent": "ash",
-   "children": [],
-   "cardCount": 55,
-   "ankiId": 1685130608181
-  },
-  {
-   "id": "ash-abdomen",
-   "name": "Abdomen",
-   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Abdomen",
-   "source": "ashraf",
-   "parent": "ash",
-   "children": [],
-   "cardCount": 55,
-   "ankiId": 1685170472218
-  },
-  {
-   "id": "ash-chest",
-   "name": "Chest",
-   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Chest",
-   "source": "ashraf",
-   "parent": "ash",
-   "children": [],
-   "cardCount": 73,
-   "ankiId": 1685166880629
-  },
-  {
-   "id": "ash-neurology",
-   "name": "Neurology",
-   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: Neurology",
-   "source": "ashraf",
-   "parent": "ash",
-   "children": [],
-   "cardCount": 20,
-   "ankiId": 1685172415421
-  },
-  {
-   "id": "ash-general",
-   "name": "General",
-   "fullName": "Dr. Ashraf Zaki Q&A ~ س و ج :: General",
-   "source": "ashraf",
-   "parent": "ash",
-   "children": [],
-   "cardCount": 89,
-   "ankiId": 1685126010860
   }
  ],
  "cards": [
@@ -11365,8 +11395,21 @@ var SUBDECKS = [];
     DECK_BY_ID[d.id] = d;
     if (d.parent === null) ROOTS.push(d); else SUBDECKS.push(d);
   }
-  for (i = 0; i < CARDS.length; i++) {
-    c = CARDS[i];
+  /* ALL_IDS follows deck display order (the DECKS array order: the Dr. Ashraf
+     Zaki tree first), preserving the original within-deck card order (stable
+     sort). Every queue, list, and search result built from ALL_IDS — study,
+     cram, difficult, leeches, browse — inherits this order, so studying
+     starts with the first deck shown on the dashboard. */
+  var rank = {};
+  for (i = 0; i < DECKS.length; i++) rank[DECKS[i].id] = i;
+  var ordered = CARDS.slice();
+  ordered.sort(function (a, b) {
+    var ra = rank[a.deck] === undefined ? 999 : rank[a.deck];
+    var rb = rank[b.deck] === undefined ? 999 : rank[b.deck];
+    return ra - rb;
+  });
+  for (i = 0; i < ordered.length; i++) {
+    c = ordered[i];
     CARD_BY_ID[c.id] = c;
     ALL_IDS.push(c.id);
     if (!CARDS_BY_DECK[c.deck]) CARDS_BY_DECK[c.deck] = [];
@@ -11392,6 +11435,18 @@ var DHK = ["سُبْحَانَ اللهِ وَبِحَمْدِهِ","سُبْح�
   var doy = Math.floor((now.getTime() - start.getTime()) / 86400000);
   document.getElementById('dhikrLine').textContent = DHK[doy % 14];
 })();
+/* A completion moment (session done, day's work done, cram done) shows a
+   dhikr from the same approved list, different from today's footer one. */
+function todayDhikrIndex() {
+  var now = new Date();
+  var start = new Date(now.getFullYear(), 0, 1);
+  return Math.floor((now.getTime() - start.getTime()) / 86400000) % DHK.length;
+}
+function completionDhikr() {
+  var idx = Math.floor(Math.random() * DHK.length);
+  if (idx === todayDhikrIndex()) idx = (idx + 1) % DHK.length;
+  return DHK[idx];
+}
 
 /* ---------- small utilities ---------- */
 function $(id) { return document.getElementById(id); }
@@ -11492,9 +11547,9 @@ function cardIdsForScope(scopeDeckIds) {
 
 /* ---------- state (localStorage) ---------- */
 var STORE_KEY = 'folio196-flashcards-v1';
-var DEFAULT_SETTINGS = { dailyNew: 20, dailyReviews: 200, shuffleDefault: false, lang: 'en', theme: 'auto' };
+var DEFAULT_SETTINGS = { dailyNew: 20, dailyReviews: 200, shuffleDefault: false, lang: 'en', theme: 'auto', examDate: null };
 function defaultState() {
-  return { fsrsCards: {}, reviewLog: [], bookmarks: [], settings: { dailyNew: 20, dailyReviews: 200, shuffleDefault: false, lang: 'en', theme: 'auto' }, dayCounts: {} };
+  return { fsrsCards: {}, reviewLog: [], bookmarks: [], notes: {}, settings: { dailyNew: 20, dailyReviews: 200, shuffleDefault: false, lang: 'en', theme: 'auto', examDate: null }, dayCounts: {} };
 }
 var state = defaultState();
 var storageOK = true;
@@ -11505,6 +11560,10 @@ function sanitizeSettings() {
   s.shuffleDefault = !!s.shuffleDefault;
   if (s.lang !== 'ar' && s.lang !== 'en') s.lang = 'en';
   if (s.theme !== 'light' && s.theme !== 'dark' && s.theme !== 'auto') s.theme = 'auto';
+  if (s.examDate != null) {
+    var ed = parseExamDate(s.examDate);
+    s.examDate = ed ? dayKey(ed) : null;
+  }
 }
 function loadState() {
   try {
@@ -11515,6 +11574,7 @@ function loadState() {
     if (p.fsrsCards && typeof p.fsrsCards === 'object') state.fsrsCards = p.fsrsCards;
     if (Array.isArray(p.reviewLog)) state.reviewLog = p.reviewLog;
     if (Array.isArray(p.bookmarks)) state.bookmarks = p.bookmarks.filter(function (id) { return !!CARD_BY_ID[id]; });
+    if (p.notes && typeof p.notes === 'object') state.notes = filterNotes(p.notes);
     if (p.dayCounts && typeof p.dayCounts === 'object') state.dayCounts = p.dayCounts;
     if (p.settings && typeof p.settings === 'object') state.settings = Object.assign({}, DEFAULT_SETTINGS, p.settings);
     sanitizeSettings();
@@ -11717,6 +11777,17 @@ function buildFlipCard(container, cardId, opts) {
   inner.appendChild(makeFace('face-back', 'backLabel', card.back, 'emptyBack'));
   wrap.appendChild(inner);
   container.appendChild(wrap);
+  if (opts && typeof opts.onTap === 'function') {
+    wrap.addEventListener('click', function (e) {
+      var path = e.composedPath ? e.composedPath() : [e.target];
+      for (var i = 0; i < path.length; i++) {
+        var n = path[i];
+        if (n && n.tagName && /^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(n.tagName)) return;
+      }
+      if (window.getSelection && window.getSelection().toString()) return;
+      opts.onTap();
+    });
+  }
   var foot = document.createElement('div');
   foot.className = 'face-foot';
   (card.tags || []).forEach(function (tg) {
@@ -11755,6 +11826,97 @@ function stateChipHtml(cardId) {
   return '<span class="' + cls + '">' + esc(t(names[r.state] || 'stateReview')) + ' · ' + esc(fmtDue(new Date(r.due).getTime())) + '</span>';
 }
 
+/* ---------- personal notes ---------- */
+var NOTE_MAX = 2000;
+function filterNotes(obj) {
+  var out = {};
+  Object.keys(obj).forEach(function (id) {
+    if (!CARD_BY_ID[id]) return;
+    var v = String(obj[id] == null ? '' : obj[id]).slice(0, NOTE_MAX);
+    if (v.trim()) out[id] = v;
+  });
+  return out;
+}
+function getNote(id) { return (state.notes && state.notes[id]) || ''; }
+function setNote(id, text) {
+  if (!state.notes) state.notes = {};
+  text = String(text == null ? '' : text).slice(0, NOTE_MAX);
+  if (text.trim()) state.notes[id] = text; else delete state.notes[id];
+  saveState();
+}
+function noteSectionEl(cardId) {
+  var box = document.createElement('div');
+  box.className = 'note-strip';
+  var editing = false;
+  function render() {
+    box.innerHTML = '';
+    var note = getNote(cardId);
+    if (editing) {
+      var ta = document.createElement('textarea');
+      ta.value = note;
+      ta.maxLength = NOTE_MAX;
+      ta.placeholder = t('notePlaceholder');
+      ta.setAttribute('aria-label', t('noteTitle'));
+      box.appendChild(ta);
+      var row = document.createElement('div');
+      row.className = 'btn-row';
+      row.style.marginTop = '8px';
+      var save = document.createElement('button');
+      save.type = 'button';
+      save.className = 'btn btn-sm btn-accent';
+      save.textContent = t('noteSave');
+      save.addEventListener('click', function () {
+        setNote(cardId, ta.value);
+        editing = false;
+        render();
+        toast(t('noteSaved'));
+      });
+      var cancel = document.createElement('button');
+      cancel.type = 'button';
+      cancel.className = 'btn btn-sm';
+      cancel.textContent = t('noteCancel');
+      cancel.addEventListener('click', function () { editing = false; render(); });
+      row.appendChild(save);
+      row.appendChild(cancel);
+      box.appendChild(row);
+      ta.focus();
+      return;
+    }
+    var strip = document.createElement('div');
+    strip.className = 'note-strip-row';
+    if (note) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'note-chip';
+      chip.textContent = '✎ ' + note;
+      chip.setAttribute('aria-label', t('noteTitle'));
+      chip.addEventListener('click', function () { editing = true; render(); });
+      strip.appendChild(chip);
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'btn btn-sm btn-danger';
+      del.textContent = t('noteDelete');
+      del.addEventListener('click', function () {
+        if (!window.confirm(t('noteDeleteConfirm'))) return;
+        setNote(cardId, '');
+        render();
+        toast(t('noteDeleted'));
+      });
+      strip.appendChild(del);
+    } else {
+      var add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'btn btn-sm';
+      add.textContent = t('noteAdd');
+      add.addEventListener('click', function () { editing = true; render(); });
+      strip.appendChild(add);
+    }
+    box.appendChild(strip);
+  }
+  render();
+  return box;
+}
+
 /* ---------- i18n ---------- */
 var I18N = {
   en: {
@@ -11779,7 +11941,7 @@ var I18N = {
     queueEmptyText: 'No cards are due right now and no new cards are available within today’s limits for the selected decks. Change the selection, adjust the daily limits in Settings, or try Cram mode.',
     studyExit: '✕ Exit', showAnswer: 'Show answer', hideAnswer: 'Hide answer',
     again: 'Again', hard: 'Hard', good: 'Good', easy: 'Easy',
-    learningNote: 'Learning cards come back at the end of the queue until they graduate. Press Space to flip, 1–4 to grade.',
+    learningNote: 'Learning cards come back at the end of the queue until they graduate. Tap the card or press Space to flip, 1–4 to grade.',
     remainingLabel: '{n} left', gradedLabel: '{n} graded', againCount: 'Again',
     sessionDone: 'Session complete 🎉', studiedLabel: 'Cards studied', durationLabel: 'Duration', studyAgain: 'Study again',
     stillLearningNote: '{n} card(s) are still in learning and will come back when their short interval ends.',
@@ -11787,7 +11949,7 @@ var I18N = {
     cramNotice: '⚠️ Cram does not affect your spaced-repetition schedule. It never changes due dates, FSRS state, or review history.',
     cramWhich: 'Which cards?', cramAll: 'All cards in the selected decks', cramDifficultOnly: 'Difficult cards only',
     cramTags: 'Filter by tags (optional)', cramSize: 'Session size (0 = all matching cards)', cramStart: 'Start cramming ▶',
-    cramPrev: '← Previous', cramNext: 'Next →', cramHint: 'Cram progress is not saved. Press Space to flip, ← → to move.',
+    cramPrev: '← Previous', cramNext: 'Next →', cramHint: 'Cram progress is not saved. Tap the card or press Space to flip, ← → to move.',
     cramDone: 'End of cram deck 🎉', cramDoneText: 'You went through all the cards in this cram session.',
     cramRestart: '↻ Repeat (same order)', cramReshuffle: '🔀 Re-shuffle & repeat',
     cramMatching: '{n} cards match your selection', cramNoneText: 'No cards match this selection. Change the decks, tags, or filters.',
@@ -11808,6 +11970,18 @@ var I18N = {
     difficultRuleText: 'A card is “difficult” when ANY of these is true: lapses ≥ 2, OR graded “Again” in the last 7 days, OR in Review state with stability < 1.0 day.',
     studyThese: 'Study these (FSRS)', difficultEmpty: 'No difficult cards 🎉', difficultEmptyText: 'Nothing matches the difficult rule right now. Keep studying!',
     diffCountLabel: '{n} difficult card(s)', reasonLapses: 'lapses ≥ 2', reasonAgain: 'Again in last 7 days', reasonStability: 'stability < 1.0',
+    examTitle: 'Exam countdown', examLead: 'Set your exam date and see how many new cards you need to start each day to finish on time. Counts cover all decks.',
+    examDateLabel: 'Exam date', examNoDate: 'Pick an exam date to see your daily target.',
+    examPassed: 'That date has passed — pick a new exam date.',
+    examDaysLeftLabel: 'days left', examNewLeftLabel: 'new cards left', examPerDayLabel: 'new cards per day', examDueByLabel: 'reviews due by exam day',
+    examApply: 'Set daily new limit to {n}', examApplied: 'Daily new limit set to {n}', examClear: 'Clear date',
+    examDone: 'All cards started 🎉 — just keep up with your reviews.',
+    leechTitle: 'Leech cards', leechRuleText: 'A card is a “leech” when it has failed (lapsed) 3 or more times. These are your worst offenders — study them first.',
+    leechCountLabel: '{n} leech card(s)', leechEmpty: 'No leech cards 🎉', leechEmptyText: 'Nothing has lapsed 3+ times yet. Cards you keep failing will show up here.',
+    leechLapses: '{n} lapses',
+    noteTitle: 'My note', noteAdd: '✎ Add note', noteDelete: 'Delete',
+    noteSave: 'Save note', noteCancel: 'Cancel', notePlaceholder: 'Your mnemonic, reminder, or extra detail — saved only on this device…',
+    noteSaved: 'Note saved', noteDeleted: 'Note deleted', noteDeleteConfirm: 'Delete this personal note? This cannot be undone.',
     statsTitle: 'Statistics', statsLead: 'Retention, daily activity, mastery, and your weakest cards.',
     totalReviewsLabel: 'Total reviews', recallRateLabel: 'Recall rate (not Again)', avgStabilityLabel: 'Avg stability (review cards)',
     matureCountLabel: 'Mature cards', retentionTitle: 'Ratings given', dailyTitle: 'Reviews per day — last 14 days',
@@ -11823,15 +11997,15 @@ var I18N = {
     setLanguage: 'Interface language', setLanguageDesc: 'Switches the whole interface, including right-to-left layout. Card content is unchanged.',
     setTheme: 'Theme', themeAuto: 'Auto (follow device)', themeLight: 'Light', themeDark: 'Dark',
     setShuffleDefault: 'Shuffle study queues by default',
-    backupTitle: 'Progress backup', backupDesc: 'Download a JSON file with your scheduling state, review history, bookmarks, and daily counts. Keep it somewhere safe — your progress lives only in this browser.',
+    backupTitle: 'Progress backup', backupDesc: 'Download a JSON file with your scheduling state, review history, bookmarks, daily counts, and personal notes. Keep it somewhere safe — your progress lives only in this browser.',
     backupBtn: '⬇ Download progress backup', restoreTitle: 'Restore progress backup',
     restoreDesc: 'Choose a progress backup file you downloaded earlier. It will replace all current progress on this device after confirmation.',
     restoreBtn: '⬆ Choose backup file…', resetTitle: 'Reset progress',
-    resetDesc: 'Clears all scheduling state, review history, bookmarks, and daily counts. Your settings are kept. This cannot be undone.',
+    resetDesc: 'Clears all scheduling state, review history, bookmarks, and daily counts. Your settings and personal notes are kept. This cannot be undone.',
     resetBtn: 'Reset all progress', settingsSaved: 'Settings saved', backupDone: 'Progress backup downloaded',
     restoreDone: 'Progress backup restored', restoreInvalid: 'That file is not a valid Folio 196 progress backup.',
     restoreConfirm: 'Replace all current progress on this device with the backup file? This cannot be undone.',
-    resetArm: 'Tap again to confirm reset', resetDone: 'Progress reset. Settings were kept.',
+    resetArm: 'Tap again to confirm reset', resetDone: 'Progress reset. Settings and notes were kept.',
     helpTitle: 'Help', backToPortal: 'Back to the Folio 196 portal',
     helpIntro: 'Flashcards use the FSRS-4.5 spaced-repetition algorithm: every grade schedules the next review at the moment you are about to forget. Grade honestly — “Again” is not a failure, it is how the schedule learns.',
     helpShortcuts: 'Keyboard shortcuts', helpKeysHead: 'Keys', helpActionHead: 'Action',
@@ -11867,7 +12041,7 @@ var I18N = {
     queueEmptyText: 'لا توجد بطاقات مستحقة الآن ولا بطاقات جديدة متاحة ضمن حدود اليوم للمجموعات المختارة. غيّر الاختيار، أو عدّل الحدود اليومية في الإعدادات، أو جرّب المراجعة السريعة.',
     studyExit: '✕ خروج', showAnswer: 'أظهر الإجابة', hideAnswer: 'أخفِ الإجابة',
     again: 'مجددًا', hard: 'صعب', good: 'جيد', easy: 'سهل',
-    learningNote: 'بطاقات التعلم تعود إلى نهاية القائمة حتى تتخرج. اضغط المسافة للقلب، و1–4 للتقييم.',
+    learningNote: 'بطاقات التعلم تعود إلى نهاية القائمة حتى تتخرج. اضغط على البطاقة أو اضغط المسافة للقلب، و1–4 للتقييم.',
     remainingLabel: 'متبقٍّ {n}', gradedLabel: 'قيّمت {n}', againCount: 'مجددًا',
     sessionDone: 'اكتملت الجلسة 🎉', studiedLabel: 'بطاقات ذاكرتها', durationLabel: 'المدة', studyAgain: 'ذاكر مجددًا',
     stillLearningNote: '{n} بطاقة ما زالت قيد التعلم وستعود عند انتهاء فاصلها القصير.',
@@ -11875,7 +12049,7 @@ var I18N = {
     cramNotice: '⚠️ المراجعة السريعة لا تؤثر على جدول التكرار المتباعد. فهي لا تغيّر مواعيد الاستحقاق ولا حالة FSRS ولا سجل المراجعة.',
     cramWhich: 'أي البطاقات؟', cramAll: 'كل بطاقات المجموعات المختارة', cramDifficultOnly: 'البطاقات الصعبة فقط',
     cramTags: 'تصفية بالوسوم (اختياري)', cramSize: 'حجم الجلسة (0 = كل البطاقات المطابقة)', cramStart: 'ابدأ المراجعة السريعة ▶',
-    cramPrev: '← السابقة', cramNext: 'التالية →', cramHint: 'تقدم المراجعة السريعة لا يُحفظ. اضغط المسافة للقلب، و← → للتنقل.',
+    cramPrev: '← السابقة', cramNext: 'التالية →', cramHint: 'تقدم المراجعة السريعة لا يُحفظ. اضغط على البطاقة أو اضغط المسافة للقلب، و← → للتنقل.',
     cramDone: 'انتهت مجموعة المراجعة 🎉', cramDoneText: 'مررت على كل بطاقات جلسة المراجعة السريعة هذه.',
     cramRestart: '↻ كرر (نفس الترتيب)', cramReshuffle: '🔀 اخلط وكرر',
     cramMatching: '{n} بطاقة تطابق اختيارك', cramNoneText: 'لا توجد بطاقات تطابق هذا الاختيار. غيّر المجموعات أو الوسوم أو عوامل التصفية.',
@@ -11895,6 +12069,18 @@ var I18N = {
     difficultTitle: 'البطاقات الصعبة', difficultLead: 'البطاقات التي تحتاج عناية إضافية، وفق قاعدة ثابتة:',
     difficultRuleText: 'تُعد البطاقة «صعبة» عند تحقق أيٍّ مما يلي: مرات النسيان ≥ 2، أو تقييم «مجددًا» في آخر 7 أيام، أو كونها في حالة مراجعة بثبات أقل من 1.0 يوم.',
     studyThese: 'ذاكرها (FSRS)', difficultEmpty: 'لا توجد بطاقات صعبة 🎉', difficultEmptyText: 'لا شيء يطابق قاعدة الصعوبة الآن. واصل المذاكرة!',
+    examTitle: 'العدّاد التنازلي للامتحان', examLead: 'حدّد تاريخ الامتحان لتعرف كم بطاقة جديدة تحتاج أن تبدأها كل يوم لتُنهي في الموعد. العدّ يشمل كل المجموعات.',
+    examDateLabel: 'تاريخ الامتحان', examNoDate: 'اختر تاريخ الامتحان لترى هدفك اليومي.',
+    examPassed: 'هذا التاريخ قد مضى — اختر تاريخ امتحان جديدًا.',
+    examDaysLeftLabel: 'يوم متبقٍّ', examNewLeftLabel: 'بطاقة جديدة متبقية', examPerDayLabel: 'بطاقة جديدة يوميًا', examDueByLabel: 'مراجعة مستحقة حتى يوم الامتحان',
+    examApply: 'اضبط حدّ البطاقات الجديدة اليومي على {n}', examApplied: 'تم ضبط حدّ البطاقات الجديدة اليومي على {n}', examClear: 'مسح التاريخ',
+    examDone: 'كل البطاقات بدأت 🎉 — حافظ فقط على مراجعاتك.',
+    leechTitle: 'البطاقات العالقة', leechRuleText: 'تُعدّ البطاقة «عالقة» عندما تفشل (تنتكس) 3 مرات أو أكثر. هذه أكثر البطاقات التي تتعثر فيها — ابدأ بها.',
+    leechCountLabel: '{n} بطاقة عالقة', leechEmpty: 'لا توجد بطاقات عالقة 🎉', leechEmptyText: 'لا توجد بطاقة انتكست 3 مرات أو أكثر بعد. البطاقات التي تستمر في التعثر ستظهر هنا.',
+    leechLapses: '{n} مرات انتكاس',
+    noteTitle: 'ملاحظتي', noteAdd: '✎ أضف ملاحظة', noteDelete: 'حذف',
+    noteSave: 'حفظ الملاحظة', noteCancel: 'إلغاء', notePlaceholder: 'اختصارك أو تذكيرك أو أي تفصيلة إضافية — تُحفظ على جهازك فقط…',
+    noteSaved: 'تم حفظ الملاحظة', noteDeleted: 'تم حذف الملاحظة', noteDeleteConfirm: 'حذف هذه الملاحظة الخاصة؟ لا يمكن التراجع عن هذا.',
     diffCountLabel: '{n} بطاقة صعبة', reasonLapses: 'نسيان ≥ 2', reasonAgain: '«مجددًا» في آخر 7 أيام', reasonStability: 'الثبات < 1.0',
     statsTitle: 'الإحصاءات', statsLead: 'الاحتفاظ والنشاط اليومي والإتقان وأضعف بطاقاتك.',
     totalReviewsLabel: 'إجمالي المراجعات', recallRateLabel: 'نسبة التذكر (غير «مجددًا»)', avgStabilityLabel: 'متوسط الثبات (بطاقات المراجعة)',
@@ -11911,15 +12097,15 @@ var I18N = {
     setLanguage: 'لغة الواجهة', setLanguageDesc: 'تبدّل الواجهة كلها، بما فيها الاتجاه من اليمين إلى اليسار. محتوى البطاقات لا يتغير.',
     setTheme: 'المظهر', themeAuto: 'تلقائي (حسب الجهاز)', themeLight: 'فاتح', themeDark: 'داكن',
     setShuffleDefault: 'خلط قوائم المذاكرة افتراضيًا',
-    backupTitle: 'نسخة احتياطية للتقدم', backupDesc: 'نزّل ملف JSON يحوي حالة الجدولة وسجل المراجعة والمحفوظات والعدادات اليومية. احتفظ به في مكان آمن — تقدمك موجود في هذا المتصفح فقط.',
+    backupTitle: 'نسخة احتياطية للتقدم', backupDesc: 'نزّل ملف JSON يحوي حالة الجدولة وسجل المراجعة والمحفوظات والعدادات اليومية والملاحظات الخاصة. احتفظ به في مكان آمن — تقدمك موجود في هذا المتصفح فقط.',
     backupBtn: '⬇ نزّل نسخة احتياطية للتقدم', restoreTitle: 'استعادة نسخة احتياطية للتقدم',
     restoreDesc: 'اختر ملف نسخة احتياطية نزّلته سابقًا. سيحل محل كل التقدم الحالي على هذا الجهاز بعد التأكيد.',
     restoreBtn: '⬆ اختر ملف النسخة…', resetTitle: 'إعادة تعيين التقدم',
-    resetDesc: 'يمسح كل حالة الجدولة وسجل المراجعة والمحفوظات والعدادات اليومية. تُحفظ إعداداتك. لا يمكن التراجع عن هذا.',
+    resetDesc: 'يمسح كل حالة الجدولة وسجل المراجعة والمحفوظات والعدادات اليومية. تُحفظ إعداداتك وملاحظاتك الخاصة. لا يمكن التراجع عن هذا.',
     resetBtn: 'إعادة تعيين كل التقدم', settingsSaved: 'تم حفظ الإعدادات', backupDone: 'تم تنزيل النسخة الاحتياطية',
     restoreDone: 'تمت استعادة النسخة الاحتياطية', restoreInvalid: 'هذا الملف ليس نسخة احتياطية صالحة لتقدم Folio 196.',
     restoreConfirm: 'استبدال كل التقدم الحالي على هذا الجهاز بملف النسخة الاحتياطية؟ لا يمكن التراجع عن هذا.',
-    resetArm: 'اضغط مجددًا لتأكيد إعادة التعيين', resetDone: 'تمت إعادة تعيين التقدم. الإعدادات محفوظة.',
+    resetArm: 'اضغط مجددًا لتأكيد إعادة التعيين', resetDone: 'تمت إعادة تعيين التقدم. الإعدادات والملاحظات محفوظة.',
     helpTitle: 'مساعدة', backToPortal: 'عودة إلى بوابة Folio 196',
     helpIntro: 'تستخدم البطاقات خوارزمية التكرار المتباعد FSRS-4.5: كل تقييم يجدول المراجعة التالية في اللحظة التي توشك فيها على النسيان. قيّم بصدق — «مجددًا» ليست فشلًا، بل هي الطريقة التي يتعلم بها الجدول.',
     helpShortcuts: 'اختصارات لوحة المفاتيح', helpKeysHead: 'المفاتيح', helpActionHead: 'الإجراء',
@@ -12068,6 +12254,74 @@ function upcomingData() {
   return days;
 }
 
+/* ---------- exam countdown ---------- */
+function parseExamDate(str) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(str == null ? '' : str));
+  if (!m) return null;
+  var y = Number(m[1]), mo = Number(m[2]), da = Number(m[3]);
+  var d = new Date(y, mo - 1, da);
+  if (d.getFullYear() !== y || d.getMonth() !== mo - 1 || d.getDate() !== da) return null;
+  return d;
+}
+function renderExamCard() {
+  var input = $('examDate');
+  var box = $('examStats');
+  var raw = state.settings.examDate || '';
+  if (input.value !== raw) input.value = raw;
+  var d = parseExamDate(raw);
+  if (!d) {
+    box.innerHTML = '<p class="muted small">' + esc(t('examNoDate')) + '</p>';
+    return;
+  }
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var examDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var daysLeft = Math.round((examDay.getTime() - today.getTime()) / 86400000);
+  if (daysLeft < 0) {
+    box.innerHTML = '<p class="muted small">' + esc(t('examPassed')) + '</p>';
+    return;
+  }
+  var c = countsFor(ALL_IDS);
+  var studyDays = Math.max(1, daysLeft);
+  var perDay = Math.ceil(c.fresh / studyDays);
+  var examEnd = new Date(examDay);
+  examEnd.setHours(23, 59, 59, 999);
+  var dueBy = 0;
+  ALL_IDS.forEach(function (id) {
+    var r = fsrsRecord(id);
+    if (r && r.state !== 0 && new Date(r.due).getTime() <= examEnd.getTime()) dueBy++;
+  });
+  var html = '<div class="stat-grid">'
+    + '<div class="stat"><div class="num">' + daysLeft + '</div><div class="lbl">' + esc(t('examDaysLeftLabel')) + '</div></div>'
+    + '<div class="stat"><div class="num">' + c.fresh + '</div><div class="lbl">' + esc(t('examNewLeftLabel')) + '</div></div>'
+    + '<div class="stat accent"><div class="num">' + perDay + '</div><div class="lbl">' + esc(t('examPerDayLabel')) + '</div></div>'
+    + '<div class="stat"><div class="num">' + dueBy + '</div><div class="lbl">' + esc(t('examDueByLabel')) + '</div></div>'
+    + '</div>';
+  if (c.fresh === 0) {
+    html += '<p class="muted small">' + esc(t('examDone')) + '</p>';
+  }
+  html += '<div class="btn-row">';
+  if (perDay > 0) {
+    html += '<button type="button" class="btn btn-accent" id="examApplyBtn">' + esc(fmt(t('examApply'), { n: Math.max(1, Math.min(500, perDay)) })) + '</button>';
+  }
+  html += '<button type="button" class="btn" id="examClearBtn">' + esc(t('examClear')) + '</button></div>';
+  box.innerHTML = html;
+  var applyBtn = box.querySelector('#examApplyBtn');
+  if (applyBtn) {
+    applyBtn.addEventListener('click', function () {
+      var n = Math.max(1, Math.min(500, perDay));
+      state.settings.dailyNew = n;
+      saveState();
+      toast(fmt(t('examApplied'), { n: n }));
+    });
+  }
+  box.querySelector('#examClearBtn').addEventListener('click', function () {
+    state.settings.examDate = null;
+    saveState();
+    renderExamCard();
+  });
+}
+
 /* ---------- dashboard ---------- */
 function renderDashboard() {
   var c = countsFor(ALL_IDS);
@@ -12091,11 +12345,12 @@ function renderDashboard() {
     + '<div><span class="dot" style="background:var(--accent)"></span><b>' + c.mature + ' / ' + CARDS.length + '</b> ' + esc(t('matureLabel')) + '</div>'
     + '<div class="sess-bar" style="min-width:180px"><div style="width:' + maturePct + '%"></div></div></div>';
   if (c.dueNow === 0 && newAvail === 0) {
-    $('dashEmpty').innerHTML = '<div class="empty"><div class="big">🎉</div><b>' + esc(t('caughtUpTitle')) + '</b><p>' + esc(t('caughtUpText')) + '</p></div>';
+    $('dashEmpty').innerHTML = '<div class="empty"><div class="big">🎉</div><b>' + esc(t('caughtUpTitle')) + '</b><p>' + esc(t('caughtUpText')) + '</p><div class="dhikr-line" dir="rtl" lang="ar">' + esc(completionDhikr()) + '</div></div>';
   } else {
     $('dashEmpty').innerHTML = '';
   }
   $('dashUpcoming').innerHTML = barChartSVG(upcomingData());
+  renderExamCard();
   renderDashTree();
   $('dashMastery').innerHTML = masteryRowsHTML();
 }
@@ -12260,10 +12515,11 @@ function renderStudyCard(keepFlip) {
   study.flipped = keepFlip ? study.flipped : false;
   $('studyMain').hidden = false;
   $('studySummary').hidden = true;
-  study.flip = buildFlipCard($('studyStage'), card.id);
+  study.flip = buildFlipCard($('studyStage'), card.id, { onTap: toggleStudyFlip });
   study.flip.setFlipped(study.flipped);
   $('studyFlipBtn').textContent = study.flipped ? t('hideAnswer') : t('showAnswer');
   $('gradeRow').hidden = !study.flipped;
+  $('studyStage').insertBefore(noteSectionEl(card.id), $('studyStage').firstChild);
   updateStudyChrome();
   updateGradePreviews();
 }
@@ -12273,6 +12529,10 @@ function toggleStudyFlip() {
   study.flip.setFlipped(study.flipped);
   $('studyFlipBtn').textContent = study.flipped ? t('hideAnswer') : t('showAnswer');
   $('gradeRow').hidden = !study.flipped;
+  if (study.flipped) {
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('gradeRow').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
+  }
   if (document.activeElement) document.activeElement.blur();
 }
 function gradeCurrent(rating) {
@@ -12317,6 +12577,7 @@ function showStudySummary() {
   $('summaryAgain').textContent = study.againCount;
   $('summaryTime').textContent = fmtDuration(Date.now() - study.startTime);
   $('summaryNote').textContent = nLearning > 0 ? fmt(t('stillLearningNote'), { n: nLearning }) : '';
+  $('summaryDhikr').textContent = completionDhikr();
 }
 function exitStudy() {
   study = null;
@@ -12399,13 +12660,14 @@ function renderCramCard(keepFlip) {
   $('cramEnd').hidden = true;
   var card = CARD_BY_ID[cram.cards[cram.index]];
   cram.flipped = keepFlip ? cram.flipped : false;
-  cram.flip = buildFlipCard($('cramStage'), card.id, { hideState: true });
+  cram.flip = buildFlipCard($('cramStage'), card.id, { hideState: true, onTap: cramToggleFlip });
   cram.flip.setFlipped(cram.flipped);
   $('cramFlipBtn').textContent = cram.flipped ? t('hideAnswer') : t('showAnswer');
   $('cramBarFill').style.width = ((cram.index + 1) / cram.cards.length * 100) + '%';
   $('cramCounts2').textContent = fmt(t('cramProgress'), { i: cram.index + 1, n: cram.cards.length });
   $('cramDeckLabel').textContent = shortDeckName(card.deck);
   $('cramPrevBtn').disabled = cram.index === 0;
+  $('cramStage').insertBefore(noteSectionEl(card.id), $('cramStage').firstChild);
 }
 function cramToggleFlip() {
   if (!cram || !cram.flip) return;
@@ -12417,6 +12679,7 @@ function cramToggleFlip() {
 function cramShowEnd() {
   $('cramMain').hidden = true;
   $('cramEnd').hidden = false;
+  $('cramDhikr').textContent = completionDhikr();
 }
 function cramNext() {
   if (!cram) return;
@@ -12459,7 +12722,7 @@ function browseFilteredIds() {
       for (var i = 0; i < tags.length; i++) if (browse.tags.has(tags[i])) { hit = true; break; }
       if (!hit) return false;
     }
-    if (q && cardText(id).toLowerCase().indexOf(q) < 0) return false;
+    if (q && cardText(id).toLowerCase().indexOf(q) < 0 && getNote(id).toLowerCase().indexOf(q) < 0) return false;
     return true;
   });
 }
@@ -12488,7 +12751,7 @@ function renderBrowsePreview() {
   box.innerHTML = '';
   var stage = document.createElement('div');
   box.appendChild(stage);
-  browse.flip = buildFlipCard(stage, id);
+  browse.flip = buildFlipCard(stage, id, { onTap: browseToggleFlip });
   browse.flipped = false;
   var kv = document.createElement('div');
   kv.className = 'kv';
@@ -12498,6 +12761,7 @@ function renderBrowsePreview() {
     + cell(rec ? String(rec.reps) : '0', t('repsLabel'))
     + cell(rec ? String(rec.lapses) : '0', t('lapsesLabel'));
   box.appendChild(kv);
+  box.insertBefore(noteSectionEl(id), box.firstChild);
   if (!rec) {
     var p = document.createElement('p');
     p.className = 'small muted';
@@ -12584,7 +12848,7 @@ function doSearch() {
     $('searchMoreBtn').style.display = 'none';
     return;
   }
-  searchResults = ALL_IDS.filter(function (id) { return cardText(id).toLowerCase().indexOf(q) >= 0; });
+  searchResults = ALL_IDS.filter(function (id) { return cardText(id).toLowerCase().indexOf(q) >= 0 || getNote(id).toLowerCase().indexOf(q) >= 0; });
   searchShown = 50;
   renderSearchResults(q);
 }
@@ -12625,21 +12889,23 @@ function renderBmPreview(id) {
   box.innerHTML = '';
   var stage = document.createElement('div');
   box.appendChild(stage);
-  var flip = buildFlipCard(stage, id);
-  var row = document.createElement('div');
-  row.className = 'btn-row';
+  var flipped = false;
   var btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'btn btn-primary';
   btn.textContent = t('showAnswer');
-  var flipped = false;
-  btn.addEventListener('click', function () {
+  function bmToggleFlip() {
     flipped = !flipped;
     flip.setFlipped(flipped);
     btn.textContent = flipped ? t('hideAnswer') : t('showAnswer');
-  });
+  }
+  var flip = buildFlipCard(stage, id, { onTap: bmToggleFlip });
+  var row = document.createElement('div');
+  row.className = 'btn-row';
+  btn.addEventListener('click', bmToggleFlip);
   row.appendChild(btn);
   box.appendChild(row);
+  box.insertBefore(noteSectionEl(id), box.firstChild);
 }
 function renderBookmarks() {
   var ids = bookmarkedIdsInOrder();
@@ -12681,8 +12947,35 @@ function computeDifficultIds() {
   });
   return out;
 }
+var LEECH_LAPSES = 3;
+function computeLeechIds() {
+  var out = [];
+  ALL_IDS.forEach(function (id) {
+    var s = state.fsrsCards[id];
+    if (!s) return;
+    var lapses = s.lapses || 0;
+    if (lapses >= LEECH_LAPSES) out.push({ id: id, lapses: lapses });
+  });
+  out.sort(function (a, b) { return b.lapses - a.lapses; });
+  return out;
+}
 function renderDifficult() {
   $('diffRule').textContent = t('difficultRuleText');
+  var leeches = computeLeechIds();
+  $('leechCount').textContent = fmt(t('leechCountLabel'), { n: leeches.length });
+  $('leechStudyBtn').disabled = leeches.length === 0;
+  $('leechCramBtn').disabled = leeches.length === 0;
+  if (!leeches.length) {
+    $('leechList').innerHTML = '';
+    $('leechEmpty').innerHTML = '<div class="empty"><div class="big">🎉</div><b>' + esc(t('leechEmpty')) + '</b><p>' + esc(t('leechEmptyText')) + '</p></div>';
+  } else {
+    $('leechEmpty').innerHTML = '';
+    $('leechList').innerHTML = leeches.map(function (entry) {
+      var c = CARD_BY_ID[entry.id];
+      return '<button type="button" class="rowitem" data-open="' + entry.id + '"><span class="ex">' + esc(excerpt(entry.id, 140)) + '</span>'
+        + '<span class="meta"><span>' + esc(shortDeckName(c.deck)) + '</span><span class="chip red">' + esc(fmt(t('leechLapses'), { n: entry.lapses })) + '</span> ' + stateChipHtml(entry.id) + '</span></button>';
+    }).join('');
+  }
   var list = computeDifficultIds();
   $('diffCount').textContent = fmt(t('diffCountLabel'), { n: list.length });
   $('diffStudyBtn').disabled = list.length === 0;
@@ -12873,6 +13166,8 @@ function validateBackup(p) {
     log.push({ cardId: e.cardId, deck: e.deck, rating: e.rating, ts: e.ts });
   }
   var bookmarks = p.bookmarks.filter(function (bid) { return !!CARD_BY_ID[bid]; });
+  var notes = {};
+  if (p.notes && typeof p.notes === 'object') notes = filterNotes(p.notes);
   var dayCounts = {};
   if (p.dayCounts) {
     Object.keys(p.dayCounts).forEach(function (k) {
@@ -12882,7 +13177,7 @@ function validateBackup(p) {
   }
   var settings = Object.assign({}, DEFAULT_SETTINGS, state.settings);
   if (p.settings && typeof p.settings === 'object') settings = Object.assign({}, DEFAULT_SETTINGS, p.settings);
-  return { fsrsCards: cards, reviewLog: log, bookmarks: bookmarks, dayCounts: dayCounts, settings: settings };
+  return { fsrsCards: cards, reviewLog: log, bookmarks: bookmarks, notes: notes, dayCounts: dayCounts, settings: settings };
 }
 function restoreFromFile(file) {
   var reader = new FileReader();
@@ -12905,9 +13200,10 @@ function restoreFromFile(file) {
   reader.readAsText(file);
 }
 function resetProgress() {
-  var keep = state.settings;
+  var keep = state.settings, keepNotes = state.notes;
   state = defaultState();
   state.settings = keep;
+  state.notes = keepNotes;
   sanitizeSettings();
   saveState();
   study = null;
@@ -13100,6 +13396,26 @@ function bindEvents() {
   $('diffCramBtn').addEventListener('click', function () {
     var ids = computeDifficultIds().map(function (x) { return x.id; });
     cramStartWithIds(ids, !!state.settings.shuffleDefault);
+  });
+  $('leechList').addEventListener('click', function (e) {
+    var row = e.target.closest('[data-open]');
+    if (row) openBrowseWith(row.getAttribute('data-open'));
+  });
+  $('leechStudyBtn').addEventListener('click', function () {
+    var ids = computeLeechIds().map(function (x) { return x.id; });
+    startStudyFromIds(ids, { shuffle: !!state.settings.shuffleDefault });
+  });
+  $('leechCramBtn').addEventListener('click', function () {
+    var ids = computeLeechIds().map(function (x) { return x.id; });
+    cramStartWithIds(ids, !!state.settings.shuffleDefault);
+  });
+  $('examDate').addEventListener('change', function () {
+    var v = $('examDate').value;
+    if (!v) { state.settings.examDate = null; }
+    else if (parseExamDate(v)) { state.settings.examDate = v; }
+    else { $('examDate').value = state.settings.examDate || ''; renderExamCard(); return; }
+    saveState();
+    renderExamCard();
   });
   $('statsWeakest').addEventListener('click', function (e) {
     var row = e.target.closest('[data-open]');
