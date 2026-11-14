@@ -355,6 +355,52 @@ main {
 .book-title { font-size: 1.2rem; font-weight: 700; }
 .book-desc { font-size: 0.9rem; color: var(--bookMut); }
 .book-cta { font-size: 0.9rem; font-weight: 700; color: var(--bookAccent); white-space: nowrap; margin-left: auto; }
+.flash-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, #ede9fe, #e6f7f4);
+  border: 1px solid #c4b5fd;
+  border-left: 5px solid #6d28d9;
+  border-radius: 14px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: var(--tx);
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.flash-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+.flash-icon { font-size: 2.6rem; line-height: 1; flex: none; }
+.flash-body { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 220px; }
+.flash-badge {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #6d28d9;
+  color: #fff;
+}
+.flash-title { font-size: 1.2rem; font-weight: 700; }
+.flash-desc { font-size: 0.9rem; color: var(--mut); }
+.flash-cta { font-size: 0.9rem; font-weight: 700; color: #6d28d9; white-space: nowrap; margin-left: auto; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .flash-card {
+    background: linear-gradient(135deg, #2d1b69, #0b2e2c);
+    border-color: #4c1d95;
+  }
+  :root:not([data-theme="light"]) .flash-cta { color: #c4b5fd; }
+}
+:root[data-theme="dark"] .flash-card {
+  background: linear-gradient(135deg, #2d1b69, #0b2e2c);
+  border-color: #4c1d95;
+}
+:root[data-theme="dark"] .flash-cta { color: #c4b5fd; }
 .visitors {
   margin-bottom: 8px;
   font-size: 0.9rem;
@@ -415,6 +461,16 @@ footer {
       <span class="book-desc">The complete book with all the department's content and images — reorganized with a better layout, clear formatting, and comparison tables.</span>
     </span>
     <span class="book-cta">Open on Telegram ↗</span>
+  </a>
+
+  <a class="flash-card" id="flashCard" href="Folio196%20Flashcards.html">
+    <span class="flash-icon">🃏</span>
+    <span class="flash-body">
+      <span class="flash-badge">Spaced Repetition</span>
+      <span class="flash-title">Flashcards — Smart Spaced Repetition</span>
+      <span class="flash-desc">908 cards · 14 subdecks · 2 decks · FSRS scheduling — Internal Medicine and Dr. Ashraf Zaki Q&amp;A, with due reviews, cram mode, bookmarks, and stats.</span>
+    </span>
+    <span class="flash-cta">Start Studying →</span>
   </a>
 
   <div class="grid" id="cardsGrid"></div>
@@ -484,6 +540,10 @@ function renderCards() {
   const bookEl = document.getElementById('bookCard');
   const bookSearch = 'dermatology complete book tables images notes';
   bookEl.style.display = (!q || bookSearch.includes(q)) ? '' : 'none';
+
+  const flashEl = document.getElementById('flashCard');
+  const flashSearch = 'flashcards spaced repetition fsrs decks cards internal medicine ashraf zaki review study';
+  flashEl.style.display = (!q || flashSearch.includes(q)) ? '' : 'none';
 
   if (!filtered.length) {
     grid.innerHTML = `<p style="color:var(--mut)">No matching subjects found.</p>`;
