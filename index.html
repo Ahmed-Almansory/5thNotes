@@ -312,7 +312,7 @@ main {
 }
 .card-name .nm {
   font-size: 1.7rem;
-  font-size: clamp(1.3rem, 12cqw, 2.6rem);
+  font-size: clamp(1.3rem, var(--nmfs, 12cqw), 3.4rem);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.01em;
@@ -765,11 +765,12 @@ function renderCards() {
 
   grid.innerHTML = filtered.map(p => {
     const name = p.title.replace(/ (Question Bank|MCQs)$/, '').replace(/^Tropical Medicine$/, 'Tropical');
+    const nmfs = name.length <= 5 ? '15cqw' : name.length <= 8 ? '13cqw' : '12cqw';
     const kind = 'MCQs';
     const meta = p.meta.replace(' + ECGs', '');
     return `
     <div class="cell">
-      <a class="card" href="${encodeURI(p.file)}" style="--accent:${p.accent};--deep:${p.deep}">
+      <a class="card" href="${encodeURI(p.file)}" style="--accent:${p.accent};--deep:${p.deep};--nmfs:${nmfs}">
         <div class="card-top">
           <span class="card-tag">${p.tag}</span>
           <span class="card-arrow">\u2197</span>
