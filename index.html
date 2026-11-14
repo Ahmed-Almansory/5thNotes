@@ -438,9 +438,13 @@ footer {
 .tg-strip svg { width: 26px; height: 26px; flex: none; }
 .tg-strip .tg-strip-open { font-weight: 700; color: #5eead4; white-space: nowrap; }
 .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
-.stat { background: var(--card); border: 1px solid var(--bd); border-radius: 999px; padding: 6px 14px; font-size: 0.85rem; color: var(--mut); }
+.stat { background: var(--card); border: 1px solid var(--bd); border-radius: 999px; padding: 6px 14px; font-size: 0.85rem; color: var(--mut); text-decoration: none; }
 .stat b { color: var(--tx); font-size: 0.95rem; }
-section { margin-bottom: 38px; }
+a.stat:hover { border-color: var(--teal); color: var(--tx); }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+section { margin-bottom: 38px; scroll-margin-top: 16px; }
+#bookCard { scroll-margin-top: 16px; }
 .sec-head { margin-bottom: 14px; }
 .eyebrow { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); margin: 0 0 4px; }
 .eyebrow.violet { color: #6d28d9; }
@@ -487,12 +491,12 @@ section { margin-bottom: 38px; }
   </a>
 
   <div class="stats">
-    <span class="stat"><b>2,128</b> MCQs</span>
-    <span class="stat"><b>908</b> Flashcards</span>
-    <span class="stat"><b>7</b> Question Banks</span>
-    <span class="stat"><b>14</b> Flashcard Decks</span>
-    <span class="stat"><b>3</b> Revision Notes</span>
-    <span class="stat"><b>1</b> Dermatology Book</span>
+    <a class="stat" href="#banksSection"><b>2,128</b> MCQs</a>
+    <a class="stat" href="#flashSection"><b>908</b> Flashcards</a>
+    <a class="stat" href="#banksSection"><b>7</b> Question Banks</a>
+    <a class="stat" href="#flashSection"><b>14</b> Flashcard Decks</a>
+    <a class="stat" href="#booksSection"><b>3</b> Revision Notes</a>
+    <a class="stat" href="#bookCard"><b>1</b> Dermatology Book</a>
   </div>
 
   <section id="flashSection">
