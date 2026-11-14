@@ -593,7 +593,7 @@ footer a { color: var(--teal); }
       <div class="form-grid" style="margin-top:12px">
         <div class="field">
           <label for="cramSize" data-i18n="cramSize">Session size (0 = all matching cards)</label>
-          <input type="number" id="cramSize" min="0" max="908" step="1" value="0">
+          <input type="number" id="cramSize" min="0" max="906" step="1" value="0">
         </div>
         <div class="field checkline" style="align-items:flex-end;padding-bottom:10px">
           <input type="checkbox" id="cramShuffle">
@@ -667,7 +667,7 @@ footer a { color: var(--teal); }
   <!-- ============ SEARCH ============ -->
   <section class="view" id="view-search">
     <h2 data-i18n="searchTitle">Search all cards</h2>
-    <p class="lead" data-i18n="searchHint">Searches the front and back of all 908 cards. Click a result to open it in Browse.</p>
+    <p class="lead" data-i18n="searchHint">Searches the front and back of all 906 cards. Click a result to open it in Browse.</p>
     <div class="panel">
       <div class="filters">
         <input type="search" id="globalSearch" data-i18n-ph="searchPh" placeholder="Type to search… (e.g. heart failure)">
@@ -842,8 +842,8 @@ footer a { color: var(--teal); }
    "Internal_medicine_0_3a4v.apkg",
    "Dr._Ashraf_Zaki_Q_A_________1_emmw.apkg"
   ],
-  "totalCards": 908,
-  "totalNotes": 904
+  "totalCards": 906,
+  "totalNotes": 902
  },
  "decks": [
   {
@@ -859,7 +859,7 @@ footer a { color: var(--teal); }
     "ash-neurology",
     "ash-general"
    ],
-   "cardCount": 292,
+   "cardCount": 290,
    "ankiId": 1685125947495
   },
   {
@@ -879,7 +879,7 @@ footer a { color: var(--teal); }
    "source": "ashraf",
    "parent": "ash",
    "children": [],
-   "cardCount": 55,
+   "cardCount": 54,
    "ankiId": 1685170472218
   },
   {
@@ -889,7 +889,7 @@ footer a { color: var(--teal); }
    "source": "ashraf",
    "parent": "ash",
    "children": [],
-   "cardCount": 73,
+   "cardCount": 72,
    "ankiId": 1685166880629
   },
   {
@@ -8790,18 +8790,6 @@ footer a { color: var(--teal); }
    "model": "Basic"
   },
   {
-   "id": "ash-1685171220331",
-   "deck": "ash-abdomen",
-   "front": "<div>* What are \"normally palpable\" structures in the abdomen?<\/div>",
-   "back": "",
-   "tags": [
-    "Abdomen"
-   ],
-   "ord": 0,
-   "noteId": 1685171220331,
-   "model": "Basic"
-  },
-  {
    "id": "ash-1685171289551",
    "deck": "ash-abdomen",
    "front": "<div>What are different methods of palpation of liver and spleen?<\/div>",
@@ -9363,18 +9351,6 @@ footer a { color: var(--teal); }
    ],
    "ord": 0,
    "noteId": 1685167715883,
-   "model": "Basic"
-  },
-  {
-   "id": "ash-1685167720997",
-   "deck": "ash-chest",
-   "front": "",
-   "back": "",
-   "tags": [
-    "Chest"
-   ],
-   "ord": 0,
-   "noteId": 1685167720996,
    "model": "Basic"
   },
   {
@@ -11518,7 +11494,10 @@ function excerpt(id, len) {
   return txt.length > len ? txt.slice(0, len - 1) + '…' : txt;
 }
 function isEmptyHtml(html) {
-  var cleaned = String(html || '').replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ').trim();
+  var s = String(html || '');
+  // A face carrying media (e.g. an image-only answer) is content, not empty.
+  if (/<\s*(img|video|audio)\b/i.test(s)) return false;
+  var cleaned = s.replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ').trim();
   return cleaned.length === 0;
 }
 function deckName(deckId) {
@@ -11571,8 +11550,11 @@ function loadState() {
     if (!raw) return;
     var p = JSON.parse(raw);
     if (!p || typeof p !== 'object') return;
-    if (p.fsrsCards && typeof p.fsrsCards === 'object') state.fsrsCards = p.fsrsCards;
-    if (Array.isArray(p.reviewLog)) state.reviewLog = p.reviewLog;
+    if (p.fsrsCards && typeof p.fsrsCards === 'object') {
+      state.fsrsCards = {};
+      Object.keys(p.fsrsCards).forEach(function (id) { if (CARD_BY_ID[id]) state.fsrsCards[id] = p.fsrsCards[id]; });
+    }
+    if (Array.isArray(p.reviewLog)) state.reviewLog = p.reviewLog.filter(function (e) { return e && CARD_BY_ID[e.cardId]; });
     if (Array.isArray(p.bookmarks)) state.bookmarks = p.bookmarks.filter(function (id) { return !!CARD_BY_ID[id]; });
     if (p.notes && typeof p.notes === 'object') state.notes = filterNotes(p.notes);
     if (p.dayCounts && typeof p.dayCounts === 'object') state.dayCounts = p.dayCounts;
@@ -11961,7 +11943,7 @@ var I18N = {
     repsLabel: 'Reviews', lapsesLabel: 'Lapses', neverStudied: 'Not studied yet', dueLabel: 'due',
     frontLabel: 'Question', backLabel: 'Answer', emptyFront: 'No question content on this card.', emptyBack: 'No answer content on this card.',
     bookmarkLabel: 'Bookmark this card', toastBookmarked: '★ Bookmarked', toastUnbookmarked: 'Bookmark removed',
-    searchTitle: 'Search all cards', searchHint: 'Searches the front and back of all 908 cards. Click a result to open it in Browse.',
+    searchTitle: 'Search all cards', searchHint: 'Searches the front and back of all 906 cards. Click a result to open it in Browse.',
     searchPh: 'Type to search… (e.g. heart failure)', searchNoQuery: 'Type at least 2 characters to search.',
     searchNoResults: 'No cards match your search.', resultsCount: '{n} result(s)', openInBrowse: 'Open in Browse',
     bookmarksTitle: 'Bookmarks', bookmarksDesc: 'Starred cards, saved on this device. Tap the ☆ on any card to bookmark it.',
@@ -12061,7 +12043,7 @@ var I18N = {
     repsLabel: 'المراجعات', lapsesLabel: 'مرات النسيان', neverStudied: 'لم تُذاكر بعد', dueLabel: 'مستحقة',
     frontLabel: 'السؤال', backLabel: 'الإجابة', emptyFront: 'لا يوجد محتوى للسؤال في هذه البطاقة.', emptyBack: 'لا يوجد محتوى للإجابة في هذه البطاقة.',
     bookmarkLabel: 'احفظ هذه البطاقة', toastBookmarked: '★ تم الحفظ', toastUnbookmarked: 'أُزيلت من المحفوظات',
-    searchTitle: 'ابحث في كل البطاقات', searchHint: 'يبحث في وجهي البطاقة الأمامي والخلفي لكل البطاقات الـ908. اضغط على نتيجة لفتحها في التصفح.',
+    searchTitle: 'ابحث في كل البطاقات', searchHint: 'يبحث في وجهي البطاقة الأمامي والخلفي لكل البطاقات الـ906. اضغط على نتيجة لفتحها في التصفح.',
     searchPh: 'اكتب للبحث… (مثال: heart failure)', searchNoQuery: 'اكتب حرفين على الأقل للبحث.',
     searchNoResults: 'لا توجد بطاقات تطابق بحثك.', resultsCount: '{n} نتيجة', openInBrowse: 'فتح في التصفح',
     bookmarksTitle: 'المحفوظات', bookmarksDesc: 'البطاقات المميزة بنجمة، محفوظة على هذا الجهاز. اضغط ☆ على أي بطاقة لحفظها.',
@@ -13162,7 +13144,8 @@ function validateBackup(p) {
   var log = [];
   for (var j = 0; j < p.reviewLog.length; j++) {
     var e = p.reviewLog[j];
-    if (!e || typeof e !== 'object' || !CARD_BY_ID[e.cardId] || [1, 2, 3, 4].indexOf(e.rating) < 0 || typeof e.ts !== 'number') return null;
+    if (!e || typeof e !== 'object' || [1, 2, 3, 4].indexOf(e.rating) < 0 || typeof e.ts !== 'number') return null;
+    if (!CARD_BY_ID[e.cardId]) continue; // card removed since the backup was made; keep the rest
     log.push({ cardId: e.cardId, deck: e.deck, rating: e.rating, ts: e.ts });
   }
   var bookmarks = p.bookmarks.filter(function (bid) { return !!CARD_BY_ID[bid]; });
