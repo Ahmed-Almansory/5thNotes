@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Anesthesia Question Bank — Folio 196 Question Bank</title>
-<!-- FOLIO196-NEW-DESIGN v2 · Anesthesia · built 2026-11-16 · DB byte-identical to live · weakest drill -->
+<!-- FOLIO196-NEW-DESIGN v2.1 · Anesthesia · built 2026-11-16 · DB byte-identical to live · weakest drill (compact list) -->
 
 <style>
 /* ==========================================================================
@@ -1799,6 +1799,8 @@ footer {
 .dpill{border:1px solid var(--bd-strong);background:var(--card);border-radius:999px;padding:7px 13px;font-size:.83rem;font-weight:600;cursor:pointer;color:var(--tx)}
 .dpill.on{background:var(--teal);border-color:var(--teal);color:var(--card)}
 .drill-start{display:block;width:100%;background:var(--teal);color:var(--card);border:0;border-radius:10px;padding:12px;font-size:.95rem;font-weight:700;cursor:pointer;margin-bottom:6px}
+.drill-toggle{display:block;width:100%;background:var(--card);color:var(--teal);border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:.86rem;font-weight:600;cursor:pointer}
+.drill-list{margin-top:4px}
 .drill-row{display:flex;gap:12px;padding:12px 2px;border-top:1px solid var(--bd);align-items:flex-start;cursor:pointer}
 .drill-row:first-of-type{border-top:0}
 .drill-rank{flex:0 0 28px;height:28px;border-radius:50%;background:var(--soft);color:var(--teal);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.85rem}
@@ -2042,7 +2044,7 @@ const scopeFor = c => {
 
 try { P = JSON.parse(localStorage.getItem(SK) || '{}'); } catch (e) {}
 let WC = {}; try { WC = JSON.parse(localStorage.getItem(SK + 'wc') || '{}') || {}; } catch (e) { WC = {}; }
-let QD = false, drillSize = 10;
+let QD = false, drillSize = 10, drillListOpen = false;
 const saveWC = () => { try { localStorage.setItem(SK + 'wc', JSON.stringify(WC)); } catch (e) {} };
 const effWC = id => (P[id] && P[id].r === 0) ? (WC[id] && typeof WC[id].n === 'number' ? WC[id].n : 1) : 0;
 const lastWC = id => (WC[id] && WC[id].t) || 0;
@@ -2341,7 +2343,7 @@ if (W.length) {
   const m = drillSize < 0 ? W.length : Math.min(drillSize, W.length);
   const maxN = effWC(W[0].id);
   const pill = (label, val, on) => `<button class="dpill${on ? ' on' : ''}" data-dsize="${val}">${label}</button>`;
-  h += `<section class="drill" id="drillSec"><div class="drill-hd"><h2>🎯 Weakest drill</h2><span>${W.length} wrong · most-missed first</span></div><p class="drill-sub">Re-answer the questions you keep missing, fresh. Progress changes only when you re-answer.</p><div class="drill-pills"><span class="lbl">Drill size:</span>${pill('Top 10', '10', drillSize === 10)}${pill('Top 20', '20', drillSize === 20)}${pill('All wrong (' + W.length + ')', 'all', drillSize < 0)}</div><button class="drill-start" id="hdrill">▶ Start drill — ${m} question${m === 1 ? '' : 's'}</button><div class="drill-list">${W.slice(0, 6).map((q, i) => { const n = effWC(q.id), t = lastWC(q.id); return `<div class="drill-row" data-q="${q.id}"><span class="drill-rank">${i + 1}</span><div class="drill-body"><div class="drill-title">Q${q.n} · ${esc(q.ch)}</div>${t ? `<div class="drill-meta">Last missed ${relMissed(t)}</div>` : ''}<div class="drill-snip">${esc(q.q.slice(0, 90))}${q.q.length > 90 ? '…' : ''}</div><div class="drill-bar"><i style="width:${Math.round(100 * n / maxN)}%"></i></div></div><div class="drill-count"><b>×${n}</b><span>wrong</span></div></div>`; }).join('')}</div>${W.length > 6 ? `<p class="drill-more">+ ${W.length - 6} more wrong question${W.length - 6 === 1 ? '' : 's'} — same list as Wrong Only, just re-ordered.</p>` : ''}</section>`;
+  h += `<section class="drill" id="drillSec"><div class="drill-hd"><h2>🎯 Weakest drill</h2><span>${W.length} wrong · most-missed first</span></div><p class="drill-sub">Re-answer the questions you keep missing, fresh. Progress changes only when you re-answer.</p><div class="drill-pills"><span class="lbl">Drill size:</span>${pill('Top 10', '10', drillSize === 10)}${pill('Top 20', '20', drillSize === 20)}${pill('All wrong (' + W.length + ')', 'all', drillSize < 0)}</div><button class="drill-start" id="hdrill">▶ Start drill — ${m} question${m === 1 ? '' : 's'}</button><button class="drill-toggle" id="drillToggle">${drillListOpen ? '▴ Hide the list' : `▾ Show all wrong questions (${W.length})`}</button><div class="drill-list" id="drillList"${drillListOpen ? '' : ' style="display:none"'}>${W.map((q, i) => { const n = effWC(q.id), t = lastWC(q.id); return `<div class="drill-row" data-q="${q.id}"><span class="drill-rank">${i + 1}</span><div class="drill-body"><div class="drill-title">Q${q.n} · ${esc(q.ch)}</div>${t ? `<div class="drill-meta">Last missed ${relMissed(t)}</div>` : ''}<div class="drill-snip">${esc(q.q.slice(0, 90))}${q.q.length > 90 ? '…' : ''}</div><div class="drill-bar"><i style="width:${Math.round(100 * n / maxN)}%"></i></div></div><div class="drill-count"><b>×${n}</b><span>wrong</span></div></div>`; }).join('')}</div></section>`;
 }
 h += `<div class="cards"><div class="card" data-c="all"><div style="flex:1;min-width:0">All questions ${accHTML('all')}<div class="prog cp"><i style="width:${cp('all')}%"></i></div></div><span>${tr('all')}</span></div>`;
   CATS.forEach(c => {
@@ -2770,6 +2772,7 @@ $('home').onclick = e => {
   if (e.target.closest('#hsh')) { setShuffle(!SH); home(); return; }
   if (e.target.closest('#hdrill')) { startDrill(); return; }
   const dp = e.target.closest('[data-dsize]'); if (dp) { drillSize = dp.dataset.dsize === 'all' ? -1 : parseInt(dp.dataset.dsize, 10); home(); return; }
+  if (e.target.closest('#drillToggle')) { drillListOpen = !drillListOpen; home(); return; }
   const dr = e.target.closest('.drill-row'); if (dr) { goQ(dr.dataset.q); return; }
   const c = e.target.closest('.card');
   if (c) {
@@ -2913,7 +2916,7 @@ $('eg').onclick = () => {
 $('helpBtn').onclick = () => { $('helpModal').classList.add('on'); };
 $('helpClose').onclick = () => { $('helpModal').classList.remove('on'); };
 $('helpModal').onclick = e => { if (e.target.id === 'helpModal') $('helpModal').classList.remove('on'); };
-$('helpContent').innerHTML = `<p><b>Chapters:</b> The main organization. Every canonical question belongs to its original chapter.</p>${CATS.map(c => `<p><b>${esc(c.name)}:</b> ${esc(c.description || c.subtitle || 'An additional view of existing questions.')} Progress is shared with the original chapter.</p>`).join('')}<p><b>Progress:</b> Answering in any view updates the same question record. Global totals count each question once.</p><p><b>Resume:</b> Returns to the first unanswered question after your last answered question; scrolling or browsing does not change this position.</p><p><b>Distractor Strikethrough:</b> Right-click any option — or long-press it on your phone — to cross it out while thinking through your differential diagnosis. Right-click / long-press it again to undo.</p><p><b>Weakest drill:</b> On the home page, your wrong questions ranked by how many times each was missed — most-missed first. Starting a drill re-opens them fresh, and progress changes only when you actually re-answer. Answer one right and it leaves the drill; miss it again and its count climbs. Counts start from this version: questions already wrong count as ×1 until missed again.</p><p><b>Show Answers &amp; Show Explanations:</b> Work independently or together! Turning both ON shows both the correct answer highlight and the full explanation block simultaneously.</p><p><b>Exam Mode &amp; Timer:</b> Select answers first, then grade them together or let the countdown timer auto-grade when time expires.</p><p><b>Custom quiz:</b> From the home page, build a custom quiz from the chapters, question count, and pool (all, unanswered, or wrong only) you choose.</p>`;
+$('helpContent').innerHTML = `<p><b>Chapters:</b> The main organization. Every canonical question belongs to its original chapter.</p>${CATS.map(c => `<p><b>${esc(c.name)}:</b> ${esc(c.description || c.subtitle || 'An additional view of existing questions.')} Progress is shared with the original chapter.</p>`).join('')}<p><b>Progress:</b> Answering in any view updates the same question record. Global totals count each question once.</p><p><b>Resume:</b> Returns to the first unanswered question after your last answered question; scrolling or browsing does not change this position.</p><p><b>Distractor Strikethrough:</b> Right-click any option — or long-press it on your phone — to cross it out while thinking through your differential diagnosis. Right-click / long-press it again to undo.</p><p><b>Weakest drill:</b> On the home page, your wrong questions ranked by how many times each was missed — most-missed first; tap “Show all wrong questions” to see the full ranked list. Starting a drill re-opens them fresh, and progress changes only when you actually re-answer. Answer one right and it leaves the drill; miss it again and its count climbs. Counts start from this version: questions already wrong count as ×1 until missed again.</p><p><b>Show Answers &amp; Show Explanations:</b> Work independently or together! Turning both ON shows both the correct answer highlight and the full explanation block simultaneously.</p><p><b>Exam Mode &amp; Timer:</b> Select answers first, then grade them together or let the countdown timer auto-grade when time expires.</p><p><b>Custom quiz:</b> From the home page, build a custom quiz from the chapters, question count, and pool (all, unanswered, or wrong only) you choose.</p>`;
 
 $('wr').onclick = () => { wrongOnly = !wrongOnly; RT = false; render(); };
 $('ex').onclick = () => { toggleExam(); render(); };
