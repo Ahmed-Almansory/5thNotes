@@ -506,6 +506,33 @@ section { margin-bottom: 38px; scroll-margin-top: 16px; }
 @media (max-width: 600px) {
   .sec-head-row .search-bar { flex-basis: 100%; }
 }
+
+/* ---- Your Progress strip ---- */
+.progress-panel { background: var(--card); border: 1px solid var(--bd); border-radius: 16px; padding: 16px 18px 14px; margin-bottom: 38px; }
+.progress-toggle { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
+.progress-title { font-size: 1.15rem; font-weight: 700; }
+.progress-arrow { display: inline-flex; flex: none; color: var(--mut); transition: transform 0.2s ease; }
+.progress-toggle[aria-expanded="true"] .progress-arrow { transform: rotate(90deg); }
+.progress-body { margin-top: 12px; }
+.progress-body[hidden] { display: none; }
+.progress-overall { margin-left: auto; color: var(--mut); font-size: 0.9rem; }
+.progress-overall b { color: var(--tx); }
+.progress-total { height: 10px; border-radius: 999px; background: var(--bd); overflow: hidden; margin-bottom: 12px; }
+.progress-total > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #0B2545, #0F766E); }
+.progress-row { display: flex; align-items: center; gap: 12px; padding: 5px 0; text-decoration: none; color: inherit; }
+.progress-row:hover .progress-name { text-decoration: underline; }
+.progress-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.progress-name { flex: 0 0 118px; font-size: 0.9rem; font-weight: 600; }
+.progress-track { flex: 1; height: 8px; border-radius: 999px; background: var(--bd); overflow: hidden; }
+.progress-track > span { display: block; height: 100%; border-radius: 999px; }
+.progress-count { flex: none; font-size: 0.85rem; color: var(--mut); white-space: nowrap; min-width: 96px; text-align: right; }
+.progress-count b { color: var(--tx); }
+.progress-note { margin: 10px 0 0; color: var(--mut); font-size: 0.82rem; }
+@media (max-width: 600px) {
+  .progress-name { flex-basis: 92px; font-size: 0.85rem; }
+  .progress-count { min-width: 0; font-size: 0.8rem; }
+}
+
 /* ---- Side menu (drawer) ---- */
 .header-actions { display: flex; gap: 8px; flex: none; }
 .menu-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 42px; padding: 8px 0; }
@@ -609,6 +636,19 @@ body.menu-open .side-menu { transform: translateX(0); }
     <a class="stat" href="#booksSection"><b>3</b> Revision Notes</a>
     <a class="stat" href="#bookCard"><b>1</b> Dermatology Book</a>
   </div>
+
+  <section class="progress-panel" id="progressSection" aria-label="Your progress">
+    <button class="progress-toggle" id="progressToggle" aria-expanded="false" aria-controls="progressBody">
+      <span class="progress-title">Your Progress</span>
+      <span class="progress-overall" id="progressOverall"></span>
+      <span class="progress-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
+    </button>
+    <div class="progress-body" id="progressBody" hidden>
+      <div class="progress-total"><span id="progressTotalBar" style="width:0%"></span></div>
+      <div id="progressRows"></div>
+      <p class="progress-note">Saved on this device only &mdash; your progress stays in this browser.</p>
+    </div>
+  </section>
 
   <section id="banksSection">
     <div class="sec-head sec-head-row">
@@ -817,6 +857,53 @@ document.getElementById('themeBtn').addEventListener('click', () => {
   const cur = root.getAttribute('data-theme');
   root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
 });
+
+
+// ===== Your Progress strip: reads each bank's saved answers on this device =====
+(function () {
+  var KEYS = {
+    "Dermatology MCQs": "derma5",
+    "Chest Question Bank": "chest-question-bank",
+    "Cardiology Question Bank": "cardio-qb",
+    "Tropical Medicine Question Bank": "tropical-medicine-5thnotes",
+    "Anesthesia Question Bank": "anesthesia-qb",
+    "Andrology Question Bank": "andrology-qb",
+    "Radiology Question Bank": "radiology-qb"
+  };
+  var rows = PAGES.map(function (p) {
+    var total = parseInt(p.meta, 10) || 0;
+    var answered = 0;
+    try {
+      var raw = localStorage.getItem(KEYS[p.title]);
+      if (raw) answered = Object.keys(JSON.parse(raw) || {}).length;
+    } catch (e) {}
+    var name = p.title.replace(/ (Question Bank|MCQs)$/, '').replace(/^Tropical Medicine$/, 'Tropical');
+    return { name: name, total: total, answered: Math.min(answered, total), accent: p.accent, deep: p.deep, file: p.file };
+  });
+  var totalQ = rows.reduce(function (s, r) { return s + r.total; }, 0);
+  var totalA = rows.reduce(function (s, r) { return s + r.answered; }, 0);
+  var pct = totalQ ? Math.round(totalA / totalQ * 100) : 0;
+  document.getElementById('progressOverall').innerHTML = '<b>' + totalA.toLocaleString('en-US') + '</b> / ' + totalQ.toLocaleString('en-US') + ' &middot; <b>' + pct + '%</b>';
+  document.getElementById('progressTotalBar').style.width = pct + '%';
+  document.getElementById('progressRows').innerHTML = rows.map(function (r) {
+    var p = r.total ? Math.round(r.answered / r.total * 100) : 0;
+    return '<a class="progress-row" href="' + encodeURI(r.file) + '">'
+      + '<span class="progress-dot" style="background:' + r.accent + '"></span>'
+      + '<span class="progress-name">' + r.name + '</span>'
+      + '<span class="progress-track"><span style="width:' + p + '%;background:linear-gradient(90deg,' + r.deep + ',' + r.accent + ')"></span></span>'
+      + '<span class="progress-count"><b>' + r.answered + '</b> / ' + r.total + ' &middot; ' + p + '%</span></a>';
+  }).join('');
+  if (totalA === 0) {
+    document.querySelector('.progress-note').textContent = 'No progress yet — solve any bank and your progress will appear here.';
+  }
+  var toggle = document.getElementById('progressToggle');
+  var body = document.getElementById('progressBody');
+  toggle.addEventListener('click', function () {
+    var open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    body.hidden = open;
+  });
+})();
 
 renderCards();
 
