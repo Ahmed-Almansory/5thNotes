@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Andrology Question Bank — Folio 196 Question Bank</title>
-<!-- FOLIO196-NEW-DESIGN v2.1 · Andrology · built 2026-11-16 · DB byte-identical to live · weakest drill (compact list) -->
+<!-- FOLIO196-NEW-DESIGN v2.2 · Andrology · built 2026-11-18 · DB byte-identical to live · weakest drill (compact list) · scroll-anchor fix -->
 
 <style>
 /* ==========================================================================
@@ -2665,6 +2665,32 @@ $('list').addEventListener('toggle', e => {
   if (e.target.classList && e.target.classList.contains('qmap')) mapOpen = e.target.open;
 }, true);
 
+// Keep the tapped card glued to its viewport position across a full
+// re-render. render() rebuilds the whole list, and off-screen cards
+// collapse to their content-visibility intrinsic-size estimate, so
+// restoring the old absolute scrollY points at the wrong content and
+// the card jumps off-screen (first answer after scrolling down).
+// The card's position only settles once the browser re-renders the
+// near-viewport cards, so anchor after layout settles (next frames),
+// re-checking in case the correction itself brings new cards into range.
+function rerenderKeep(id, y0, top0) {
+  render();
+  const el = document.getElementById('q-' + id);
+  if (!el || top0 == null) { scrollTo(0, y0); return; }
+  const nextFrame = typeof requestAnimationFrame === 'function'
+    ? cb => requestAnimationFrame(cb)
+    : cb => setTimeout(cb, 0);
+  let n = 0;
+  const fix = () => {
+    const cur = document.getElementById('q-' + id);
+    if (!cur) return;
+    const dy = cur.getBoundingClientRect().top - top0;
+    if (Math.abs(dy) > 1) scrollTo({ top: scrollY + dy, behavior: 'instant' });
+    if (++n < 3 && Math.abs(dy) > 1) nextFrame(fix);
+  };
+  nextFrame(fix);
+}
+
 $('list').onclick = e => {
   if (e.target.closest('#qzend')) { QZ = []; QZW = false; QD = false; openView(null); scrollTo(0, 0); return; }
   if (e.target.closest('#shc2')) { openShPicker(); return; }
@@ -2692,23 +2718,21 @@ $('list').onclick = e => {
   if (!b) return;
   const card = b.closest('.q');
   if (!card) return;
-  const id = card.dataset.id, q = byId(id), y0 = scrollY;
+  const id = card.dataset.id, q = byId(id), y0 = scrollY, top0 = card.getBoundingClientRect().top;
   if (b.classList.contains('expbtn')) {
     EXPL[id] = !card.querySelector('.explain');
     try { localStorage.setItem(SK + 'explq', JSON.stringify(EXPL)); } catch (e) {}
-    render();
-    scrollTo(0, y0);
+    rerenderKeep(id, y0, top0);
     return;
   }
-  if (b.classList.contains('bm')) { toggleBM(id); render(); scrollTo(0, y0); return; }
+  if (b.classList.contains('bm')) { toggleBM(id); rerenderKeep(id, y0, top0); return; }
   if (b.classList.contains('rt')) {
     delete P[id];
     delete WC[id];
     save();
     saveWC();
     if (LAST && LAST.id == id) clearLast();
-    render();
-    scrollTo(0, y0);
+    rerenderKeep(id, y0, top0);
     return;
   }
   const rtQ = retaking() && P[id] && P[id].r === 0;
@@ -2722,8 +2746,7 @@ $('list').onclick = e => {
       saveLast(id);
     }
     savePX();
-    render();
-    scrollTo(0, y0);
+    rerenderKeep(id, y0, top0);
     autoGrade(q.ch);
     return;
   }
@@ -2736,9 +2759,7 @@ $('list').onclick = e => {
   SESS.add(id);
   save();
   saveLast(id);
-  const y = scrollY;
-  render();
-  scrollTo(0, y);
+  rerenderKeep(id, y0, top0);
 };
 
 $('nav').onclick = e => {
