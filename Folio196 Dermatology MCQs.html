@@ -4,9 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Dermatology MCQs — Folio 196 · Chapters + Hawary Only + El Zanqa</title>
-<!-- FOLIO196-NEW-DESIGN v2.4.2 · Dermatology · built 2026-11-19 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update + min-height pin) -->
+<!-- FOLIO196-NEW-DESIGN v2.5 · Dermatology · built 2026-11-20 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update + min-height pin) -->
+<!-- v2.5: SVG icon set; bottom action bar on phones; back-button history; 44px hit areas (glyphs unchanged); de-glass toolbar + solid Resume; mastery-colored chapters; empty-state CTA; keyboard A-E; Options bottom sheet on phones; hide-on-scroll toolbar (600px threshold); bottom bar hides in Exam Mode; chapters drawer scrim -->
 <!-- v2.4.2: per-question copy button (question + options); text-selection block scoped to touch devices so desktop can select again -->
 <!-- v2.4.1 review fixes: touch long-press strikethrough (iOS), Wrong/Saved filter exclusivity, no iOS zoom on input focus -->
+
+
 
 <style>
 /* ==========================================================================
@@ -1855,9 +1858,84 @@ footer {
 @media (max-width: 860px) {
   .bar input[type=search], .hsx input, #tmin, .qzopt input { font-size: 16px; }
 }
+
+/* ================= MOCKUP v1 ================= */
+.ic { width: 1.05em; height: 1.05em; vertical-align: -0.18em; flex: none; }
+.bar button { display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
+/* 6. de-glass: solid toolbar + solid Resume (was amber->green #0D9488); tabular sans numbers */
+.bar { background: var(--card); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.resume { background: var(--teal); }
+.sc b { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; font-variant-numeric: tabular-nums; }
+.opt b { font-family: inherit; font-variant-numeric: tabular-nums; }
+/* 4. 44px hit areas — glyph sizes unchanged, padding carries the target */
+.bm, .copyq, .expbtn { width: 44px; height: 44px; }
+.bm { inset-inline-end: 8px; }
+.copyq { inset-inline-end: 56px; }
+.expbtn { inset-inline-end: 104px; }
+.q h3 { padding-inline-end: 152px; }
+.hi { position: relative; }
+.hi::after { content: ''; position: absolute; inset: -12px; }
+#th { padding: 12px 16px; min-height: 44px; }
+/* 7. mastery bands on chapter cards (same thresholds as accHTML) */
+.card.m-low { border-inline-start-color: var(--bad); }
+.card.m-low .prog.cp i { background: var(--bad); }
+.card.m-mid { border-inline-start-color: #F59E0B; }
+.card.m-mid .prog.cp i { background: #F59E0B; }
+.card.m-high { border-inline-start-color: var(--ok); }
+.card.m-high .prog.cp i { background: var(--ok); }
+/* 9. keyboard-navigated search result */
+.sp a.kb { outline: 2px solid var(--teal); outline-offset: 1px; }
+/* 2. bottom action bar on phones; top bar slimmed */
+#bbar { display: none; }
+@media (max-width: 860px) {
+  body.inq #bbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: var(--card); border-top: 1px solid var(--bd); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); gap: 4px; }
+  #bbar button { flex: 1; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 0.72rem; font-weight: 700; color: var(--mut); background: none; border: 0; border-radius: 10px; padding: 0; }
+  #bbar button .ic { width: 22px; height: 22px; }
+  body.inq main { padding-bottom: 84px; }
+  .bar #hm, .bar #mb, .bar #rb, .bar #sv { display: none; }
+}
+/* v2. Options popover becomes a bottom sheet on phones: it was anchored to the
+   Options button, which sits mid-screen on a wrapped toolbar, so the 315px
+   popover opened 91px off-screen left at 360px. NOTE: position:fixed only
+   escapes .bar because the de-glass above removed its backdrop-filter; if
+   this ever goes live without the de-glass, move the popover out of .bar.
+   v3: the sheet sits ABOVE the bottom action bar (bottom: 68px + safe area)
+   so the last row (Reset Progress) is fully visible instead of cut off
+   behind the bar. */
+@media (max-width: 860px) {
+  .opt-pop { position: fixed; left: 12px; right: 12px; top: auto; bottom: calc(68px + env(safe-area-inset-bottom)); width: auto; max-width: none; max-height: 70vh; overflow-y: auto; z-index: 90; border-radius: 18px; }
+}
+/* v3. During Exam Mode the bottom action bar hides, so the exam bar (#xb:
+   timer, answered count, Grade now — sticky bottom:10px, z-30) is not covered
+   by #bbar (fixed, z-60). The sheet drops back to 12px then, since the bar
+   it cleared is gone. The body class is set in exUI() (runs on every render
+   and on load, so the persisted exam state is covered too). */
+body.examing #bbar { display: none; }
+@media (max-width: 860px) {
+  body.examing .opt-pop { bottom: calc(12px + env(safe-area-inset-bottom)); }
+}
+/* v3. Chapters drawer scrim: tapping anywhere outside the drawer closes it
+   (the drawer alone had no outside-tap close — it only closed on picking a
+   chapter). The scrim is the immediate sibling of #nav, shown only on phones
+   while the drawer is open; it sits below the drawer (z-89 vs 90) and above
+   everything else, including the bottom bar. */
+#navscrim { display: none; }
+@media (max-width: 860px) {
+  #nav.open + #navscrim { display: block; position: fixed; inset: 0; z-index: 89; background: rgba(2, 6, 23, .45); }
+}
+/* v2. Hide-on-scroll toolbar trial (Ahmed 2026-11-19: only if it does not break
+   the v2.4 scroll fix). transform/opacity only — layout never moves, so the
+   min-height pin and the frame probe are unaffected. Never hides while the
+   Options popover is open. v3: hides only past 600px — the bar stays put
+   while solving the first question and stops following you further down;
+   show-on-scroll-up kept. */
+.bar { transition: transform .25s ease, opacity .25s ease; }
+body.barhide .bar { transform: translateY(-130%); opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
 </style>
 </head>
 <body>
+
 
 <header>
   <svg viewBox="0 0 200 120"><g fill="none" stroke="#fff" stroke-width="2"><path d="M0 20q25-15 50 0t50 0 50 0 50 0"/><path d="M0 45q25-15 50 0t50 0 50 0 50 0"/><circle cx="30" cy="75" r="9"/><circle cx="70" cy="85" r="9"/><circle cx="110" cy="75" r="9"/><circle cx="150" cy="85" r="9"/><path d="M0 105q25-12 50 0t50 0 50 0 50 0"/></g></svg>
@@ -1871,6 +1949,7 @@ footer {
 
 <div class="wrap">
   <nav id="nav" tabindex="0" aria-label="Chapters navigation"></nav>
+  <div id="navscrim" onclick="nav.classList.remove('open')" aria-hidden="true"></div>
   <main>
     <a class="tg" href="https://t.me/kafifthnotes" target="_blank" rel="noopener noreferrer">
       <div class="tg-left">
@@ -1889,8 +1968,8 @@ footer {
     <!-- 2. STUDY NOTES VIEW -->
     <div id="notes" style="display:none">
       <div class="bar">
-        <button id="nhm">⌂ Home</button>
-        <button id="nmb" onclick="nav.classList.toggle('open')">☰ Chapters</button>
+        <button id="nhm"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg> Home</button>
+        <button id="nmb" onclick="nav.classList.toggle('open')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg> Chapters</button>
         <input type="search" id="ns" placeholder="Search high-yield dermatology notes…" autocomplete="off">
         <button id="nx">Expand all</button>
         <button id="nc">Collapse all</button>
@@ -1898,7 +1977,7 @@ footer {
           <button id="nw">✗ Wrong questions notes</button>
           <i class="hi" data-h="wrongnotes" tabindex="0" role="button" aria-label="Help: Wrong questions notes">i</i>
         </span>
-        <button id="ng" class="pri">▶ Practice questions</button>
+        <button id="ng" class="pri"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg> Practice questions</button>
       </div>
       <div id="nbody"></div>
     </div>
@@ -1906,10 +1985,10 @@ footer {
     <!-- 3. QUESTION SOLVING VIEW -->
     <div id="view" style="display:none">
       <div class="bar">
-        <button id="hm">⌂ Home</button>
-        <button id="rb" class="pri">▶ Resume</button>
-        <button id="nt" style="display:none">📘 Notes</button>
-        <button id="mb" onclick="nav.classList.toggle('open')">☰ Chapters</button>
+        <button id="hm"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg> Home</button>
+        <button id="rb" class="pri"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg> Resume</button>
+        <button id="nt" style="display:none"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Notes</button>
+        <button id="mb" onclick="nav.classList.toggle('open')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg> Chapters</button>
         <input type="search" id="s" placeholder="Search questions, options, answers…" autocomplete="off">
         <span class="hb">
           <button id="ex" title="Select answers first, then grade them together">Exam Mode: OFF</button>
@@ -1919,13 +1998,13 @@ footer {
           <button id="wr" title="Show only questions answered incorrectly, with their answers shown">Wrong Only</button>
           <i class="hi" data-h="wrong" tabindex="0" role="button" aria-label="Help: Wrong Only">i</i>
         </span>
-        <button id="sv" title="Show questions you bookmarked">★ Saved (0)</button>
-        <button id="helpBtn" title="Open the feature guide">❔ Guide</button>
+        <button id="sv" title="Show questions you bookmarked"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg> Saved (0)</button>
+        <button id="helpBtn" title="Open the feature guide"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 1 1 3.6 2.4c-.9.4-1.1 1-1.1 1.9"/><path d="M12 17h.01"/></svg> Guide</button>
 
         <!-- Multi-Select Study Options Dropdown Menu -->
         <div class="opt-wrap" id="optWrap">
           <button id="optMenuBtn" type="button" aria-expanded="false" title="Open Study Options menu (toggle multiple modes)">
-            ⚙️ Options <span class="opt-badge" id="optCountBadge">0</span> ▾
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg> Options <span class="opt-badge" id="optCountBadge">0</span> ▾
           </button>
           <div class="opt-pop" id="optPopover" role="menu" aria-label="Study Options">
             <div class="opt-pop-hd">
@@ -1942,17 +2021,17 @@ footer {
             </div>
             <div class="opt-sep"></div>
             <div class="opt-row">
-              <button id="sh" title="Shuffle unanswered questions in the current collection">🔀 Shuffle: OFF</button>
-              <button id="sh2" title="Generate a new random order" style="display:none;padding:7px 9px">↻</button>
+              <button id="sh" title="Shuffle unanswered questions in the current collection"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Shuffle: OFF</button>
+              <button id="sh2" title="Generate a new random order" style="display:none;padding:7px 9px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
               <i class="hi" data-h="shuffle" tabindex="0" role="button" aria-label="Help: Shuffle">i</i>
             </div>
             <div class="opt-row">
-              <button id="shc" title="Mix unanswered questions from selected chapters">⚙ Shuffle chapters</button>
+              <button id="shc" title="Mix unanswered questions from selected chapters"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg> Shuffle chapters</button>
               <i class="hi" data-h="shufchap" tabindex="0" role="button" aria-label="Help: Shuffle chapters">i</i>
             </div>
             <div class="opt-sep"></div>
             <div class="opt-row danger-row">
-              <button id="rs" title="Clear answer progress and pending exam selections; saved questions stay">🗑 Reset Progress</button>
+              <button id="rs" title="Clear answer progress and pending exam selections; saved questions stay"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg> Reset Progress</button>
             </div>
           </div>
         </div>
@@ -1962,22 +2041,28 @@ footer {
       <div class="sp" id="sp"></div>
       <div class="prog"><i id="pb"></i></div>
       <div class="stat" id="st"></div>
-      <p id="strikeTip" style="font-size:.78rem;color:var(--mut);margin:0 0 12px;padding:8px 12px;background:var(--soft-ui);border:1px solid var(--bd);border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>💡 Tip: right-click an option — or long-press it on your phone — to cross it out. Right-click / long-press it again to undo.</span><button type="button" onclick="document.getElementById('strikeTip').remove()" aria-label="Dismiss tip" style="border:0;background:none;color:var(--mut);cursor:pointer;font-size:.9rem;padding:2px 6px">✕</button></p>
+      <p id="strikeTip" style="font-size:.78rem;color:var(--mut);margin:0 0 12px;padding:8px 12px;background:var(--soft-ui);border:1px solid var(--bd);border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg> Tip: right-click an option — or long-press it on your phone — to cross it out. Right-click / long-press it again to undo.</span><button type="button" onclick="document.getElementById('strikeTip').remove()" aria-label="Dismiss tip" style="border:0;background:none;color:var(--mut);cursor:pointer;font-size:.9rem;padding:2px 6px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></p>
       <div id="list"></div>
       <div id="xb">
         <span id="xc"></span>
         <span id="tmwrap">
           <input id="tmin" type="number" min="1" max="300" value="60" inputmode="numeric" aria-label="Timer minutes">
           <span id="tminlab" style="font-size:.85rem">min</span>
-          <button id="tgo" class="tmb" title="Start a countdown; grading happens automatically when time runs out">⏱ Start timer</button>
+          <button id="tgo" class="tmb" title="Start a countdown; grading happens automatically when time runs out"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Start timer</button>
           <b id="tcd" style="display:none"></b>
-          <button id="tstop" class="tmb" style="display:none" title="Stop the timer without grading">⏹ Stop</button>
+          <button id="tstop" class="tmb" style="display:none" title="Stop the timer without grading"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="2"/></svg> Stop</button>
           <i class="hi" data-h="timer" tabindex="0" role="button" aria-label="Help: Timer">i</i>
         </span>
-        <button id="xg" class="pri">✔ Grade now</button>
+        <button id="xg" class="pri"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> Grade now</button>
       </div>
     </div>
-  </main>
+  <nav id="bbar" aria-label="Quick actions">
+  <button id="bb-hm" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></button>
+  <button id="bb-mb" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span>Chapters</span></button>
+  <button id="bb-rb" type="button"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg><span>Resume</span></button>
+  <button id="bb-sv" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg><span>Saved</span></button>
+</nav>
+</main>
 </div>
 
 <footer>
@@ -1995,7 +2080,7 @@ footer {
   </div>
 </div>
 <div class="zm" id="zm">
-  <button id="zc">✕ Close</button>
+  <button id="zc"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg> Close</button>
   <img id="zi" alt="Question image (enlarged)">
 </div>
 <input type="file" id="rfile" accept="application/json,.json" hidden>
@@ -2011,6 +2096,18 @@ const DB = {"ch":["Introduction To Dermatology","Bacterial Infections","Mycobact
    CORE APPLICATION ENGINE (100% COMPATIBLE WITH v3.4.6 + ENHANCED UX)
    ========================================================================== */
 const SK = 'derma5';
+/* MOCKUP v1: one SVG icon set (24px grid, currentColor) for the JS label setters. */
+const IC = {
+  shuffle: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
+  star: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg>',
+  clock: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  copy: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  check: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>',
+  sun: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+  trash: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>'
+};
+
 const $ = i => document.getElementById(i);
 const DHK = [
   "سُبْحَانَ اللهِ وَبِحَمْدِهِ",
@@ -2155,13 +2252,13 @@ function setShuffle(v) {
 }
 
 function shUI() {
-  $('sh').textContent = '🔀 Shuffle: ' + (SH ? 'ON' : 'OFF');
+  $('sh').innerHTML = IC.shuffle + ' Shuffle: ' + (SH ? 'ON' : 'OFF');
   $('sh').title = CATBYKEY[cur] ? 'Shuffles unanswered questions within this category' : (cur === 'all' ? 'Shuffles the canonical main bank only; categories are not added again' : 'Shuffles unanswered questions within this chapter');
   $('sh').classList.toggle('pri', SH);
   $('sh2').style.display = SH ? '' : 'none';
   $('shc').classList.toggle('pri', SH && SC.length > 0);
   const h = $('hsh');
-  if (h) h.textContent = '🔀 Shuffle: ' + (SH ? 'ON' : 'OFF');
+  if (h) h.innerHTML = IC.shuffle + ' Shuffle: ' + (SH ? 'ON' : 'OFF');
 }
 
 const A = id => P[id] || PX[id];
@@ -2219,7 +2316,7 @@ function copyQuestion(q) {
   copyText(t);
 }
 function copyText(t) {
-  const ok = () => toast('📋 Question copied');
+  const ok = () => toast('Question copied');
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(t).then(ok, () => legacyCopy(t, ok));
   } else legacyCopy(t, ok);
@@ -2275,7 +2372,7 @@ const effTheme = () => TH || (window.matchMedia && matchMedia('(prefers-color-sc
 function applyTheme() {
   if (TH) document.documentElement.setAttribute('data-theme', TH);
   else document.documentElement.removeAttribute('data-theme');
-  $('th').textContent = effTheme() == 'dark' ? '☀ Light' : '🌙 Dark';
+  $('th').innerHTML = effTheme() == 'dark' ? IC.sun + ' Light' : IC.moon + ' Dark';
 }
 $('th').onclick = () => {
   TH = effTheme() == 'dark' ? 'light' : 'dark';
@@ -2329,8 +2426,8 @@ function updRB() { $('rb').style.display = ''; return true; }
 
 function navb() {
   let h = `<div class="nav-sec-label">Overview</div>`;
-  h += `<a data-c="home" class="${cur === null ? 'on' : ''}">⌂ Home Dashboard</a>`;
-  if (NT) h += `<a data-c="__notes" class="${cur == '__notes' ? 'on' : ''}">📘 High-Yield Notes <span>${nCount().f}</span></a>`;
+  h += `<a data-c="home" class="${cur === null ? 'on' : ''}"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg> Home Dashboard</a>`;
+  if (NT) h += `<a data-c="__notes" class="${cur == '__notes' ? 'on' : ''}"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> High-Yield Notes <span>${nCount().f}</span></a>`;
   h += `<a data-c="all" class="${cur == 'all' && !wrongOnly && !savedOnly ? 'on' : ''}">All Chapters <span>${tr('all')}</span></a>`;
 
   if (CATS.length) {
@@ -2343,7 +2440,7 @@ function navb() {
 
   h += `<div class="nav-sec-label">Review Filters</div>`;
   h += `<a data-c="__wrong" class="${cur == 'all' && wrongOnly && !savedOnly ? 'on' : ''}">✗ Wrong Answers <span>${sums().bad}</span></a>`;
-  h += `<a data-c="__saved" class="${cur == 'all' && savedOnly && !wrongOnly ? 'on' : ''}">★ Saved Bookmarks <span>${BM.length}</span></a>`;
+  h += `<a data-c="__saved" class="${cur == 'all' && savedOnly && !wrongOnly ? 'on' : ''}"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg> Saved Bookmarks <span>${BM.length}</span></a>`;
 
   h += `<div class="nav-sec-label">Chapters (${DB.ch.length})</div>`;
   DB.ch.forEach((c, i) => {
@@ -2373,17 +2470,17 @@ function home() {
   hideTip();
   const T = nextTarget();
   let h = '';
-  if (T.q) h += `<button class="resume" id="rs2">${T.start ? '▶ Start from the first question' : '▶ Resume where I left off'}<small>${DB.ch.indexOf(T.q.ch) + 1}. ${T.q.ch} · Question ${T.q.n}</small></button>`;
-  else if (T.done) h += `<button class="resume" id="rs2">🎉 All questions answered<small>You have completed every question</small><small dir="rtl" lang="ar">${DHKDUA}</small></button>`;
+  if (T.q) h += `<button class="resume" id="rs2">${T.start ? '<svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg> Start from the first question' : '<svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg> Resume where I left off'}<small>${DB.ch.indexOf(T.q.ch) + 1}. ${T.q.ch} · Question ${T.q.n}</small></button>`;
+  else if (T.done) h += `<button class="resume" id="rs2"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> All questions answered<small>You have completed every question</small><small dir="rtl" lang="ar">${DHKDUA}</small></button>`;
 
   if (QZ.length) {
     const qd = QZ.filter(id => P[id]).length;
-    h += `<button class="nbtn" id="qzr">${qd < QZ.length ? (QD ? '🎯 Resume weakest drill' : '🧩 Resume custom quiz') : (QD ? '🎯 Review weakest drill' : '🧩 Review custom quiz')}<small>${qd}/${QZ.length} answered · ${QD ? 'most-missed first' : 'built from your selected chapters'}</small></button>`;
+    h += `<button class="nbtn" id="qzr">${qd < QZ.length ? (QD ? '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg> Resume weakest drill' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> Resume custom quiz') : (QD ? '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg> Review weakest drill' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> Review custom quiz')}<small>${qd}/${QZ.length} answered · ${QD ? 'most-missed first' : 'built from your selected chapters'}</small></button>`;
   }
 
   if (NT) {
     const N = nCount();
-    h += `<button class="nbtn" id="hn">📘 Read the Notes first<small>${N.f} high-yield facts · ${N.s} system${N.s > 1 ? 's' : ''} · ${N.t} topics — then test yourself with the questions</small><small>✗ Inside: “Wrong questions notes” — only the facts linked to your wrong answers.</small></button>`;
+    h += `<button class="nbtn" id="hn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Read the Notes first<small>${N.f} high-yield facts · ${N.s} system${N.s > 1 ? 's' : ''} · ${N.t} topics — then test yourself with the questions</small><small>✗ Inside: “Wrong questions notes” — only the facts linked to your wrong answers.</small></button>`;
   }
 
   const S = sums();
@@ -2399,14 +2496,14 @@ function home() {
 
   h += `<div class="qa">
     <span class="hb"><button id="hw">✗ Retake wrong (${S.bad})</button>${HI('retake', 'Retake wrong')}</span>
-    <button id="hs">★ Saved (${BM.length})</button>
-    <span class="hb"><button id="hx">📝 Exam Mode: ${EX ? 'ON' : 'OFF'}</button>${HI('exam', 'Exam Mode')}</span>
-    <span class="hb"><button id="hsh">🔀 Shuffle: ${SH ? 'ON' : 'OFF'}</button>${HI('shuffle', 'Shuffle')}</span>
-    <span class="hb"><button id="hshc">⚙ Shuffle chapters</button>${HI('shufchap', 'Shuffle chapters')}</span>
-    <span class="hb"><button id="hqz">🧩 Build a custom quiz</button>${HI('quiz', 'Custom quiz')}</span>
+    <button id="hs"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg> Saved (${BM.length})</button>
+    <span class="hb"><button id="hx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Exam Mode: ${EX ? 'ON' : 'OFF'}</button>${HI('exam', 'Exam Mode')}</span>
+    <span class="hb"><button id="hsh"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Shuffle: ${SH ? 'ON' : 'OFF'}</button>${HI('shuffle', 'Shuffle')}</span>
+    <span class="hb"><button id="hshc"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg> Shuffle chapters</button>${HI('shufchap', 'Shuffle chapters')}</span>
+    <span class="hb"><button id="hqz"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> Build a custom quiz</button>${HI('quiz', 'Custom quiz')}</span>
     <button id="hbk" title="Download your progress as a file">⇩ Backup progress</button>
     <button id="hrt" title="Restore progress from a backup file">⇧ Restore progress</button>
-    <button id="hguide">❔ Guide</button>
+    <button id="hguide"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 1 1 3.6 2.4c-.9.4-1.1 1-1.1 1.9"/><path d="M12 17h.01"/></svg> Guide</button>
   </div>`;
 
   const W = weakList();
@@ -2414,22 +2511,25 @@ if (W.length) {
   const m = drillSize < 0 ? W.length : Math.min(drillSize, W.length);
   const maxN = effWC(W[0].id);
   const pill = (label, val, on) => `<button class="dpill${on ? ' on' : ''}" data-dsize="${val}">${label}</button>`;
-  h += `<section class="drill" id="drillSec"><div class="drill-hd"><h2>🎯 Weakest drill</h2><span>${W.length} wrong · most-missed first</span></div><p class="drill-sub">Re-answer the questions you keep missing, fresh. Progress changes only when you re-answer.</p><div class="drill-pills"><span class="lbl">Drill size:</span>${pill('Top 10', '10', drillSize === 10)}${pill('Top 20', '20', drillSize === 20)}${pill('All wrong (' + W.length + ')', 'all', drillSize < 0)}</div><button class="drill-start" id="hdrill">▶ Start drill — ${m} question${m === 1 ? '' : 's'}</button><button class="drill-toggle" id="drillToggle">${drillListOpen ? '▴ Hide the list' : `▾ Show all wrong questions (${W.length})`}</button><div class="drill-list" id="drillList"${drillListOpen ? '' : ' style="display:none"'}>${W.map((q, i) => { const n = effWC(q.id), t = lastWC(q.id); return `<div class="drill-row" data-q="${q.id}"><span class="drill-rank">${i + 1}</span><div class="drill-body"><div class="drill-title">Q${q.n} · ${esc(q.ch)}</div>${t ? `<div class="drill-meta">Last missed ${relMissed(t)}</div>` : ''}<div class="drill-snip">${esc(q.q.slice(0, 90))}${q.q.length > 90 ? '…' : ''}</div><div class="drill-bar"><i style="width:${Math.round(100 * n / maxN)}%"></i></div></div><div class="drill-count"><b>×${n}</b><span>wrong</span></div></div>`; }).join('')}</div></section>`;
+  h += `<section class="drill" id="drillSec"><div class="drill-hd"><h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg> Weakest drill</h2><span>${W.length} wrong · most-missed first</span></div><p class="drill-sub">Re-answer the questions you keep missing, fresh. Progress changes only when you re-answer.</p><div class="drill-pills"><span class="lbl">Drill size:</span>${pill('Top 10', '10', drillSize === 10)}${pill('Top 20', '20', drillSize === 20)}${pill('All wrong (' + W.length + ')', 'all', drillSize < 0)}</div><button class="drill-start" id="hdrill"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg> Start drill — ${m} question${m === 1 ? '' : 's'}</button><button class="drill-toggle" id="drillToggle">${drillListOpen ? '▴ Hide the list' : `▾ Show all wrong questions (${W.length})`}</button><div class="drill-list" id="drillList"${drillListOpen ? '' : ' style="display:none"'}>${W.map((q, i) => { const n = effWC(q.id), t = lastWC(q.id); return `<div class="drill-row" data-q="${q.id}"><span class="drill-rank">${i + 1}</span><div class="drill-body"><div class="drill-title">Q${q.n} · ${esc(q.ch)}</div>${t ? `<div class="drill-meta">Last missed ${relMissed(t)}</div>` : ''}<div class="drill-snip">${esc(q.q.slice(0, 90))}${q.q.length > 90 ? '…' : ''}</div><div class="drill-bar"><i style="width:${Math.round(100 * n / maxN)}%"></i></div></div><div class="drill-count"><b>×${n}</b><span>wrong</span></div></div>`; }).join('')}</div></section>`;
 }
-h += `<div class="cards"><div class="card" data-c="all"><div style="flex:1;min-width:0">All questions ${accHTML('all')}<div class="prog cp"><i style="width:${cp('all')}%"></i></div></div><span>${tr('all')}</span></div>`;
+h += `<div class="cards"><div class="card ${bandOf('all')}" data-c="all"><div style="flex:1;min-width:0">All questions ${accHTML('all')}<div class="prog cp"><i style="width:${cp('all')}%"></i></div></div><span>${tr('all')}</span></div>`;
   CATS.forEach(c => {
     const k = CATKEY(c), col = CATCOL(c);
-    h += `<div class="card catcard" data-c="${ea(k)}" style="--cat-color:${col}"><div style="flex:1;min-width:0">${esc(c.name)} ${accHTML(k)}${c.subtitle ? `<small class="csub">${esc(c.subtitle)}</small>` : ''}<div class="prog cp"><i style="width:${cp(k)}%"></i></div></div><span>${tr(k)}</span>${HI('cat:' + c.id, c.name)}</div>`;
+    h += `<div class="card catcard ${bandOf(k)}" data-c="${ea(k)}" style="--cat-color:${col}"><div style="flex:1;min-width:0">${esc(c.name)} ${accHTML(k)}${c.subtitle ? `<small class="csub">${esc(c.subtitle)}</small>` : ''}<div class="prog cp"><i style="width:${cp(k)}%"></i></div></div><span>${tr(k)}</span>${HI('cat:' + c.id, c.name)}</div>`;
   });
   DB.ch.forEach((c, i) => {
-    h += `<div class="card" data-c="${ea(c)}"><div style="flex:1;min-width:0">${i + 1}. ${esc(c)} ${accHTML(c)}<div class="prog cp"><i style="width:${cp(c)}%"></i></div></div><span>${tr(c)}</span></div>`;
+    h += `<div class="card ${bandOf(c)}" data-c="${ea(c)}"><div style="flex:1;min-width:0">${i + 1}. ${esc(c)} ${accHTML(c)}<div class="prog cp"><i style="width:${cp(c)}%"></i></div></div><span>${tr(c)}</span></div>`;
   });
   $('home').innerHTML = `<div class="hsx"><input type="search" id="hs2" placeholder="Search all questions, options, answers…" autocomplete="off"></div><div class="sp" id="sp2"></div><h2>Choose a collection</h2>` + h + '</div>';
   stat();
 }
 
+let __navInit = false;
 function openView(c) {
   cur = c;
+  document.body.classList.toggle('inq', c !== null && c !== '__notes');
+  if (!window.__restoring) { try { if (!__navInit) { history.replaceState({v: c}, ''); __navInit = true; } else { history.pushState({v: c}, ''); } } catch (e) {} }
   const N = c === '__notes';
   $('home').style.display = c === null ? '' : 'none';
   $('notes').style.display = N ? '' : 'none';
@@ -2439,6 +2539,40 @@ function openView(c) {
   else if (N) { renderNotes(); }
   else { render(); }
 }
+
+/* MOCKUP v1: Android back button restores the previous view instead of leaving the bank. */
+window.addEventListener('popstate', e => {
+  const v = e.state && e.state.v !== undefined ? e.state.v : null;
+  window.__restoring = true;
+  openView(v);
+  window.__restoring = false;
+  scrollTo(0, 0);
+});
+
+/* MOCKUP v1: bottom action bar wires to the same handlers as the top bar. */
+$('bb-hm').onclick = () => $('hm').click();
+$('bb-mb').onclick = () => $('mb').click();
+$('bb-rb').onclick = () => $('rb').click();
+$('bb-sv').onclick = () => $('sv').click();
+
+/* MOCKUP v1: empty-state CTA — clear all filters and show everything. */
+function clearFilters() { wrongOnly = false; savedOnly = false; const s = $('s'); if (s) s.value = ''; render(); }
+
+/* MOCKUP v1: mastery band for chapter cards (same thresholds as accHTML). */
+const bandOf = c => { const a = accOf(c); return a == null ? '' : a >= 80 ? 'm-high' : a >= 50 ? 'm-mid' : 'm-low'; };
+
+/* MOCKUP v2: hide the toolbar while scrolling down through questions; show it
+   on scroll up. transform/opacity only, so the v2.4 no-rerender scroll fix is
+   untouched. Never hides while the Options popover is open. */
+let __lastY = scrollY, __barHidden = false;
+addEventListener('scroll', () => {
+  const y = scrollY;
+  const pop = $('optPopover');
+  const popOpen = pop && pop.classList.contains('open');
+  if (y > __lastY && y > 600 && !popOpen && !__barHidden) { __barHidden = true; document.body.classList.add('barhide'); }
+  else if ((y < __lastY - 40 || y <= 8) && __barHidden) { __barHidden = false; document.body.classList.remove('barhide'); }
+  __lastY = y;
+}, { passive: true });
 
 function cardHTML(q) {
   let h = '';
@@ -2451,8 +2585,8 @@ function cardHTML(q) {
           showThisExpl = !!(hasExpl && (Object.prototype.hasOwnProperty.call(EXPL, q.id) ? EXPL[q.id] : (rev && showExpl)));
 
     h += `<div class="q" id="q-${q.id}" data-id="${q.id}">
-      <button class="bm ${BM.includes(q.id) ? 'on' : ''}" title="Save / flag this question" aria-label="Save question">${BM.includes(q.id) ? '★' : '☆'}</button>
-      <button class="copyq" title="Copy this question with its options" aria-label="Copy question">📋</button>
+      <button class="bm ${BM.includes(q.id) ? 'on' : ''}" title="Save / flag this question" aria-label="Save question">${BM.includes(q.id) ? '<svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg>' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg>'}</button>
+      <button class="copyq" title="Copy this question with its options" aria-label="Copy question"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
       ${(p || rev) && hasExpl ? `<button class="expbtn ${showThisExpl ? 'on' : ''}" data-exp="${q.id}" title="Show or hide this question's explanation" aria-label="Toggle explanation">?</button>` : ''}
       ${((CATBYKEY[cur] && (!SH || p)) || (cur == 'all' && SH && p)) ? `<div class="chtag">${DB.ch.indexOf(q.ch) + 1}. ${esc(q.ch)}</div>` : ''}
       <h3 dir="auto"><b>${q.n}.</b> ${esc(q.q)}${q.dup ? ` <span class="dupb">مكرر${q.dn ? ' · Ch' + q.dc + ' Q' + q.dn : ''}</span>` : ''}</h3>
@@ -2480,8 +2614,8 @@ function cardHTML(q) {
 
     (q.f || []).forEach(f => h += `<div class="flag" dir="auto">⚑ ${esc(f)}</div>`);
     if (q.pg) h += `<div class="src">Department Book · p. ${esc(q.pg)}</div>`;
-    if (rev && NT && QN[q.id]) h += `<div class="rn"><a data-rn="1">📘 Jump to related high-yield note →</a></div>`;
-    if (p && q.o.length) h += `<div><button class="rt">↻ Retry this question</button></div>`;
+    if (rev && NT && QN[q.id]) h += `<div class="rn"><a data-rn="1"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Jump to related high-yield note →</a></div>`;
+    if (p && q.o.length) h += `<div><button class="rt"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg> Retry this question</button></div>`;
     h += '</div>';
   return h;
 }
@@ -2512,7 +2646,7 @@ function refreshCard(id) {
     if (shouldBanner && !ban) {
       const DHKCI = CATBYKEY[cur] ? DB.ch.length + CATS.indexOf(CATBYKEY[cur]) : DB.ch.indexOf(cur);
       const tb = document.createElement('div');
-      tb.innerHTML = '<div class="dhkdone">🎉 ' + (CATBYKEY[cur] ? esc(CATBYKEY[cur].name) + ' complete' : 'Chapter complete') + '<small dir="rtl" lang="ar">' + DHK[DHKCI % DHK.length] + '</small></div>';
+      tb.innerHTML = '<div class="dhkdone"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> ' + (CATBYKEY[cur] ? esc(CATBYKEY[cur].name) + ' complete' : 'Chapter complete') + '<small dir="rtl" lang="ar">' + DHK[DHKCI % DHK.length] + '</small></div>';
       const nb = tb.firstChild;
       const firstQ = document.querySelector('#list .q');
       if (firstQ) firstQ.parentNode.insertBefore(nb, firstQ);
@@ -2558,7 +2692,7 @@ function refreshCard(id) {
         const qd = QZ.filter(x => P[x]).length,
               qo = QZ.filter(x => P[x] && P[x].r === 1).length,
               qb = QZ.filter(x => P[x] && P[x].r === 0).length;
-        zb.innerHTML = '🧩 ' + (QD ? '🎯 <b>Weakest drill</b>' : '🧩 <b>Custom quiz</b>') + ' · ' + QZ.length + ' questions · ' + qd + ' answered' + (qd === QZ.length && QZ.length ? ' · 🎉 Complete: ✓ ' + qo + ' correct · ✗ ' + qb + ' wrong' : '') + (DHKQ ? ' · <span dir="rtl" lang="ar">' + DHKQ + '</span>' : '');
+        zb.innerHTML = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> ' + (QD ? '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg> <b>Weakest drill</b>' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> <b>Custom quiz</b>') + ' · ' + QZ.length + ' questions · ' + qd + ' answered' + (qd === QZ.length && QZ.length ? ' · <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> Complete: ✓ ' + qo + ' correct · ✗ ' + qb + ' wrong' : '') + (DHKQ ? ' · <span dir="rtl" lang="ar">' + DHKQ + '</span>' : '');
       }
     }
     stat();
@@ -2580,10 +2714,10 @@ function render() {
     const qd = QZ.filter(id => P[id]).length,
           qo = QZ.filter(id => P[id] && P[id].r === 1).length,
           qb = QZ.filter(id => P[id] && P[id].r === 0).length;
-    h += `<div class="qzban"><span>🧩 ${QD ? '🎯 <b>Weakest drill</b>' : '🧩 <b>Custom quiz</b>'} · ${QZ.length} questions · ${qd} answered${qd === QZ.length && QZ.length ? ' · 🎉 Complete: ✓ ' + qo + ' correct · ✗ ' + qb + ' wrong' : ''}${DHKQ ? ' · <span dir="rtl" lang="ar">' + DHKQ + '</span>' : ''}</span><button id="qzend">${QD ? '✕ End drill' : '✕ End quiz'}</button></div>`;
+    h += `<div class="qzban"><span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> ${QD ? '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg> <b>Weakest drill</b>' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> <b>Custom quiz</b>'} · ${QZ.length} questions · ${qd} answered${qd === QZ.length && QZ.length ? ' · <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> Complete: ✓ ' + qo + ' correct · ✗ ' + qb + ' wrong' : ''}${DHKQ ? ' · <span dir="rtl" lang="ar">' + DHKQ + '</span>' : ''}</span><button id="qzend">${QD ? '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg> End drill' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg> End quiz'}</button></div>`;
   }
   if (cur == 'all' && SH && !wrongOnly && !savedOnly) {
-    h += `<div class="shn">🔀 Shuffling <b>${L.filter(q => !P[q.id]).length}</b> unanswered question${L.filter(q => !P[q.id]).length == 1 ? '' : 's'} from: ${SC.length ? esc(SC.map(c => DB.ch.indexOf(c) + 1 + '. ' + c).join(' · ')) : 'all chapters'}<button id="shc2">Change chapters</button></div>`;
+    h += `<div class="shn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Shuffling <b>${L.filter(q => !P[q.id]).length}</b> unanswered question${L.filter(q => !P[q.id]).length == 1 ? '' : 's'} from: ${SC.length ? esc(SC.map(c => DB.ch.indexOf(c) + 1 + '. ' + c).join(' · ')) : 'all chapters'}<button id="shc2">Change chapters</button></div>`;
   }
   if (cur != 'all') {
     const C = scopeFor(cur);
@@ -2596,7 +2730,7 @@ function render() {
     const DHKSC = scopeFor(cur);
     if (DHKSC.length && DHKSC.every(q => P[q.id])) {
       const DHKCI = CATBYKEY[cur] ? DB.ch.length + CATS.indexOf(CATBYKEY[cur]) : DB.ch.indexOf(cur);
-      h += '<div class="dhkdone">🎉 ' + (CATBYKEY[cur] ? esc(CATBYKEY[cur].name) + ' complete' : 'Chapter complete') + '<small dir="rtl" lang="ar">' + DHK[DHKCI % DHK.length] + '</small></div>';
+      h += '<div class="dhkdone"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> ' + (CATBYKEY[cur] ? esc(CATBYKEY[cur].name) + ' complete' : 'Chapter complete') + '<small dir="rtl" lang="ar">' + DHK[DHKCI % DHK.length] + '</small></div>';
     }
   }
 
@@ -2612,8 +2746,8 @@ function render() {
     h += cardHTML(q);
   });
 
-  const none = savedOnly && !BM.length ? 'No saved questions yet — tap ☆ on any question to save it here.' : wrongOnly && !DB.q.some(q => P[q.id] && P[q.id].r === 0) ? 'No wrong answers right now 🎉' : (SH && !wrongOnly && !savedOnly ? 'Nothing left to shuffle here: every question is answered 🎉 (press Change chapters, or turn Shuffle off).' : 'No questions match.');
-  $('list').innerHTML = L.length ? h : h + `<p>${none}</p>`;
+  const none = savedOnly && !BM.length ? 'No saved questions yet — tap <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg> on any question to save it here.' : wrongOnly && !DB.q.some(q => P[q.id] && P[q.id].r === 0) ? 'No wrong answers right now <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>' : (SH && !wrongOnly && !savedOnly ? 'Nothing left to shuffle here: every question is answered <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> (press Change chapters, or turn Shuffle off).' : 'No questions match.');
+  $('list').innerHTML = L.length ? h : h + `<p>${none}</p><button class="pri" style="margin-top:10px" onclick="clearFilters()">Show all questions</button>`;
   stat();
 }
 
@@ -2736,9 +2870,10 @@ function exUI() {
   $('ex').textContent = 'Exam Mode: ' + (EX ? 'ON' : 'OFF');
   $('ex').classList.toggle('pri', EX);
   $('xb').classList.toggle('on', EX);
+  document.body.classList.toggle('examing', EX);
   $('xc').textContent = pendScope().length + ' selected · not graded yet';
   const h = $('hx');
-  if (h) h.textContent = '📝 Exam Mode: ' + (EX ? 'ON' : 'OFF');
+  if (h) h.textContent = 'Exam Mode: ' + (EX ? 'ON' : 'OFF');
 }
 
 let TM = null, TMTitle = null;
@@ -2750,12 +2885,12 @@ const tmFmt = ms => {
 function tmTick() {
   if (!TM) return;
   const left = TM.end - Date.now(), el = $('tcd');
-  el.textContent = '⏱ ' + tmFmt(left);
+  el.textContent = tmFmt(left);
   el.classList.toggle('low', left <= 5 * 60000);
-  document.title = '⏱ ' + tmFmt(left) + ' · ' + TMTitle;
+  document.title = tmFmt(left) + ' · ' + TMTitle;
   if (left <= 0) {
     stopTimer();
-    toast("⏱ Time's up — grading your selected answers.");
+    toast("Time's up — grading your selected answers.");
     gradeNow();
   }
 }
@@ -2763,7 +2898,7 @@ function startTimer() {
   const m = Math.min(300, Math.max(1, parseInt($('tmin').value, 10) || 60));
   $('tmin').value = m;
   stopTimer();
-  TMTitle = document.title.replace(/^⏱ \d+:\d+ · /, '');
+  TMTitle = document.title.replace(/^\d+:\d+ · /, '');
   TM = { end: Date.now() + m * 60000 };
   $('tgo').style.display = 'none';
   $('tmin').style.display = 'none';
@@ -2793,7 +2928,7 @@ $('tstop').onclick = () => { stopTimer(); toast('Timer stopped — your selected
 function expl(q) {
   if (!q.e || !q.e[0]) return '';
   const parts = String(q.e[0]).split(/\n+/).filter(Boolean).map(s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'));
-  return `<div class="explain" dir="auto"><b>💡 Clinical Explanation</b>${parts.map((x, idx) => `<p class="${idx > 0 && idx === parts.length - 1 ? 'takeaway-line' : ''}">${idx > 0 && idx === parts.length - 1 ? '🔑 ' + x : x}</p>`).join('')}</div>`;
+  return `<div class="explain" dir="auto"><b><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg> Clinical Explanation</b>${parts.map((x, idx) => `<p class="${idx > 0 && idx === parts.length - 1 ? 'takeaway-line' : ''}">${idx > 0 && idx === parts.length - 1 ? '🔑 ' + x : x}</p>`).join('')}</div>`;
 }
 
 function updateOptMenuUI() {
@@ -2810,9 +2945,9 @@ function updateOptMenuUI() {
   const pillsEl = $('activePills');
   if (pillsEl) {
     let p = '';
-    if (show) p += `<span class="apill" data-pill="tg" title="Click to turn off Show Answers">👁 Show Answers: ON <i>✕</i></span>`;
-    if (showExpl) p += `<span class="apill" data-pill="eg" title="Click to turn off Show Explanations">💡 Explanations: ON <i>✕</i></span>`;
-    if (SH) p += `<span class="apill" data-pill="sh" title="Click to turn off Shuffle">🔀 Shuffle: ON <i>✕</i></span>`;
+    if (show) p += `<span class="apill" data-pill="tg" title="Click to turn off Show Answers">👁 Show Answers: ON <i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></i></span>`;
+    if (showExpl) p += `<span class="apill" data-pill="eg" title="Click to turn off Show Explanations"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg> Explanations: ON <i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></i></span>`;
+    if (SH) p += `<span class="apill" data-pill="sh" title="Click to turn off Shuffle"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Shuffle: ON <i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></i></span>`;
     pillsEl.innerHTML = p;
   }
 }
@@ -2824,7 +2959,7 @@ function stat() {
   $('eg').classList.toggle('pri', showExpl);
   $('st').textContent = `Total ${S.n} · Solved ${S.d} · Unanswered ${S.n - S.d} · Correct ${S.ok} · Wrong ${S.bad} · ${S.pct}% complete` + (Object.keys(PX).length ? ` · Selected, not graded ${Object.keys(PX).length}` : '');
   $('pb').style.width = 100 * S.d / S.n + '%';
-  $('sv').textContent = '★ Saved (' + BM.length + ')';
+  $('sv').innerHTML = IC.star + ' Saved (' + BM.length + ')';
   syncBtns();
   exUI();
   shUI();
@@ -2845,7 +2980,7 @@ function resume() {
   const T = inQ ? catTarget(scopeFor('__quiz')) : (C0 ? catTarget(scopeFor(cur)) : nextTarget());
   if (T.none) return;
   if (T.done) {
-    toast('🎉 You have answered all ' + ((inQ || C0) ? scopeFor(cur).length : DB.q.length) + ' questions' + (C0 ? ' of this category' : inQ ? ' of this quiz' : '') + '. Nothing left to resume!');
+    toast('<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> You have answered all ' + ((inQ || C0) ? scopeFor(cur).length : DB.q.length) + ' questions' + (C0 ? ' of this category' : inQ ? ' of this quiz' : '') + '. Nothing left to resume!');
     return;
   }
   const q = T.q;
@@ -2938,8 +3073,8 @@ $('list').onclick = e => {
     copyQuestion(q);
     if (!b.classList.contains('done')) {
       b.classList.add('done');
-      b.textContent = '✓';
-      setTimeout(() => { b.classList.remove('done'); b.textContent = '📋'; }, 1200);
+      b.innerHTML = IC.check;
+      setTimeout(() => { b.classList.remove('done'); b.innerHTML = IC.copy; }, 1200);
     }
     return;
   }
@@ -3109,6 +3244,31 @@ document.addEventListener('keydown', e => {
       $('optPopover').classList.remove('open');
       $('optMenuBtn').setAttribute('aria-expanded', 'false');
     }
+    return;
+  }
+  /* MOCKUP v1: keyboard answering (A-E) + search-result navigation. */
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea') return;
+  if (/^[a-eA-E]$/.test(e.key)) {
+    const card = [...document.querySelectorAll('#list .q')].find(c => !c.querySelector('.opt.ok') && c.querySelector('.opt[data-o="' + e.key.toUpperCase() + '"]'));
+    if (card) { const o = card.querySelector('.opt[data-o="' + e.key.toUpperCase() + '"]'); if (o) { o.click(); e.preventDefault(); } }
+    return;
+  }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    const links = [...document.querySelectorAll('.sp a[data-id]')].filter(a => a.offsetParent);
+    if (links.length) {
+      e.preventDefault();
+      let i = links.findIndex(a => a.classList.contains('kb'));
+      links.forEach(a => a.classList.remove('kb'));
+      i = e.key === 'ArrowDown' ? (i + 1) % links.length : (i - 1 + links.length) % links.length;
+      links[i].classList.add('kb');
+      links[i].focus();
+    }
+    return;
+  }
+  if (e.key === 'Enter') {
+    const kb = document.querySelector('.sp a[data-id].kb');
+    if (kb) { kb.click(); e.preventDefault(); }
   }
 });
 
@@ -3185,14 +3345,14 @@ function qzSum() {
   if (el) el.textContent = qzPool().length + ' questions available in this selection.';
 }
 function openQuizPicker() {
-  let h = '<div class="shb"><h3>🧩 Build a custom quiz</h3><div class="stat">Pick chapters, how many questions, and which pool. Answering a quiz updates your normal progress.</div><div class="shl">';
+  let h = '<div class="shb"><h3><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> Build a custom quiz</h3><div class="stat">Pick chapters, how many questions, and which pool. Answering a quiz updates your normal progress.</div><div class="shl">';
   DB.ch.forEach((c, i) => {
     const L = DB.q.filter(q => q.ch == c),
           u = L.filter(q => !P[q.id]).length,
           w = L.filter(q => P[q.id] && P[q.id].r === 0).length;
     h += `<label><input type="checkbox" data-c="${ea(c)}" checked> ${i + 1}. ${esc(c)} <span>${L.length} · ${u} unanswered · ${w} wrong</span></label>`;
   });
-  h += `</div><div class="qzopt"><label for="qzn">Number of questions</label><input id="qzn" type="number" min="1" max="${DB.q.length}" value="${Math.min(20, DB.q.length)}"></div><div class="qzopt"><label>Include</label><div class="qzseg"><label><input type="radio" name="qzp" value="all" checked> All questions</label><label><input type="radio" name="qzp" value="unans"> Unanswered only</label><label><input type="radio" name="qzp" value="wrong"> Wrong only</label></div></div><div class="qzopt"><label style="display:flex;align-items:center;gap:8px;font-weight:400"><input id="qzsh" type="checkbox" checked style="width:18px;height:18px"> Shuffle the order</label></div><div class="qzsum" id="qzsum"></div><div class="qa"><button class="pri" id="qzgo">▶ Start quiz</button><button id="qzx">Cancel</button></div></div>`;
+  h += `</div><div class="qzopt"><label for="qzn">Number of questions</label><input id="qzn" type="number" min="1" max="${DB.q.length}" value="${Math.min(20, DB.q.length)}"></div><div class="qzopt"><label>Include</label><div class="qzseg"><label><input type="radio" name="qzp" value="all" checked> All questions</label><label><input type="radio" name="qzp" value="unans"> Unanswered only</label><label><input type="radio" name="qzp" value="wrong"> Wrong only</label></div></div><div class="qzopt"><label style="display:flex;align-items:center;gap:8px;font-weight:400"><input id="qzsh" type="checkbox" checked style="width:18px;height:18px"> Shuffle the order</label></div><div class="qzsum" id="qzsum"></div><div class="qa"><button class="pri" id="qzgo"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg> Start quiz</button><button id="qzx">Cancel</button></div></div>`;
   $('qzp').innerHTML = h;
   $('qzp').classList.add('on');
   qzSum();
@@ -3230,12 +3390,12 @@ $('qzp').onclick = e => {
 
 function openShPicker() {
   const sel = new Set(SC.length ? SC : DB.ch);
-  let h = '<div class="shb"><h3>🔀 Shuffle from which chapters?</h3><div class="stat">Pick one or more chapters. Only questions you have not answered yet are shuffled.</div><div class="qa"><button id="sha">Select all</button><button id="shn">Clear</button></div><div class="shl">';
+  let h = '<div class="shb"><h3><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Shuffle from which chapters?</h3><div class="stat">Pick one or more chapters. Only questions you have not answered yet are shuffled.</div><div class="qa"><button id="sha">Select all</button><button id="shn">Clear</button></div><div class="shl">';
   DB.ch.forEach((c, i) => {
     const L = DB.q.filter(q => q.ch == c), u = L.filter(q => !P[q.id]).length;
     h += `<label><input type="checkbox" data-c="${ea(c)}" ${sel.has(c) ? 'checked' : ''}> ${i + 1}. ${esc(c)} <span>${u} unanswered / ${L.length}</span></label>`;
   });
-  h += '</div><div class="qa"><button class="pri" id="shgo">🔀 Start shuffle</button><button id="shx">Cancel</button></div></div>';
+  h += '</div><div class="qa"><button class="pri" id="shgo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Start shuffle</button><button id="shx">Cancel</button></div></div>';
   $('shp').innerHTML = h;
   $('shp').classList.add('on');
 }
@@ -3275,14 +3435,14 @@ $('rs').onclick = () => {
     $('rs').style.color = 'var(--bad)';
     setTimeout(() => {
       resetPending = false;
-      $('rs').textContent = '🗑 Reset Progress';
+      $('rs').innerHTML = IC.trash + ' Reset Progress';
       $('rs').style.borderColor = '';
       $('rs').style.color = '';
     }, 3500);
     return;
   }
   resetPending = false;
-  $('rs').textContent = '🗑 Reset Progress';
+  $('rs').innerHTML = IC.trash + ' Reset Progress';
   $('rs').style.borderColor = '';
   $('rs').style.color = '';
   P = {}; PX = {}; WC = {};
@@ -3291,7 +3451,7 @@ $('rs').onclick = () => {
   stopTimer();
   if (SH) reshuffle();
   render();
-  toast('Progress cleared (your ★ saved bookmarks are preserved).');
+  toast('Progress cleared (your <svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.9 5.9 6.6 1-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-1z"/></svg> saved bookmarks are preserved).');
 };
 
 function backupProgress() {
@@ -3347,7 +3507,7 @@ function renderNotes() {
   if (nwb) nwb.classList.toggle('pri', NWN);
   if (!NT) { b.innerHTML = '<p>No notes in this site.</p>'; return; }
   const W = NQ.toLowerCase().trim().split(/\s+/).filter(Boolean), N = nCount();
-  let h = `<h2>📘 High-Yield Clinical Notes</h2><div class="stat">${N.f} facts · ${N.s} system${N.s > 1 ? 's' : ''} · ${N.t} topics. Read these first, then test yourself with the questions. Tap any question chip to jump straight to that MCQ.${NWN ? ' Showing only facts linked to questions you answered wrongly.' : ''}</div>`, shown = 0, chips = '', body = '';
+  let h = `<h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> High-Yield Clinical Notes</h2><div class="stat">${N.f} facts · ${N.s} system${N.s > 1 ? 's' : ''} · ${N.t} topics. Read these first, then test yourself with the questions. Tap any question chip to jump straight to that MCQ.${NWN ? ' Showing only facts linked to questions you answered wrongly.' : ''}</div>`, shown = 0, chips = '', body = '';
   NT.systems.forEach((s, si) => {
     let tb = '', tc = '', sc = 0;
     s.topics.forEach((p, pi) => {
@@ -3362,7 +3522,7 @@ function renderNotes() {
     chips += `<a class="nchip" data-sys="${si}">${esc(s.n)} <small>${sc}</small></a>`;
     body += `<details class="nsys" id="ns-${si}" data-si="${si}" ${(W.length || NOPEN.has(si)) ? 'open' : ''}><summary dir="auto">${esc(s.n)}<small>${sc} fact${sc > 1 ? 's' : ''}</small></summary>${s.topics.length > 1 ? `<div class="nchips">${tc}</div>` : ''}${tb}</details>`;
   });
-  h += (chips ? `<div class="nchips">${chips}</div>` : '') + (shown ? body : (NWN ? (DB.q.some(q => P[q.id] && P[q.id].r === 0) ? '<p>No notes are linked to your wrong answers.</p>' : '<p>No wrong answers yet 🎉 — facts linked to questions you answer wrongly will appear here.</p>') : '<p>No notes match your search.</p>'));
+  h += (chips ? `<div class="nchips">${chips}</div>` : '') + (shown ? body : (NWN ? (DB.q.some(q => P[q.id] && P[q.id].r === 0) ? '<p>No notes are linked to your wrong answers.</p>' : '<p>No wrong answers yet <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg> — facts linked to questions you answer wrongly will appear here.</p>') : '<p>No notes match your search.</p>'));
   b.innerHTML = h;
   NHL.forEach(k => { const el = $('nf-' + k); if (el) { el.classList.add('hl'); } });
 }
