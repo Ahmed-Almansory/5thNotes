@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chest Question Bank — Folio 196 · Chapters + Hawary Only</title>
-<!-- FOLIO196-NEW-DESIGN v2.2 · Chest · built 2026-11-18 · DB byte-identical to live · weakest drill (compact list) · scroll-anchor fix -->
+<!-- FOLIO196-NEW-DESIGN v2.3 · Chest · built 2026-11-19 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update) -->
 
 <style>
 /* ==========================================================================
@@ -2369,6 +2369,117 @@ function openView(c) {
   else { render(); }
 }
 
+function cardHTML(q) {
+  let h = '';
+    const pr = P[q.id],
+          p = (retaking() && pr && pr.r === 0 && !RTS.has(q.id)) ? null : pr,
+          px = p ? null : PX[q.id],
+          rev = (show && !EX && !retaking()) || p,
+          hasExpl = !!(q.e && q.e[0]),
+          /* Fixed UI logic: when both Show Answers (rev) and Show Explanations (showExpl) are enabled, or when per-question ? is toggled, both display cleanly */
+          showThisExpl = !!(hasExpl && (Object.prototype.hasOwnProperty.call(EXPL, q.id) ? EXPL[q.id] : (rev && showExpl)));
+
+    h += `<div class="q" id="q-${q.id}" data-id="${q.id}">
+      <button class="bm ${BM.includes(q.id) ? 'on' : ''}" title="Save / flag this question" aria-label="Save question">${BM.includes(q.id) ? '★' : '☆'}</button>
+      ${(p || rev) && hasExpl ? `<button class="expbtn ${showThisExpl ? 'on' : ''}" data-exp="${q.id}" title="Show or hide this question's explanation" aria-label="Toggle explanation">?</button>` : ''}
+      ${((CATBYKEY[cur] && (!SH || p)) || (cur == 'all' && SH && p)) ? `<div class="chtag">${DB.ch.indexOf(q.ch) + 1}. ${esc(q.ch)}</div>` : ''}
+      <h3 dir="auto"><b>${q.n}.</b> ${esc(q.q)}${q.dup ? ` <span class="dupb">مكرر${q.dn ? ' · Ch' + q.dc + ' Q' + q.dn : ''}</span>` : ''}</h3>
+      ${imgs(q)}`;
+
+    if (q.o.length) {
+      q.o.forEach(o => {
+        let c = 'opt';
+        if (rev && isOk(q, o[0])) c += ' ok';
+        else if (p && p.c == o[0]) c += ' bad';
+        else if (px == o[0]) c += ' sel';
+        h += `<button class="${c}" dir="auto" data-o="${ea(o[0])}" title="Click to select · Right-click to cross out distractor"><b>${esc(o[0])}</b> <span>${esc(o[1])}</span></button>`;
+      });
+      if (rev) {
+        h += `<div class="ans" dir="auto"><span class="k">✓ Correct answer: ${esc(AS(q).join(' & ') || 'not provided — see flag')}</span></div>`;
+      }
+      if (showThisExpl) h += expl(q);
+    } else {
+      h += `<button class="opt" data-sa="1"><b>✦</b> <span>Show model answer</span></button>`;
+      if (rev) {
+        h += `<div class="ans" dir="auto"><span class="k">Model Answer:</span> ${esc(q.sa || '—')}</div>`;
+      }
+      if (showThisExpl) h += expl(q);
+    }
+
+    (q.f || []).forEach(f => h += `<div class="flag" dir="auto">⚑ ${esc(f)}</div>`);
+    if (q.pg) h += `<div class="src">Department Book · p. ${esc(q.pg)}</div>`;
+    if (rev && NT && QN[q.id]) h += `<div class="rn"><a data-rn="1">📘 Jump to related high-yield note →</a></div>`;
+    if (p && q.o.length) h += `<div><button class="rt">↻ Retry this question</button></div>`;
+    h += '</div>';
+  return h;
+}
+
+// v2.3: answer in place -- no full re-render, so nothing above the card
+// can collapse and the card never moves. render() rebuilds the whole
+// list; off-screen .q cards collapse to their 260px content-visibility
+// estimate, so any full re-render + scroll correction shows on a phone
+// as jump-up-then-back (v2.2 corrected only on the next animation
+// frame, after the wrong position had already painted). Updating only
+// the tapped card keeps its top fixed -- new content grows downwards.
+// Falls back to rerenderKeep when the card must leave this filtered view.
+function cardInList(q) {
+  if (!scopeFor(cur).some(x => x.id === q.id)) return false;
+  if (wrongOnly && !(P[q.id] && P[q.id].r === 0) && !(retaking() && RTS.has(q.id))) return false;
+  if (savedOnly && !BM.includes(q.id)) return false;
+  return true;
+}
+function refreshCard(id) {
+  const q = byId(id);
+  const old = q && document.getElementById('q-' + id);
+  if (!q || !old) return false;
+  if (!cardInList(q)) return false;
+  try {
+    const shouldBanner = cur !== 'all' && cur !== '__quiz' && !wrongOnly && !savedOnly && !retaking()
+      && scopeFor(cur).length && scopeFor(cur).every(x => P[x.id]);
+    const ban = document.querySelector('#list .dhkdone');
+    if (shouldBanner && !ban) {
+      const DHKCI = CATBYKEY[cur] ? DB.ch.length + CATS.indexOf(CATBYKEY[cur]) : DB.ch.indexOf(cur);
+      const tb = document.createElement('div');
+      tb.innerHTML = '<div class="dhkdone">🎉 ' + (CATBYKEY[cur] ? esc(CATBYKEY[cur].name) + ' complete' : 'Chapter complete') + '<small dir="rtl" lang="ar">' + DHK[DHKCI % DHK.length] + '</small></div>';
+      const nb = tb.firstChild;
+      const firstQ = document.querySelector('#list .q');
+      if (firstQ) firstQ.parentNode.insertBefore(nb, firstQ);
+      else $('list').appendChild(nb);
+      scrollTo(0, scrollY + nb.offsetHeight);
+    } else if (!shouldBanner && ban) {
+      const hh = ban.offsetHeight;
+      ban.remove();
+      scrollTo(0, scrollY - hh);
+    }
+    const tmp = document.createElement('div');
+    tmp.innerHTML = cardHTML(q);
+    const neu = tmp.firstChild;
+    if (!neu) return false;
+    old.replaceWith(neu);
+    const dot = document.querySelector('.dot[data-id="' + id + '"]');
+    if (dot) {
+      const p = P[id];
+      dot.className = 'dot ' + (p ? (p.r === 1 ? 'ok' : p.r === 0 ? 'bad' : '') : (PX[id] ? 'pend' : '')) + ' ' + (BM.includes(id) ? 'sv' : '') + ' ' + (q.dup ? 'dp' : '');
+    }
+    const sm = document.querySelector('#list .qmap summary');
+    if (sm) {
+      const C = scopeFor(cur);
+      sm.textContent = 'Question Navigator Matrix (' + C.filter(x => P[x.id]).length + '/' + C.length + ' answered' + (C.some(x => PX[x.id] && (!P[x.id] || P[x.id].r === 0)) ? ' · ' + C.filter(x => PX[x.id] && (!P[x.id] || P[x.id].r === 0)).length + ' selected, not graded' : '') + ')';
+    }
+    if (cur === '__quiz') {
+      const zb = document.querySelector('#list .qzban span');
+      if (zb) {
+        const qd = QZ.filter(x => P[x]).length,
+              qo = QZ.filter(x => P[x] && P[x].r === 1).length,
+              qb = QZ.filter(x => P[x] && P[x].r === 0).length;
+        zb.innerHTML = '🧩 ' + (QD ? '🎯 <b>Weakest drill</b>' : '🧩 <b>Custom quiz</b>') + ' · ' + QZ.length + ' questions · ' + qd + ' answered' + (qd === QZ.length && QZ.length ? ' · 🎉 Complete: ✓ ' + qo + ' correct · ✗ ' + qb + ' wrong' : '') + (DHKQ ? ' · <span dir="rtl" lang="ar">' + DHKQ + '</span>' : '');
+      }
+    }
+    stat();
+    return true;
+  } catch (e) { return false; }
+}
+
 function render() {
   hideTip();
   let L = ord(scopeFor(cur).filter(q => (!wrongOnly || (P[q.id] && P[q.id].r === 0) || (retaking() && RTS.has(q.id))) && (!savedOnly || BM.includes(q.id))));
@@ -2412,46 +2523,7 @@ function render() {
       lastDup = q.ch;
       h += `<div class="dsep">مكرر — Duplicates<small>Same questions as in the other chapters. Kept here unchanged.</small></div>`;
     }
-    const pr = P[q.id],
-          p = (retaking() && pr && pr.r === 0 && !RTS.has(q.id)) ? null : pr,
-          px = p ? null : PX[q.id],
-          rev = (show && !EX && !retaking()) || p,
-          hasExpl = !!(q.e && q.e[0]),
-          /* Fixed UI logic: when both Show Answers (rev) and Show Explanations (showExpl) are enabled, or when per-question ? is toggled, both display cleanly */
-          showThisExpl = !!(hasExpl && (Object.prototype.hasOwnProperty.call(EXPL, q.id) ? EXPL[q.id] : (rev && showExpl)));
-
-    h += `<div class="q" id="q-${q.id}" data-id="${q.id}">
-      <button class="bm ${BM.includes(q.id) ? 'on' : ''}" title="Save / flag this question" aria-label="Save question">${BM.includes(q.id) ? '★' : '☆'}</button>
-      ${(p || rev) && hasExpl ? `<button class="expbtn ${showThisExpl ? 'on' : ''}" data-exp="${q.id}" title="Show or hide this question's explanation" aria-label="Toggle explanation">?</button>` : ''}
-      ${((CATBYKEY[cur] && (!SH || p)) || (cur == 'all' && SH && p)) ? `<div class="chtag">${DB.ch.indexOf(q.ch) + 1}. ${esc(q.ch)}</div>` : ''}
-      <h3 dir="auto"><b>${q.n}.</b> ${esc(q.q)}${q.dup ? ` <span class="dupb">مكرر${q.dn ? ' · Ch' + q.dc + ' Q' + q.dn : ''}</span>` : ''}</h3>
-      ${imgs(q)}`;
-
-    if (q.o.length) {
-      q.o.forEach(o => {
-        let c = 'opt';
-        if (rev && isOk(q, o[0])) c += ' ok';
-        else if (p && p.c == o[0]) c += ' bad';
-        else if (px == o[0]) c += ' sel';
-        h += `<button class="${c}" dir="auto" data-o="${ea(o[0])}" title="Click to select · Right-click to cross out distractor"><b>${esc(o[0])}</b> <span>${esc(o[1])}</span></button>`;
-      });
-      if (rev) {
-        h += `<div class="ans" dir="auto"><span class="k">✓ Correct answer: ${esc(AS(q).join(' & ') || 'not provided — see flag')}</span></div>`;
-      }
-      if (showThisExpl) h += expl(q);
-    } else {
-      h += `<button class="opt" data-sa="1"><b>✦</b> <span>Show model answer</span></button>`;
-      if (rev) {
-        h += `<div class="ans" dir="auto"><span class="k">Model Answer:</span> ${esc(q.sa || '—')}</div>`;
-      }
-      if (showThisExpl) h += expl(q);
-    }
-
-    (q.f || []).forEach(f => h += `<div class="flag" dir="auto">⚑ ${esc(f)}</div>`);
-    if (q.pg) h += `<div class="src">Department Book · p. ${esc(q.pg)}</div>`;
-    if (rev && NT && QN[q.id]) h += `<div class="rn"><a data-rn="1">📘 Jump to related high-yield note →</a></div>`;
-    if (p && q.o.length) h += `<div><button class="rt">↻ Retry this question</button></div>`;
-    h += '</div>';
+    h += cardHTML(q);
   });
 
   const none = savedOnly && !BM.length ? 'No saved questions yet — tap ☆ on any question to save it here.' : wrongOnly && !DB.q.some(q => P[q.id] && P[q.id].r === 0) ? 'No wrong answers right now 🎉' : (SH && !wrongOnly && !savedOnly ? 'Nothing left to shuffle here: every question is answered 🎉 (press Change chapters, or turn Shuffle off).' : 'No questions match.');
@@ -2491,8 +2563,10 @@ function gradeIds(ids, pre) {
   });
   save(); savePX();
   if (!pendScope().length) stopTimer();
-  render();
-  scrollTo(0, y);
+  let gradedInPlace = true;
+  ids.forEach(gid => { if (!refreshCard(gid)) gradedInPlace = false; });
+  if (!gradedInPlace) { render(); scrollTo(0, y); }
+  stat();
   toast((pre || '') + 'Graded ' + n + ' · ✓ ' + ok + ' correct · ✗ ' + bad + ' wrong');
 }
 
@@ -2722,17 +2796,17 @@ $('list').onclick = e => {
   if (b.classList.contains('expbtn')) {
     EXPL[id] = !card.querySelector('.explain');
     try { localStorage.setItem(SK + 'explq', JSON.stringify(EXPL)); } catch (e) {}
-    rerenderKeep(id, y0, top0);
+    if (!refreshCard(id)) rerenderKeep(id, y0, top0);
     return;
   }
-  if (b.classList.contains('bm')) { toggleBM(id); rerenderKeep(id, y0, top0); return; }
+  if (b.classList.contains('bm')) { toggleBM(id); if (!refreshCard(id)) rerenderKeep(id, y0, top0); return; }
   if (b.classList.contains('rt')) {
     delete P[id];
     delete WC[id];
     save();
     saveWC();
     if (LAST && LAST.id == id) clearLast();
-    rerenderKeep(id, y0, top0);
+    if (!refreshCard(id)) rerenderKeep(id, y0, top0);
     return;
   }
   const rtQ = retaking() && P[id] && P[id].r === 0;
@@ -2746,7 +2820,7 @@ $('list').onclick = e => {
       saveLast(id);
     }
     savePX();
-    rerenderKeep(id, y0, top0);
+    if (!refreshCard(id)) rerenderKeep(id, y0, top0);
     autoGrade(q.ch);
     return;
   }
@@ -2759,7 +2833,7 @@ $('list').onclick = e => {
   SESS.add(id);
   save();
   saveLast(id);
-  rerenderKeep(id, y0, top0);
+  if (!refreshCard(id)) rerenderKeep(id, y0, top0);
 };
 
 $('nav').onclick = e => {
