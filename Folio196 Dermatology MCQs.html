@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Dermatology MCQs — Folio 196 · Chapters + Hawary Only + El Zanqa</title>
-<!-- FOLIO196-NEW-DESIGN v2.3 · Dermatology · built 2026-11-19 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update) -->
+<!-- FOLIO196-NEW-DESIGN v2.4 · Dermatology · built 2026-11-19 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update + min-height pin) -->
 
 <style>
 /* ==========================================================================
@@ -2455,7 +2455,21 @@ function refreshCard(id) {
     tmp.innerHTML = cardHTML(q);
     const neu = tmp.firstChild;
     if (!neu) return false;
+    // Pin the new card to the old card's height for two frames: a freshly
+    // swapped-in card can measure ~46px short for a frame, and at max
+    // scroll that shrinks the page and the browser clamps scrollY (the
+    // 46px wobble, probe_46px.py). The new content is taller anyway, so
+    // the pin only blocks the transient shrink and is released right after.
+    const oldH = old.offsetHeight;
+    if (oldH) neu.style.minHeight = oldH + 'px';
     old.replaceWith(neu);
+    const nextFrame = typeof requestAnimationFrame === 'function'
+      ? cb => requestAnimationFrame(cb)
+      : cb => setTimeout(cb, 0);
+    nextFrame(() => nextFrame(() => {
+      const el = document.getElementById('q-' + id);
+      if (el) el.style.minHeight = '';
+    }));
     const dot = document.querySelector('.dot[data-id="' + id + '"]');
     if (dot) {
       const p = P[id];
