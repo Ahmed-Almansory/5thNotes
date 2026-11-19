@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chest Question Bank — Folio 196 · Chapters + Hawary Only</title>
-<!-- FOLIO196-NEW-DESIGN v2.4 · Chest · built 2026-11-19 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update + min-height pin) -->
+<!-- FOLIO196-NEW-DESIGN v2.4.2 · Chest · built 2026-11-19 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update + min-height pin) -->
+<!-- v2.4.2: per-question copy button (question + options); text-selection block scoped to touch devices so desktop can select again -->
+<!-- v2.4.1 review fixes: touch long-press strikethrough (iOS), Wrong/Saved filter exclusivity, no iOS zoom on input focus -->
 
 <style>
 /* ==========================================================================
@@ -23,7 +25,7 @@
   --card-elev: #F8FAFC;
   --tx: #0F172A;
   --tx-sec: #334155;
-  --mut: #64748B;
+  --mut: #5b6a7e;
   --ok: #10B981;
   --ok-bg: rgba(16, 185, 129, 0.12);
   --bad: #EF4444;
@@ -950,7 +952,7 @@ button.pri:hover {
   line-height: 1.62;
   font-weight: 600;
   color: var(--tx);
-  padding-inline-end: 82px;
+  padding-inline-end: 138px;
 }
 
 .q h3 b {
@@ -983,10 +985,34 @@ button.pri:hover {
   background: rgba(245, 158, 11, 0.14);
 }
 
-.expbtn {
+.copyq {
   position: absolute;
   top: 14px;
   inset-inline-end: 54px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  background: var(--soft-ui);
+  border: 1px solid var(--bd);
+  color: var(--mut);
+  cursor: pointer;
+}
+
+.copyq.done {
+  color: var(--teal);
+  border-color: var(--teal);
+  background: var(--soft);
+}
+
+.expbtn {
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 94px;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -1024,7 +1050,18 @@ button.pri:hover {
   line-height: 1.5;
   color: var(--tx);
   position: relative;
+  touch-action: manipulation;
   transition: all 0.15s ease;
+}
+
+/* Long-press cross-out needs the native callout/selection suppressed,
+   but only on touch devices - desktop keeps normal text selection.
+   The .touch class is set by script from real touch capability, which is
+   more reliable than hover/pointer media queries (odd in some browsers). */
+html.touch .opt {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .opt b {
@@ -1814,6 +1851,10 @@ footer {
 .drill-count b{display:block;font-size:1.15rem;color:var(--teal)}
 .drill-count span{font-size:.68rem;color:var(--mut)}
 .drill-more{color:var(--mut);font-size:.8rem;margin:10px 0 0}
+/* Mobile usability: inputs under 16px make iOS Safari zoom the page on focus */
+@media (max-width: 860px) {
+  .bar input[type=search], .hsx input, #tmin, .qzopt input { font-size: 16px; }
+}
 </style>
 </head>
 <body>
@@ -1829,7 +1870,7 @@ footer {
 </header>
 
 <div class="wrap">
-  <nav id="nav"></nav>
+  <nav id="nav" tabindex="0" aria-label="Chapters navigation"></nav>
   <main>
     <a class="tg" href="https://t.me/kafifthnotes" target="_blank" rel="noopener noreferrer">
       <div class="tg-left">
@@ -2166,6 +2207,36 @@ function toast(m) {
   t._h = setTimeout(() => t.style.display = 'none', 4200);
 }
 
+/* v2.4.2: mark touch devices so .opt selection stays blocked only there. */
+document.documentElement.classList.toggle('touch', 'ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+/* v2.4.2: copy a whole question (text + options) to the clipboard.
+   navigator.clipboard needs a secure context; file:// pages fall back
+   to a hidden textarea + execCommand so it works everywhere. */
+function copyQuestion(q) {
+  let t = q.n + '. ' + q.q;
+  if (q.o && q.o.length) t += '\n' + q.o.map(o => o[0] + '. ' + o[1]).join('\n');
+  copyText(t);
+}
+function copyText(t) {
+  const ok = () => toast('📋 Question copied');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(ok, () => legacyCopy(t, ok));
+  } else legacyCopy(t, ok);
+}
+function legacyCopy(t, ok) {
+  const ta = document.createElement('textarea');
+  ta.value = t;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+  try { document.execCommand('copy'); ok(); }
+  catch (e) { toast('Copy failed - long-press the question text instead.'); }
+  ta.remove();
+}
+
 const imgs = q => (q.im && q.im.length) ? '<div class="im">' + q.im.map(k => `<img src="${DB.img[k]}" data-im="${k}" alt="Question image" loading="lazy">`).join('') + '</div>' : '';
 
 const NT = (DB.notes && DB.notes.systems && DB.notes.systems.length) ? DB.notes : null;
@@ -2381,6 +2452,7 @@ function cardHTML(q) {
 
     h += `<div class="q" id="q-${q.id}" data-id="${q.id}">
       <button class="bm ${BM.includes(q.id) ? 'on' : ''}" title="Save / flag this question" aria-label="Save question">${BM.includes(q.id) ? '★' : '☆'}</button>
+      <button class="copyq" title="Copy this question with its options" aria-label="Copy question">📋</button>
       ${(p || rev) && hasExpl ? `<button class="expbtn ${showThisExpl ? 'on' : ''}" data-exp="${q.id}" title="Show or hide this question's explanation" aria-label="Toggle explanation">?</button>` : ''}
       ${((CATBYKEY[cur] && (!SH || p)) || (cur == 'all' && SH && p)) ? `<div class="chtag">${DB.ch.indexOf(q.ch) + 1}. ${esc(q.ch)}</div>` : ''}
       <h3 dir="auto"><b>${q.n}.</b> ${esc(q.q)}${q.dup ? ` <span class="dupb">مكرر${q.dn ? ' · Ch' + q.dc + ' Q' + q.dn : ''}</span>` : ''}</h3>
@@ -2545,13 +2617,61 @@ function render() {
   stat();
 }
 
-/* Right-click distractor strikethrough on .opt */
+/* Distractor strikethrough: right-click on desktop, long-press on touch.
+   iOS Safari never fires contextmenu on buttons, so a touch timer handles
+   it; Android fires contextmenu AND the touch timer for one press, so
+   toggleStrike ignores a second toggle from the OTHER source within 700ms
+   of the first — two toggles from the same source (e.g. two right-clicks)
+   still work. */
+function toggleStrike(opt, src) {
+  if (!opt || opt.classList.contains('ok') || opt.classList.contains('bad')) return;
+  const now = Date.now();
+  if (opt._struckAt && now - opt._struckAt < 700 && opt._struckBy && opt._struckBy !== src) return;
+  opt._struckAt = now;
+  opt._struckBy = src;
+  opt.classList.toggle('struck');
+}
 $('list').addEventListener('contextmenu', e => {
   const opt = e.target.closest('.opt');
-  if (!opt || opt.classList.contains('ok') || opt.classList.contains('bad')) return;
+  if (!opt) return;
   e.preventDefault();
-  opt.classList.toggle('struck');
+  toggleStrike(opt, 'menu');
 });
+let lpT = 0, lpOpt = null, lpX = 0, lpY = 0, lpDone = false;
+$('list').addEventListener('touchstart', e => {
+  const opt = e.target.closest('.opt');
+  lpCancelStrike();
+  if (!opt || opt.classList.contains('ok') || opt.classList.contains('bad')) return;
+  const t = e.changedTouches[0];
+  lpOpt = opt; lpX = t.clientX; lpY = t.clientY; lpDone = false;
+  lpT = setTimeout(() => {
+    lpDone = true;
+    toggleStrike(opt, 'touch');
+    if (navigator.vibrate) navigator.vibrate(10);
+  }, 500);
+}, { passive: true });
+$('list').addEventListener('touchmove', e => {
+  if (!lpOpt) return;
+  const t = e.changedTouches[0];
+  if (Math.abs(t.clientX - lpX) > 10 || Math.abs(t.clientY - lpY) > 10) lpCancelStrike();
+}, { passive: true });
+$('list').addEventListener('touchend', () => {
+  clearTimeout(lpT);
+  if (lpDone && lpOpt) {
+    /* Swallow the synthetic click that follows a long-press so it does
+       not answer the question right after crossing an option out. */
+    lpOpt._lpGuard = true;
+    const o = lpOpt;
+    setTimeout(() => { o._lpGuard = false; }, 500);
+  }
+  lpOpt = null; lpDone = false;
+}, { passive: true });
+$('list').addEventListener('touchcancel', () => lpCancelStrike(), { passive: true });
+function lpCancelStrike() { clearTimeout(lpT); lpOpt = null; lpDone = false; }
+$('list').addEventListener('click', e => {
+  const opt = e.target.closest('.opt');
+  if (opt && opt._lpGuard) { e.preventDefault(); e.stopPropagation(); opt._lpGuard = false; }
+}, true);
 
 /* Exam Mode helpers */
 const pendScope = () => Object.keys(PX).filter(id => {
@@ -2814,6 +2934,15 @@ $('list').onclick = e => {
     return;
   }
   if (b.classList.contains('bm')) { toggleBM(id); if (!refreshCard(id)) rerenderKeep(id, y0, top0); return; }
+  if (b.classList.contains('copyq')) {
+    copyQuestion(q);
+    if (!b.classList.contains('done')) {
+      b.classList.add('done');
+      b.textContent = '✓';
+      setTimeout(() => { b.classList.remove('done'); b.textContent = '📋'; }, 1200);
+    }
+    return;
+  }
   if (b.classList.contains('rt')) {
     delete P[id];
     delete WC[id];
@@ -3027,7 +3156,7 @@ $('helpClose').onclick = () => { $('helpModal').classList.remove('on'); };
 $('helpModal').onclick = e => { if (e.target.id === 'helpModal') $('helpModal').classList.remove('on'); };
 $('helpContent').innerHTML = `<p><b>Chapters:</b> The main organization. Every canonical question belongs to its original chapter.</p>${CATS.map(c => `<p><b>${esc(c.name)}:</b> ${esc(c.description || c.subtitle || 'An additional view of existing questions.')} Progress is shared with the original chapter.</p>`).join('')}<p><b>Progress:</b> Answering in any view updates the same question record. Global totals count each question once.</p><p><b>Resume:</b> Returns to the first unanswered question after your last answered question; scrolling or browsing does not change this position.</p><p><b>Distractor Strikethrough:</b> Right-click any option — or long-press it on your phone — to cross it out while thinking through your differential diagnosis. Right-click / long-press it again to undo.</p><p><b>Weakest drill:</b> On the home page, your wrong questions ranked by how many times each was missed — most-missed first; tap “Show all wrong questions” to see the full ranked list. Starting a drill re-opens them fresh, and progress changes only when you actually re-answer. Answer one right and it leaves the drill; miss it again and its count climbs. Counts start from this version: questions already wrong count as ×1 until missed again.</p><p><b>Show Answers &amp; Show Explanations:</b> Work independently or together! Turning both ON shows both the correct answer highlight and the full explanation block simultaneously.</p><p><b>Exam Mode &amp; Timer:</b> Select answers first, then grade them together or let the countdown timer auto-grade when time expires.</p><p><b>Custom quiz:</b> From the home page, build a custom quiz from the chapters, question count, and pool (all, unanswered, or wrong only) you choose.</p>`;
 
-$('wr').onclick = () => { wrongOnly = !wrongOnly; RT = false; render(); };
+$('wr').onclick = () => { wrongOnly = !wrongOnly; if (wrongOnly) savedOnly = false; RT = false; render(); };
 $('ex').onclick = () => { toggleExam(); render(); };
 $('xg').onclick = gradeNow;
 $('sh').onclick = () => { setShuffle(!SH); render(); scrollTo(0, 0); };
@@ -3134,7 +3263,7 @@ $('shp').onclick = e => {
   }
 };
 $('shc').onclick = openShPicker;
-$('sv').onclick = () => { savedOnly = !savedOnly; render(); };
+$('sv').onclick = () => { savedOnly = !savedOnly; if (savedOnly) wrongOnly = false; render(); };
 
 /* Non-blocking custom Reset confirmation via toast/double-click or modal */
 let resetPending = false;
