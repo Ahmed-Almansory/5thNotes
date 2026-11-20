@@ -93,6 +93,49 @@ function urlForView(c) {
 /* The engine reads this global when it pushes history entries. */
 window.PLATFORM = { mode: ROUTE_MODE, urlForView: urlForView };
 
+/* ---------- Google Analytics 4 (owner-only stats) ----------
+   Property "Folio 196", Measurement ID G-54EJBSV490. The snippet in
+   index.html loads with send_page_view:false, so every page_view comes from
+   here with a clean route path ('/' portal, '/dermatology', '/dermatology/all',
+   '/cardiology/<chapter>' ...). One page_view per route change: portal opens,
+   bank entries, chapter/view moves, and back/forward. The per-bank abacus
+   counter (countBankOpen, above) stays as the lightweight open count. */
+function gaPage(path) {
+  try {
+    if (typeof gtag === 'function') gtag('config', 'G-54EJBSV490', { page_path: path });
+  } catch (e) {}
+}
+function routePath(slug, view) {
+  var p = '/' + slug;
+  if (view === 'all') p += '/all';
+  else if (view === '__notes') p += '/notes';
+  else if (view === '__quiz') p += '/quiz';
+  else if (typeof view === 'string' && view.indexOf('__cat_') === 0) p += '/cat/' + view.slice(6);
+  else if (typeof view === 'string' && view) p += '/' + encodeURIComponent(view);
+  return p;
+}
+/* Engine chapter/view moves use history.pushState, which fires no route event
+   — mirror each pushed route into GA as a page view with its clean path. */
+(function () {
+  try {
+    var _pushState = history.pushState.bind(history);
+    history.pushState = function (state, title, url) {
+      var r = _pushState(state, title, url);
+      if (typeof url === 'string' && url) gaPage(url.replace(/^#/, ''));
+      return r;
+    };
+  } catch (e) {}
+})();
+/* History mode only: back/forward fires popstate (no hashchange). In hash
+   mode the hashchange handler below already routes through bootBank/showPortal,
+   so no popstate listener here — it would double-count. */
+if (ROUTE_MODE !== 'hash') {
+  window.addEventListener('popstate', function () {
+    var r = parseRoute();
+    gaPage(r.bank ? routePath(r.bank, r.view) : '/');
+  });
+}
+
 /* ---------- portal data (from the Night Shift v4 portal's PAGES) ----------
    Counts come from data/index.json at runtime; the rest is portal copy. */
 var PORTAL_META = {
@@ -374,6 +417,7 @@ function wirePortalOnce() {
 }
 
 function showPortal() {
+  gaPage('/');
   $('bankView').hidden = true;
   $('portalView').hidden = false;
   document.title = 'Folio 196 — Question Banks';
@@ -417,6 +461,7 @@ function showBank(slug) {
 }
 
 function bootBank(slug, view) {
+  gaPage(routePath(slug, view));
   if ($('bankView').hidden) countBankOpen(slug);
   if (bootedBank === slug) { /* hash-mode return to an already-booted bank */
     showBank(slug);
