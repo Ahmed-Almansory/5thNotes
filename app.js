@@ -400,6 +400,16 @@ function buildDB(slug, bank) {
   };
 }
 
+/* Private per-bank open counter (not shown anywhere on the site): one hit per
+   bank entry, on the same free counter service as the portal total. Fires
+   only when entering a bank from the portal (or a deep link); chapter/view
+   moves inside a bank do not count. Fire-and-forget: a failed hit (offline,
+   blocked counter) never breaks the bank. Read a count with the matching
+   abacus /get/ key for the bank slug. */
+function countBankOpen(slug) {
+  fetch('https://abacus.jasoncameron.dev/hit/folio196-bank-' + slug).catch(function () {});
+}
+
 function showBank(slug) {
   $('portalView').hidden = true;
   $('bankView').hidden = false;
@@ -407,6 +417,7 @@ function showBank(slug) {
 }
 
 function bootBank(slug, view) {
+  if ($('bankView').hidden) countBankOpen(slug);
   if (bootedBank === slug) { /* hash-mode return to an already-booted bank */
     showBank(slug);
     if (window.__folio) {
