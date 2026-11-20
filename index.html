@@ -9,6 +9,10 @@
 <style>
 /* PLATFORM BASE */
 html{scroll-behavior:smooth}
+html,body{margin:0;padding:0}
+body{background:#f2f7f7}
+@media (prefers-color-scheme: dark){html:not([data-theme="light"]) body{background:#071627}}
+html[data-theme="dark"] body{background:#071627}
 #portalView,#bankView{min-height:100vh}
 [hidden]{display:none!important}
 .portal-back{display:inline-flex;align-items:center;gap:6px;margin:2px 0 14px;padding:8px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--soft-ui);color:var(--teal);font-size:.9rem;font-weight:600;text-decoration:none}
