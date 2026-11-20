@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Folio 196 — Question Banks</title>
 <meta name="description" content="Folio 196 question banks — 2,128 MCQs across 7 banks. Solve, review, and retake.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Folio 196">
+<meta property="og:title" content="Folio 196 — Question Banks">
+<meta property="og:description" content="Folio 196 question banks — 2,128 MCQs across 7 banks. Solve, review, and retake.">
+<meta property="og:url" content="https://ahmed-almansory.github.io/5thNotes/">
+<meta property="og:image" content="https://ahmed-almansory.github.io/5thNotes/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Folio 196 — Question Banks">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Folio 196 — Question Banks">
+<meta name="twitter:description" content="Folio 196 question banks — 2,128 MCQs across 7 banks. Solve, review, and retake.">
+<meta name="twitter:image" content="https://ahmed-almansory.github.io/5thNotes/share.jpg">
 <link rel="icon" href="logo.jpg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#00142D">
@@ -464,6 +477,15 @@ html[data-theme="dark"] #portalView .flash-cta{ color: #c4b5fd; }
   border-top: 1px solid var(--bd);
   margin-top: 32px;
 }
+#portalView .install-btn{
+  display: flex; align-items: center; gap: 6px; width: fit-content;
+  margin: 12px auto 0; padding: 8px 16px;
+  background: transparent; color: var(--teal);
+  border: 1px solid var(--teal); border-radius: 999px;
+  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
+}
+#portalView .install-btn svg{ width: 16px; height: 16px; }
+#portalView .install-btn[hidden]{ display: none; }
 #portalView .tg-strip{
   display: flex;
   align-items: center;
@@ -2458,6 +2480,7 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
 
 <footer>
   <div class="visitors">👥 Visitors: <b id="visitorCount">…</b></div>
+  <button id="installBtn" class="install-btn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m6 11 6 6 6-6"/><path d="M4 21h16"/></svg>Install app</button>
   © Almansory / Folio 196
 </footer>
 

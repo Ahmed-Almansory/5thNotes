@@ -364,6 +364,14 @@ function wirePortalOnce() {
     root.setAttribute('data-theme', next);
     try { localStorage.setItem('folio196-theme', next); } catch (e) {}
   });
+  var installBtn = $('installBtn');
+  if (installBtn) installBtn.addEventListener('click', function () {
+    if (!_deferredInstall) return;
+    var p = _deferredInstall;
+    _deferredInstall = null;
+    installBtn.hidden = true;
+    p.prompt();
+  });
   document.querySelectorAll('.hero-hint button').forEach(function (b) {
     b.addEventListener('click', function () {
       $('searchInput').value = b.dataset.q;
@@ -453,6 +461,19 @@ function buildDB(slug, bank) {
 function countBankOpen(slug) {
   fetch('https://abacus.jasoncameron.dev/hit/folio196-bank-' + slug).catch(function () {});
 }
+
+/* ---------- in-app install button (PWA) ----------
+   The footer button stays hidden until the browser fires beforeinstallprompt
+   (Android Chrome/Edge: install is available). On iOS there is no such event,
+   so the button never shows there — iPhone users install via Share → Add to
+   Home Screen (the apple-touch-icon covers it). */
+var _deferredInstall = null;
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  _deferredInstall = e;
+  var b = $('installBtn');
+  if (b) b.hidden = false;
+});
 
 function showBank(slug) {
   $('portalView').hidden = true;
