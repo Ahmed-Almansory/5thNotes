@@ -99,7 +99,8 @@ window.PLATFORM = { mode: ROUTE_MODE, urlForView: urlForView };
    here with a clean route path ('/' portal, '/dermatology', '/dermatology/all',
    '/cardiology/<chapter>' ...). One page_view per route change: portal opens,
    bank entries, chapter/view moves, and back/forward. The per-bank abacus
-   counter (countBankOpen, above) stays as the lightweight open count. */
+   counter (inline script in index.html, before engine.js) stays as the
+   lightweight open count. */
 function gaPage(path) {
   try {
     if (typeof gtag === 'function') gtag('config', 'G-54EJBSV490', { page_path: path });
@@ -452,15 +453,11 @@ function buildDB(slug, bank) {
   };
 }
 
-/* Private per-bank open counter (not shown anywhere on the site): one hit per
-   bank entry, on the same free counter service as the portal total. Fires
-   only when entering a bank from the portal (or a deep link); chapter/view
-   moves inside a bank do not count. Fire-and-forget: a failed hit (offline,
-   blocked counter) never breaks the bank. Read a count with the matching
-   abacus /get/ key for the bank slug. */
-function countBankOpen(slug) {
-  fetch('https://abacus.jasoncameron.dev/hit/folio196-bank-' + slug).catch(function () {});
-}
+/* The per-bank open counter lives INLINE in index.html (see the script just
+   before engine.js): index.html is served network-first on every navigation,
+   while app.js can sit in a phone's service-worker cache for days after a
+   deploy — the app.js counter silently never fired on early installs for
+   exactly that reason. Do NOT add a second counter here. */
 
 /* ---------- in-app install button (PWA) ----------
    The footer button stays hidden until the browser fires beforeinstallprompt
@@ -483,7 +480,6 @@ function showBank(slug) {
 
 function bootBank(slug, view) {
   gaPage(routePath(slug, view));
-  if ($('bankView').hidden) countBankOpen(slug);
   if (bootedBank === slug) { /* hash-mode return to an already-booted bank */
     showBank(slug);
     if (window.__folio) {
