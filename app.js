@@ -582,7 +582,14 @@ function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   if (location.protocol !== 'https:' && location.hostname !== 'localhost' &&
       location.hostname !== '127.0.0.1') return;
-  navigator.serviceWorker.register(SW_URL).catch(function (e) {
+  navigator.serviceWorker.register(SW_URL).then(function (reg) {
+    /* Force an update check on every visit, bypassing the HTTP cache:
+       the browser's automatic check can keep serving a cached sw.js for
+       minutes, which left phones running a pre-counter app.js (cache-first)
+       long after the counter shipped. A newly found worker installs in the
+       background (skipWaiting + claim) and takes over on the next load. */
+    if (reg && reg.update) reg.update();
+  }).catch(function (e) {
     console.warn('SW registration failed:', e);
   });
 }

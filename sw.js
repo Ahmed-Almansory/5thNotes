@@ -4,8 +4,8 @@
    serving stale files. The shell itself is fetched network-first on
    navigation so a new deploy shows up on the next visit when online, with
    the cached shell as the offline fallback.
-   20261120-2159 is stamped by build_platform.py at build time. */
-var CACHE = 'folio196-20261120-2159';
+   20261121-0159 is stamped by build_platform.py at build time. */
+var CACHE = 'folio196-20261121-0159';
 var SHELL = ['index.html', 'app.js', 'engine.js', 'logo.jpg', 'manifest.json',
   'icon-192.png', 'icon-512.png', 'icon-512-maskable.png', 'data/index.json'];
 
@@ -47,10 +47,12 @@ self.addEventListener('fetch', function (event) {
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return; /* never cache third parties */
 
-  /* navigation: network-first, cached shell as offline fallback */
+  /* navigation: network-first, cached shell as offline fallback.
+     cache:'reload' bypasses the browser HTTP cache, so a deploy is never
+     masked by a stale cached copy of index.html. */
   if (req.mode === 'navigate') {
     event.respondWith(
-      fetch(req).then(function (res) {
+      fetch(req, { cache: 'reload' }).then(function (res) {
         var copy = res.clone();
         caches.open(CACHE).then(function (cache) {
           cache.put('index.html', copy);
@@ -58,6 +60,28 @@ self.addEventListener('fetch', function (event) {
         return res;
       }).catch(function () {
         return caches.match('index.html');
+      })
+    );
+    return;
+  }
+
+  /* the code shell (app.js, engine.js): network-first too. These change on
+     every deploy, and a cache-first read keeps serving the previous build's
+     code after an app.js-only deploy (no sw.js bump) — that is exactly how
+     the per-bank counter silently never fired on phones that had the first
+     service worker installed: their cached app.js predated the counter.
+     Offline fallback is the cached copy. */
+  var leaf = url.pathname.split('/').pop();
+  if (leaf === 'app.js' || leaf === 'engine.js') {
+    event.respondWith(
+      fetch(req, { cache: 'reload' }).then(function (res) {
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (cache) { cache.put(req, copy); });
+        }
+        return res;
+      }).catch(function () {
+        return caches.match(req, { ignoreSearch: true });
       })
     );
     return;
