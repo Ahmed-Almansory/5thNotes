@@ -2365,7 +2365,7 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
     var b = bankFromURL();
     if (b && b !== lastBank) {
       lastBank = b;
-      try { fetch('https://abacus.jasoncameron.dev/hit/folio196-bank-' + b).catch(function () {}); } catch (e) {}
+      try { fetch('https://abacus.jasoncameron.dev/hit/folio196-bank/' + b).catch(function () {}); } catch (e) {}
     } else if (!b) { lastBank = null; }
   }
   window.addEventListener('hashchange', countIfEntered);

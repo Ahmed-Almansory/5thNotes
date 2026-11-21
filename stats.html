@@ -68,7 +68,7 @@ function load() {
   }).join('') + '<tr class="total"><td>All banks</td><td class="num" id="bankTotal">…</td></tr>';
   document.getElementById('total').textContent = '…';
   document.getElementById('note').textContent = '';
-  var jobs = BANKS.map(function (b) { return getCount('folio196-bank-' + b[1]); });
+  var jobs = BANKS.map(function (b) { return getCount('folio196-bank/' + b[1]); });
   jobs.push(getCount('5thnotes-almansory/visits'));
   Promise.all(jobs).then(function (vals) {
     var sum = 0;
