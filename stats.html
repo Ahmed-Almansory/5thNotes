@@ -56,10 +56,17 @@ var BANKS = [
   ['Radiology', 'radiology']
 ];
 function getCount(key) {
-  return fetch('https://abacus.jasoncameron.dev/get/' + key)
-    .then(function (r) { return r.json(); })
-    .then(function (d) { return (d && typeof d.value === 'number') ? d.value : 0; })
-    .catch(function () { return 0; });
+  var ctrl = new AbortController();
+  var timer = setTimeout(function () { ctrl.abort(); }, 8000);
+  return fetch('https://abacus.jasoncameron.dev/get/' + key + '?t=' + Date.now(), { signal: ctrl.signal, cache: 'no-store' })
+    .then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); })
+    .then(function (o) {
+      if (o.d && typeof o.d.value === 'number') return o.d.value;
+      if (o.status === 404) return 0; // key never created = genuinely zero opens
+      return null; // error JSON, timeout or network failure — not a zero
+    })
+    .catch(function () { return null; })
+    .finally(function () { clearTimeout(timer); });
 }
 function load() {
   var rows = document.getElementById('rows');
@@ -68,21 +75,32 @@ function load() {
   }).join('') + '<tr class="total"><td>All banks</td><td class="num" id="bankTotal">…</td></tr>';
   document.getElementById('total').textContent = '…';
   document.getElementById('note').textContent = '';
-  var jobs = BANKS.map(function (b) { return getCount('folio196-bank/' + b[1]); });
-  jobs.push(getCount('5thnotes-almansory/visits'));
-  Promise.all(jobs).then(function (vals) {
-    var sum = 0;
-    BANKS.forEach(function (b, i) {
-      sum += vals[i];
+  document.getElementById('note').className = 'mut';
+  document.getElementById('updated').textContent = 'Loading…';
+  var loaded = 0, sum = 0, failed = 0;
+  function finishOne() {
+    loaded++;
+    if (loaded === BANKS.length + 1) {
+      document.getElementById('bankTotal').textContent = failed ? sum + '+' : sum;
+      document.getElementById('updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+      if (failed) {
+        document.getElementById('note').textContent = 'Some counts could not be loaded (the counter service was slow or returned an error) — “—” is not zero, try Refresh.';
+        document.getElementById('note').className = 'mut err';
+      }
+    }
+  }
+  BANKS.forEach(function (b) {
+    getCount('folio196-bank/' + b[1]).then(function (v) {
       var cell = rows.querySelector('[data-slug="' + b[1] + '"]');
-      if (cell) cell.textContent = vals[i];
+      if (v === null) { failed++; if (cell) cell.textContent = '—'; }
+      else { sum += v; if (cell) cell.textContent = v; }
+      finishOne();
     });
-    document.getElementById('bankTotal').textContent = sum;
-    document.getElementById('total').textContent = vals[BANKS.length];
-    document.getElementById('updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
-  }).catch(function () {
-    document.getElementById('note').textContent = 'Could not reach the counter — check your connection and refresh.';
-    document.getElementById('note').className = 'mut err';
+  });
+  getCount('5thnotes-almansory/visits').then(function (v) {
+    if (v === null) { failed++; document.getElementById('total').textContent = '—'; }
+    else { document.getElementById('total').textContent = v; }
+    finishOne();
   });
 }
 document.getElementById('refresh').addEventListener('click', load);
