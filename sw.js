@@ -4,8 +4,8 @@
    serving stale files. The shell itself is fetched network-first on
    navigation so a new deploy shows up on the next visit when online, with
    the cached shell as the offline fallback.
-   20261121-1914 is stamped by build_platform.py at build time. */
-var CACHE = 'folio196-20261121-1914';
+   20261125-0000 is stamped by build_platform.py at build time. */
+var CACHE = 'folio196-20261125-0000';
 var SHELL = ['index.html', 'app.js', 'engine.js', 'logo.jpg', 'manifest.json',
   'icon-192.png', 'icon-512.png', 'icon-512-maskable.png', 'data/index.json'];
 
