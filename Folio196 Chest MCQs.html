@@ -1,14 +1,11 @@
+<!-- Folio 196 QBank · built with mcq-html-builder v3.4.6 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chest Question Bank — Folio 196 · Chapters + Hawary Only</title>
-<!-- FOLIO196-NEW-DESIGN v2.5 · Chest · built 2026-11-20 · DB byte-identical to live · weakest drill (compact list) · no-rerender answer (in-place card update + min-height pin) -->
-<!-- v2.5: SVG icon set; bottom action bar on phones; back-button history; 44px hit areas (glyphs unchanged); de-glass toolbar + solid Resume; mastery-colored chapters; empty-state CTA; keyboard A-E; Options bottom sheet on phones; hide-on-scroll toolbar (600px threshold); bottom bar hides in Exam Mode; chapters drawer scrim -->
-<!-- v2.4.2: per-question copy button (question + options); text-selection block scoped to touch devices so desktop can select again -->
-<!-- v2.4.1 review fixes: touch long-press strikethrough (iOS), Wrong/Saved filter exclusivity, no iOS zoom on input focus -->
-
+<!-- FOLIO196 BUILDER TEMPLATE: v2.5 shell (2026-11-21) · DB schema v3.4.6 · built by mcq-html-builder -->
 
 
 <style>
@@ -323,7 +320,7 @@ main h2 {
 .tg {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 14px;
   margin: 4px 0 18px;
   padding: 13px 18px;
@@ -955,7 +952,6 @@ button.pri:hover {
   line-height: 1.62;
   font-weight: 600;
   color: var(--tx);
-  padding-inline-end: 138px;
 }
 
 .q h3 b {
@@ -966,9 +962,8 @@ button.pri:hover {
 
 /* Bookmark & Explanation ? Action Buttons on Card Top-Right */
 .bm {
-  position: absolute;
-  top: 14px;
-  inset-inline-end: 14px;
+  float: inline-end;
+  margin-inline-start: 4px;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -989,9 +984,8 @@ button.pri:hover {
 }
 
 .copyq {
-  position: absolute;
-  top: 14px;
-  inset-inline-end: 54px;
+  float: inline-end;
+  margin-inline-start: 4px;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -1013,9 +1007,8 @@ button.pri:hover {
 }
 
 .expbtn {
-  position: absolute;
-  top: 14px;
-  inset-inline-end: 94px;
+  float: inline-end;
+  margin-inline-start: 4px;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -1815,7 +1808,6 @@ footer {
   }
   .q h3 {
     font-size: 1rem;
-    padding-inline-end: 74px;
   }
   header {
     padding: 18px 60px 15px 16px;
@@ -1869,10 +1861,6 @@ footer {
 .opt b { font-family: inherit; font-variant-numeric: tabular-nums; }
 /* 4. 44px hit areas — glyph sizes unchanged, padding carries the target */
 .bm, .copyq, .expbtn { width: 44px; height: 44px; }
-.bm { inset-inline-end: 8px; }
-.copyq { inset-inline-end: 56px; }
-.expbtn { inset-inline-end: 104px; }
-.q h3 { padding-inline-end: 152px; }
 .hi { position: relative; }
 .hi::after { content: ''; position: absolute; inset: -12px; }
 #th { padding: 12px 16px; min-height: 44px; }
@@ -1952,14 +1940,8 @@ body.barhide .bar { transform: translateY(-130%); opacity: 0; pointer-events: no
   <div id="navscrim" onclick="nav.classList.remove('open')" aria-hidden="true"></div>
   <main>
     <a class="tg" href="https://t.me/kafifthnotes" target="_blank" rel="noopener noreferrer">
-      <div class="tg-left">
         <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#fff"/><path style="fill:#0f766e" d="M10 23.6l24.6-9.5c1.1-.4 2.1.3 1.7 1.9l-4.2 19.7c-.3 1.4-1.1 1.7-2.3 1.1l-6.3-4.7-3 2.9c-.3.3-.6.6-1.3.6l.5-6.4 11.6-10.5c.5-.4-.1-.7-.8-.3L16.8 28.6l-6.2-1.9c-1.3-.4-1.4-1.3.3-2z"/></svg>
-        <div>
-          <b>Join Folio 196 on Telegram</b>
-          <span>Clinical revision notes, department book updates &amp; high-yield QBank alerts</span>
-        </div>
-      </div>
-      <span style="font-family:ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;font-weight:700;background:rgba(255,255,255,.14);padding:5px 10px;border-radius:8px">@kafifthnotes →</span>
+        <b>Join Folio 196 on Telegram</b>
     </a>
 
     <!-- 1. HOME DASHBOARD VIEW -->
@@ -2041,7 +2023,7 @@ body.barhide .bar { transform: translateY(-130%); opacity: 0; pointer-events: no
       <div class="sp" id="sp"></div>
       <div class="prog"><i id="pb"></i></div>
       <div class="stat" id="st"></div>
-      <p id="strikeTip" style="font-size:.78rem;color:var(--mut);margin:0 0 12px;padding:8px 12px;background:var(--soft-ui);border:1px solid var(--bd);border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg> Tip: right-click an option — or long-press it on your phone — to cross it out. Right-click / long-press it again to undo.</span><button type="button" onclick="document.getElementById('strikeTip').remove()" aria-label="Dismiss tip" style="border:0;background:none;color:var(--mut);cursor:pointer;font-size:.9rem;padding:2px 6px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></p>
+      <p id="strikeTip" style="font-size:.78rem;color:var(--mut);margin:0 0 12px;padding:8px 12px;background:var(--soft-ui);border:1px solid var(--bd);border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg> Tip: right-click or long-press an option to cross it out. Do it again to undo.</span><button type="button" onclick="document.getElementById('strikeTip').remove()" aria-label="Dismiss tip" style="border:0;background:none;color:var(--mut);cursor:pointer;font-size:.9rem;padding:2px 6px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></p>
       <div id="list"></div>
       <div id="xb">
         <span id="xc"></span>

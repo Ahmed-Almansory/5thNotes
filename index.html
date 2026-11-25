@@ -1534,7 +1534,6 @@ html[data-theme=dark] #bankView button.pri, html[data-theme=dark] #bankView .res
   line-height: 1.62;
   font-weight: 600;
   color: var(--tx);
-  padding-inline-end: 138px;
 }
 #bankView .q h3 b{
   font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
@@ -1542,9 +1541,8 @@ html[data-theme=dark] #bankView button.pri, html[data-theme=dark] #bankView .res
   margin-inline-end: 4px;
 }
 #bankView .bm{
-  position: absolute;
-  top: 14px;
-  inset-inline-end: 14px;
+  float: inline-end;
+  margin-inline-start: 4px;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -1563,9 +1561,8 @@ html[data-theme=dark] #bankView button.pri, html[data-theme=dark] #bankView .res
   background: rgba(245, 158, 11, 0.14);
 }
 #bankView .copyq{
-  position: absolute;
-  top: 14px;
-  inset-inline-end: 54px;
+  float: inline-end;
+  margin-inline-start: 4px;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -1585,9 +1582,8 @@ html[data-theme=dark] #bankView button.pri, html[data-theme=dark] #bankView .res
   background: var(--soft);
 }
 #bankView .expbtn{
-  position: absolute;
-  top: 14px;
-  inset-inline-end: 94px;
+  float: inline-end;
+  margin-inline-start: 4px;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -2270,7 +2266,6 @@ html[data-theme=dark] #bankView .dupb{
   }
 #bankView .q h3{
     font-size: 1rem;
-    padding-inline-end: 74px;
   }
 #bankView header{
     padding: 18px 60px 15px 16px;
@@ -2314,10 +2309,6 @@ html[data-theme=dark] #bankView .dupb{
 #bankView .sc b{ font-family: system-ui, 'Segoe UI', Roboto, sans-serif; font-variant-numeric: tabular-nums; }
 #bankView .opt b{ font-family: inherit; font-variant-numeric: tabular-nums; }
 #bankView .bm, #bankView .copyq, #bankView .expbtn{ width: 44px; height: 44px; }
-#bankView .bm{ inset-inline-end: 8px; }
-#bankView .copyq{ inset-inline-end: 56px; }
-#bankView .expbtn{ inset-inline-end: 104px; }
-#bankView .q h3{ padding-inline-end: 152px; }
 #bankView .hi{ position: relative; }
 #bankView .hi::after{ content: ''; position: absolute; inset: -12px; }
 #bankView #th{ padding: 12px 16px; min-height: 44px; }
