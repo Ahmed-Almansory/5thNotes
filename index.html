@@ -144,8 +144,8 @@ html[data-theme="dark"] #portalView{
   min-width: 0;
 }
 #portalView .logo{
-  width: 64px;
-  height: 64px;
+  width: 64px; aspect-ratio: 440 / 252; object-fit: contain;
+  height: auto;
   border-radius: 14px;
   flex: none;
   border: 2px solid rgba(255,255,255,0.85);
@@ -165,7 +165,7 @@ html[data-theme="dark"] #portalView{
   mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
 }
 #portalView .formerly{margin:2px 0 0;font-size:.8rem;opacity:.85}
-@media (max-width: 600px){#portalView .logo{ width: 52px; height: 52px; }
+@media (max-width: 600px){#portalView .logo{ width: 52px; height: auto; }
 #portalView .header-mark{ height: 175px; right: -46px; opacity: 0.13; }
 #portalView .header-inner{ flex-direction: column; align-items: flex-start; }}
 #portalView header h1{
@@ -571,7 +571,7 @@ html[data-theme="light"] #portalView{
 #portalView header{ background: var(--hero-bg); padding: 48px 18px 104px; }
 #portalView .header-mark{ display: none; }
 #portalView header::after{ display: none; }
-#portalView .logo{ width: 96px; height: 96px; border: 2px solid var(--aqua); border-radius: 20px; }
+#portalView .logo{ width: 96px; height: auto; border: 2px solid var(--aqua); border-radius: 20px; }
 #portalView .brand{ gap: 16px; }
 #portalView header h1{ font-size: clamp(2.6rem, 9vw, 4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; color: var(--hero-tx); }
 #portalView .n196{ color: var(--aqua); }
@@ -611,7 +611,7 @@ html:not([data-theme="light"]) #portalView .flash-card, html[data-theme="dark"] 
 html:not([data-theme="light"]) #portalView .flash-cta, html[data-theme="dark"] #portalView .flash-cta{ color: #C4B5FD; }
 html:not([data-theme="light"]) #portalView .book-card, html[data-theme="dark"] #portalView .book-card{ box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
 #portalView :focus-visible{ outline: 3px solid var(--aqua); outline-offset: 2px; }
-@media (max-width: 600px){#portalView .logo{ width: 72px; height: 72px; }
+@media (max-width: 600px){#portalView .logo{ width: 72px; height: auto; }
 #portalView header{ padding: 32px 16px 96px; }
 #portalView .hero{ margin-top: 28px; }
 #portalView .hero-search input{ font-size: 1rem; }
@@ -642,7 +642,7 @@ html[data-theme="light"] #portalView{
   --bookCtaBg: #B45309; --bookCtaTx: #FFFFFF;
 }
 #portalView header{ padding: 28px 18px 76px; }
-#portalView .logo{ width: 72px; height: 72px; }
+#portalView .logo{ width: 72px; height: auto; }
 #portalView header h1{ font-size: clamp(2.2rem, 7vw, 3.2rem); }
 #portalView .hero{ margin: 24px auto 0; }
 #portalView .hero-search input{ padding: 10px 4px; font-size: 1.05rem; }
@@ -689,7 +689,7 @@ html:not([data-theme="light"]) #portalView .notes-btn{ border-color: rgba(69,224
 #portalView .menu-link:hover{ background: rgba(69,224,192,0.08); }
 #portalView footer{ border-top: 1px solid rgba(69,224,192,0.3); padding: 32px 16px 40px; }
 @media (max-width: 600px){#portalView header{ padding: 24px 16px 68px; }
-#portalView .logo{ width: 64px; height: 64px; }
+#portalView .logo{ width: 64px; height: auto; }
 #portalView .hero{ margin-top: 20px; }
 #portalView main{ padding: 20px 14px 28px; }
 #portalView section{ margin-bottom: 48px; }
