@@ -593,7 +593,9 @@ html[data-theme="light"] #portalView .menu-btn .bar{ background: #061A30; }
 #portalView .ecg path{ fill: none; stroke: currentColor; stroke-width: 2; stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: ecg-draw 1.6s ease-out 0.2s forwards, ecg-pulse 4.5s ease-in-out 2.4s infinite; }
 @keyframes ecg-draw{ to { stroke-dashoffset: 0; } }
 @keyframes ecg-pulse{ 0%, 100% { opacity: 1; } 12% { opacity: 0.45; } 24% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce){#portalView .ecg path{ animation: none; stroke-dashoffset: 0; opacity: 0.6; }}
+#portalView .tagline .w{ display:inline-block; opacity:0; transform:translateY(8px); animation:word-in .5s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*90ms); }
+@keyframes word-in{ to{ opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce){#portalView .ecg path{ animation: none; stroke-dashoffset: 0; opacity: 0.6; }#portalView .tagline .w{ animation:none; opacity:1; transform:none; }}
 #portalView main{ padding: 24px 16px 32px; }
 #portalView section{ margin-bottom: 48px; }
 #portalView .sec-head h2{ font-size: 1.75rem; }
@@ -2396,7 +2398,7 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
       <div>
         <h1>Folio <span class="n196">196</span></h1>
       <p class="formerly">(formerly 5th notes)</p>
-      <p>Question Banks · Flashcards · Notes · By Almansory</p>
+      <p class="tagline"><span class="w" style="--i:0">Question</span> <span class="w" style="--i:1">Banks</span> <span class="w" style="--i:2">·</span> <span class="w" style="--i:3">Flashcards</span> <span class="w" style="--i:4">·</span> <span class="w" style="--i:5">Notes</span> <span class="w" style="--i:6">·</span> <span class="w" style="--i:7">By</span> <span class="w" style="--i:8">Almansory</span></p>
       </div>
     </div>
     <div class="header-actions">
