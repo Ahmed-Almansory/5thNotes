@@ -260,7 +260,12 @@ function renderCards() {
   $('flashSection').style.display = flashEl.style.display;
   $('booksSection').style.display = bookEl.style.display;
   if (!filtered.length) {
-    grid.innerHTML = '<p style="color:var(--mut)">No matching subjects found.</p>';
+    var rawQ = ($('searchInput').value || '').trim();
+    grid.innerHTML = '<div class="empty-state"><p>No banks match &ldquo;' + esc(rawQ) + '&rdquo;.</p>' +
+      '<button type="button" class="empty-clear" data-empty-clear>Clear search</button>' +
+      '<div class="empty-pills"><button type="button" data-empty-q="Dermatology">Dermatology</button>' +
+      '<button type="button" data-empty-q="Cardiology">Cardiology</button>' +
+      '<button type="button" data-empty-q="Chest">Chest</button></div></div>';
     return;
   }
   grid.innerHTML = filtered.map(function (b) {
@@ -314,6 +319,36 @@ function renderProgress() {
     document.querySelector('.progress-note').textContent =
       'No progress yet — solve any bank and your progress will appear here.';
   }
+  renderStreak();
+}
+
+function streakDays() {
+  var days = [];
+  try { days = JSON.parse(localStorage.getItem('folio196-streak') || '[]'); } catch (e) {}
+  if (!Array.isArray(days)) days = [];
+  var set = {};
+  days.forEach(function (d) { set[d] = true; });
+  function iso(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  var today = new Date(), cur = new Date(today);
+  if (!set[iso(cur)]) cur.setDate(cur.getDate() - 1);
+  var n = 0;
+  while (set[iso(cur)]) { n++; cur.setDate(cur.getDate() - 1); }
+  var last7 = [];
+  for (var i = 6; i >= 0; i--) { var d = new Date(today); d.setDate(d.getDate() - i); last7.push(!!set[iso(d)]); }
+  return { n: n, last7: last7 };
+}
+
+function renderStreak() {
+  var el = $('progressStreak');
+  if (!el) return;
+  var s = streakDays();
+  if (!s.n) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = '<b>' + s.n + '-day streak</b><span class="dots">' +
+    s.last7.map(function (on) { return '<span class="dot' + (on ? ' on' : '') + '"></span>'; }).join('') +
+    '</span><small>Any answered question counts as an active day.</small>';
 }
 
 function renderMenu() {
@@ -359,6 +394,20 @@ function wirePortalOnce() {
     menuFlash.setAttribute('rel', 'noopener noreferrer');
   }
   $('searchInput').addEventListener('input', renderCards);
+  $('cardsGrid').addEventListener('click', function (e) {
+    var qb = e.target.closest('[data-empty-q]');
+    if (qb) {
+      $('searchInput').value = qb.dataset.emptyQ;
+      $('searchInput').dispatchEvent(new Event('input'));
+      $('banksSection').scrollIntoView();
+      return;
+    }
+    if (e.target.closest('[data-empty-clear]')) {
+      $('searchInput').value = '';
+      $('searchInput').dispatchEvent(new Event('input'));
+      $('searchInput').focus();
+    }
+  });
   $('themeBtn').addEventListener('click', function () {
     var root = document.documentElement;
     var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -386,6 +435,32 @@ function wirePortalOnce() {
     toggle.setAttribute('aria-expanded', String(!open));
     body.hidden = open;
   });
+  document.querySelectorAll('#faqSection .faq-q').forEach(function (b) {
+    b.addEventListener('click', function () { b.parentElement.classList.toggle('open'); });
+  });
+  /* scroll reveal + stat counters */
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if ('IntersectionObserver' in window && !reducedMotion) {
+    var rio = new IntersectionObserver(function (es) {
+      es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); rio.unobserve(en.target); } });
+    }, { threshold: .12 });
+    document.querySelectorAll('#portalView .reveal').forEach(function (el) { rio.observe(el); });
+    var cio = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        cio.unobserve(en.target);
+        var el = en.target, target = +el.dataset.count, dur = 900, t0 = performance.now();
+        (function tick(now) {
+          var p = Math.min(1, (now - t0) / dur);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString('en-US');
+          if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+      });
+    }, { threshold: .5 });
+    document.querySelectorAll('#portalView [data-count]').forEach(function (el) { cio.observe(el); });
+  } else {
+    document.querySelectorAll('#portalView .reveal').forEach(function (el) { el.classList.add('in'); });
+  }
   /* side menu */
   (function () {
     var menuBtn = $('menuBtn'), sideMenu = $('sideMenu'),

@@ -541,6 +541,34 @@ html[data-theme="dark"] #portalView .eyebrow.gold{ color: #e09a28; }
 #portalView .progress-count{ flex: none; font-size: 0.85rem; color: var(--mut); white-space: nowrap; min-width: 96px; text-align: right; }
 #portalView .progress-count b{ color: var(--tx); }
 #portalView .progress-note{ margin: 10px 0 0; color: var(--mut); font-size: 0.82rem; }
+#portalView .reveal{ opacity: 0; transform: translateY(14px); transition: opacity .5s cubic-bezier(.22,1,.36,1), transform .5s cubic-bezier(.22,1,.36,1); }
+#portalView .reveal.in{ opacity: 1; transform: none; }
+#portalView .streak{ display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+#portalView .streak b{ font-size: 1.05rem; }
+#portalView .streak .dots{ display: flex; gap: 5px; }
+#portalView .streak .dot{ width: 13px; height: 13px; border-radius: 50%; background: var(--bd); }
+#portalView .streak .dot.on{ background: #f59e0b; }
+#portalView .streak small{ color: var(--mut); }
+#portalView #faqSection .sec-head h2{ font-size: 1.75rem; }
+#portalView .faq-item{ border: 1px solid var(--bd); border-radius: 12px; margin-bottom: 10px; background: var(--card); overflow: hidden; }
+#portalView .faq-q{ width: 100%; text-align: left; background: none; border: 0; padding: 14px 16px; font-size: 1rem; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; color: var(--tx); }
+#portalView .faq-q span{ color: var(--mut); }
+#portalView .faq-a{ padding: 0 16px 14px; color: var(--mut); display: none; line-height: 1.55; }
+#portalView .faq-item.open .faq-a{ display: block; }
+#portalView .faq-item.open .faq-q span{ transform: rotate(45deg); display: inline-block; }
+#portalView .empty-state{ margin-top: 14px; text-align: center; padding: 20px 12px; border: 1px dashed var(--bd); border-radius: 12px; }
+#portalView .empty-state p{ margin: 0 0 12px; color: var(--mut); }
+#portalView .empty-clear{ background: var(--navy); color: #fff; border: 0; border-radius: 999px; padding: 9px 18px; font-size: .95rem; cursor: pointer; }
+#portalView .empty-pills{ display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+#portalView .empty-pills button{ border: 1px solid var(--bd); border-radius: 999px; padding: 6px 13px; background: var(--soft); cursor: pointer; font-size: .9rem; color: var(--tx); }
+#portalView .cell .card{ transition: transform .15s ease, box-shadow .15s ease; }
+#portalView .cell .card:active{ transform: scale(.97); }
+#bankView .opt{ transition: background-color .25s ease, border-color .25s ease, transform .12s ease; }
+#bankView .opt:active{ transform: scale(.985); }
+@keyframes opt-grade{ from{ transform: scale(.985); filter: brightness(1.3); } to{ transform: scale(1); filter: brightness(1); } }
+#bankView #list .q.graded-in .opt.ok, #bankView #list .q.graded-in .opt.bad{ animation: opt-grade .3s ease both; }
+#bankView header{ animation: bank-head-in .45s cubic-bezier(.22,1,.36,1) both; }
+@keyframes bank-head-in{ from{ opacity: 0; transform: translateY(-6px); } to{ opacity: 1; transform: none; } }
 @media (max-width: 600px){#portalView .progress-name{ flex-basis: 92px; font-size: 0.85rem; }
 #portalView .progress-count{ min-width: 0; font-size: 0.8rem; }}
 html:not([data-theme="light"]) #portalView{
@@ -590,12 +618,12 @@ html[data-theme="light"] #portalView .menu-btn .bar{ background: #061A30; }
 #portalView .theme-btn{ min-height: 44px; }
 #portalView .menu-btn{ width: 44px; min-height: 44px; }
 #portalView .ecg{ position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 72px; z-index: 1; pointer-events: none; color: var(--aqua); opacity: 0.5; }
-#portalView .ecg path{ fill: none; stroke: currentColor; stroke-width: 2; stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: ecg-draw 1.6s ease-out 0.2s forwards, ecg-pulse 4.5s ease-in-out 2.4s infinite; }
-@keyframes ecg-draw{ to { stroke-dashoffset: 0; } }
-@keyframes ecg-pulse{ 0%, 100% { opacity: 1; } 12% { opacity: 0.45; } 24% { opacity: 1; } }
+#portalView .ecg path{ fill: none; stroke: currentColor; stroke-width: 2; opacity: .35; }
+#portalView .ecg .sweep{ stroke-width: 2.5; opacity: 1; stroke-dasharray: 220 1187.4; animation: ecg-sweep 4.5s linear infinite; }
+@keyframes ecg-sweep{ from{ stroke-dashoffset: 0; } to{ stroke-dashoffset: -1407.4; } }
 #portalView .tagline .w{ display:inline-block; opacity:0; transform:translateY(8px); animation:word-in .5s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*90ms); }
 @keyframes word-in{ to{ opacity:1; transform:translateY(0); } }
-@media (prefers-reduced-motion: reduce){#portalView .ecg path{ animation: none; stroke-dashoffset: 0; opacity: 0.6; }#portalView .tagline .w{ animation:none; opacity:1; transform:none; }}
+@media (prefers-reduced-motion: reduce){#portalView .ecg path{ opacity: 0.6; }#portalView .ecg .sweep{ display: none; }#portalView .tagline .w{ animation:none; opacity:1; transform:none; }#portalView .reveal{ opacity:1; transform:none; transition:none; }#bankView .opt{ transition:none; }#bankView #list .q.graded-in .opt.ok, #bankView #list .q.graded-in .opt.bad{ animation:none; }#bankView header{ animation:none; }#bankView nav#nav{ transition:none; }}
 #portalView main{ padding: 24px 16px 32px; }
 #portalView section{ margin-bottom: 48px; }
 #portalView .sec-head h2{ font-size: 1.75rem; }
@@ -620,7 +648,6 @@ html:not([data-theme="light"]) #portalView .book-card, html[data-theme="dark"] #
 #portalView .stat + .stat{ border-inline-start: 0; }
 #portalView .stat{ flex: 1 1 40%; }
 #portalView main{ padding: 20px 14px 28px; }
-#portalView section{ margin-bottom: 40px; }
 #portalView .progress-toggle{ flex-wrap: wrap; row-gap: 4px; }
 #portalView .progress-overall{ margin-left: 0; }}
 html:not([data-theme="light"]) #portalView{
@@ -655,7 +682,7 @@ html[data-theme="light"] #portalView{
 #portalView .card:hover{ transform: translateY(-5px); }
 #portalView .card-meta{ font-size: clamp(0.85rem, 5.6cqw, 1.05rem); }
 #portalView #banksSection .sec-head h2{ font-size: 2rem; }
-#portalView #flashSection .sec-head h2, #portalView #booksSection .sec-head h2{ font-size: 1.6rem; }
+#portalView #flashSection .sec-head h2, #portalView #booksSection .sec-head h2{ font-size: 1.75rem; }
 #portalView section{ margin-bottom: 56px; }
 #portalView .stats{ padding: 2px 8px; margin-bottom: 48px; gap: 4px; }
 #portalView .stat{ padding: 8px 14px; font-size: 0.85rem; }
@@ -695,7 +722,7 @@ html:not([data-theme="light"]) #portalView .notes-btn{ border-color: rgba(69,224
 #portalView .hero{ margin-top: 20px; }
 #portalView main{ padding: 20px 14px 28px; }
 #portalView section{ margin-bottom: 48px; }
-#portalView #banksSection .sec-head h2{ font-size: 1.6rem; }
+#portalView #banksSection .sec-head h2, #portalView #simSection .sec-head h2, #portalView #flashSection .sec-head h2, #portalView #booksSection .sec-head h2, #portalView #faqSection .sec-head h2{ font-size: 1.6rem; }
 #portalView .grid{ gap: 12px; }
 #portalView .card{ border-radius: 20px; }
 #portalView .stat{ flex: 1 1 40%; }}
@@ -2241,14 +2268,27 @@ html[data-theme=dark] #bankView .dupb{
 }
 @media (max-width: 860px){#bankView nav#nav{
     position: fixed;
-    inset: 0 22% 0 0;
+    inset: auto 0 0 0;
     width: auto;
-    max-width: 310px;
+    max-width: 640px;
+    margin: 0 auto;
+    max-height: 72vh;
     background: var(--card);
     z-index: 90;
-    transform: translateX(-105%);
-    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(105%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: var(--shadow-lg);
+    border-radius: 20px 20px 0 0;
+    border-inline-end: 0;
+  }
+#bankView nav#nav::before{
+    content: '';
+    display: block;
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--bd);
+    margin: 4px auto 8px;
   }
 #bankView nav#nav.open{
     transform: none;
@@ -2412,9 +2452,9 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input type="search" id="searchInput" placeholder="Search banks, chapters, ECG..." aria-label="Search subjects or chapters">
       </div>
-      <p class="hero-hint">Try: <button type="button" data-q="Dermatology">Dermatology</button> &middot; <button type="button" data-q="Cardiology">Cardiology</button> &middot; <button type="button" data-q="ECG">ECG</button></p>
+      <p class="hero-hint">Try: <button type="button" data-q="Dermatology">Dermatology</button> &middot; <button type="button" data-q="Cardiology">Cardiology</button> &middot; <button type="button" data-q="Chest">Chest</button></p>
     </div>
-    <svg class="ecg" viewBox="0 0 1200 64" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32 H180 l14-8 16 8 10-5 10 5 10-34 12 58 10-42 8 16 12-6 H520 l14-8 16 8 10-5 10 5 10-34 12 58 10-42 8 16 12-6 H1200"/></svg>
+    <svg class="ecg" viewBox="0 0 1200 64" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32 H100 Q116,22 132,32 H148 L152,36 L158,6 L164,40 L170,32 H182 C188,32 190,21 200,21 C210,21 212,32 218,32 H490 Q506,22 522,32 H538 L542,36 L548,4 L554,40 L560,32 H572 C578,32 580,21 590,21 C600,21 602,32 608,32 H880 Q896,22 912,32 H928 L932,36 L938,7 L944,40 L950,32 H962 C968,32 970,20 982,20 C994,20 998,32 1006,32 H1200"/><path class="sweep" d="M0 32 H100 Q116,22 132,32 H148 L152,36 L158,6 L164,40 L170,32 H182 C188,32 190,21 200,21 C210,21 212,32 218,32 H490 Q506,22 522,32 H538 L542,36 L548,4 L554,40 L560,32 H572 C578,32 580,21 590,21 C600,21 602,32 608,32 H880 Q896,22 912,32 H928 L932,36 L938,7 L944,40 L950,32 H962 C968,32 970,20 982,20 C994,20 998,32 1006,32 H1200"/></svg>
 </header>
 
 <div class="menu-overlay" id="menuOverlay"></div>
@@ -2460,9 +2500,15 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
     <span class="tg-strip-open">Open ↗</span>
   </a>
 
+  <div class="stats reveal">
+    <a class="stat" href="#banksSection"><b data-count="2128">2,128</b> MCQs</a>
+    <a class="stat" href="#flashSection"><b data-count="906">906</b> Flashcards</a>
+    <a class="stat" href="#banksSection"><b data-count="7">7</b> Question Banks</a>
+    <a class="stat" href="#booksSection"><b data-count="3">3</b> Revision Notes</a>
+    <a class="stat" href="#bookCard"><b data-count="1">1</b> Dermatology Book</a>
+  </div>
 
-
-  <section id="banksSection">
+  <section id="banksSection" class="reveal">
     <div class="sec-head sec-head-row">
       <div>
         <p class="eyebrow">Past Questions · Hawary · El Zanqa</p>
@@ -2474,9 +2520,9 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
   </section>
 
 
-  <section id="simSection">
+  <section id="simSection" class="reveal">
     <div class="sec-head">
-      <p class="eyebrow">New · OSCE Practice</p>
+      <p class="eyebrow">OSCE Practice</p>
       <h2>Patient Simulator</h2>
       <p>Take a history like the exam, then pick your diagnosis.</p>
     </div>
@@ -2491,7 +2537,7 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
   </a>
   </section>
 
-  <section class="progress-panel" id="progressSection" aria-label="Your progress">
+  <section class="progress-panel reveal" id="progressSection" aria-label="Your progress">
     <button class="progress-toggle" id="progressToggle" aria-expanded="false" aria-controls="progressBody">
       <span class="progress-title">Your Progress</span>
       <span class="progress-overall" id="progressOverall"></span>
@@ -2501,11 +2547,12 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
       <div class="progress-total"><span id="progressTotalBar" style="width:0%"></span></div>
       <div id="progressRows"></div>
       <p class="progress-note">Saved on this device only &mdash; your progress stays in this browser.</p>
+      <div class="streak" id="progressStreak" hidden></div>
     </div>
   </section>
-  <section id="flashSection">
+  <section id="flashSection" class="reveal">
     <div class="sec-head">
-      <p class="eyebrow violet">New · Spaced Repetition</p>
+      <p class="eyebrow violet">Spaced Repetition</p>
       <h2>Flashcards</h2>
       <p>Smart scheduling with FSRS — review a little every day, remember it for the exam.</p>
     </div>
@@ -2520,7 +2567,7 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
   </a>
   </section>
 
-  <section id="booksSection">
+  <section id="booksSection" class="reveal">
     <div class="sec-head">
       <p class="eyebrow gold">Books &amp; Notes</p>
       <h2>Books &amp; Notes</h2>
@@ -2536,14 +2583,18 @@ else{var mq=window.matchMedia('(prefers-color-scheme: light)');apply(mq);if(mq.a
     <span class="book-cta">Open on Telegram ↗</span>
   </a>
   </section>
-  <div class="stats">
-    <a class="stat" href="#banksSection"><b>2,128</b> MCQs</a>
-    <a class="stat" href="#flashSection"><b>906</b> Flashcards</a>
-    <a class="stat" href="#banksSection"><b>7</b> Question Banks</a>
-    <a class="stat" href="#booksSection"><b>3</b> Revision Notes</a>
-    <a class="stat" href="#bookCard"><b>1</b> Dermatology Book</a>
-  </div>
-
+  <section id="faqSection" class="reveal" aria-label="Frequently asked questions">
+    <div class="sec-head">
+      <p class="eyebrow">Help</p>
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="faq-item"><button class="faq-q" type="button">Is Folio 196 free?<span aria-hidden="true">+</span></button><div class="faq-a">Yes &mdash; completely free. No account, no payment, no ads.</div></div>
+    <div class="faq-item"><button class="faq-q" type="button">Does it work offline?<span aria-hidden="true">+</span></button><div class="faq-a">Yes. After your first visit the banks are saved on your device, so you can solve questions without internet.</div></div>
+    <div class="faq-item"><button class="faq-q" type="button">Does my progress save?<span aria-hidden="true">+</span></button><div class="faq-a">Your progress is saved on this device only, in this browser &mdash; answers, bookmarks and wrong questions stay where you left them.</div></div>
+    <div class="faq-item"><button class="faq-q" type="button">Which banks are there?<span aria-hidden="true">+</span></button><div class="faq-a">7 banks, 2,128 questions: Dermatology, Cardiology, Chest, Tropical Medicine, Anesthesia, Andrology and Radiology.</div></div>
+    <div class="faq-item"><button class="faq-q" type="button">Where do the questions come from?<span aria-hidden="true">+</span></button><div class="faq-a">From the Hawary and Paradox files, plus all previous years&apos; exam questions.</div></div>
+    <div class="faq-item"><button class="faq-q" type="button">How do I join the Telegram channel?<span aria-hidden="true">+</span></button><div class="faq-a">Join Folio 196 on Telegram &mdash; the link is in the strip under the hero on the portal.</div></div>
+  </section>
 </main>
 
 <footer>

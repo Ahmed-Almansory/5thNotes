@@ -48,6 +48,7 @@ try {
 } catch (e) {}
 
 let cur = null, show = false, showExpl = false, EXPL = {}, wrongOnly = false, savedOnly = false, RT = false, P = {}, LAST = null, BM = [], TH = null, mapOpen = false;
+let JUSTGRADED = null;
 try { showExpl = localStorage.getItem(SK + 'expl') === '1'; } catch (e) {}
 try {
   EXPL = JSON.parse(localStorage.getItem(SK + 'explq') || '{}');
@@ -177,7 +178,15 @@ const save = () => { try { localStorage.setItem(SK, JSON.stringify(P)); } catch 
 const saveLast = (id) => {
   if (!id) return;
   LAST = { id: id };
+  JUSTGRADED = id;
   try { localStorage.setItem(SK + 'ans', JSON.stringify(LAST)); } catch (e) {}
+  try {
+    var k = 'folio196-streak', d = new Date(),
+        today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
+        days = JSON.parse(localStorage.getItem(k) || '[]');
+    if (!Array.isArray(days)) days = [];
+    if (days.indexOf(today) < 0) { days.push(today); if (days.length > 400) days = days.slice(-400); localStorage.setItem(k, JSON.stringify(days)); }
+  } catch (e) {}
   updRB();
 };
 const clearLast = () => {
@@ -572,6 +581,9 @@ function refreshCard(id) {
     tmp.innerHTML = cardHTML(q);
     const neu = tmp.firstChild;
     if (!neu) return false;
+    const g = (JUSTGRADED === id);
+    JUSTGRADED = null;
+    if (g) neu.classList.add('graded-in');
     // Pin the new card to the old card's height for two frames: a freshly
     // swapped-in card can measure ~46px short for a frame, and at max
     // scroll that shrinks the page and the browser clamps scrollY (the
